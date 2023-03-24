@@ -38,18 +38,21 @@ private:
 	void renderPlayerInfo();
 	void renderSprite();
 	void renderAttack();
+	
+	//Simple function for flipping the sprite left/right based on its current scale
+	void TurnLeft();
+	void TurnRight();
 
 	//Updaters
 	void updateAttack();
 	void updatePlayerInfo();
+	
 	void updateInput();
 public:
 	
 	Player(sf::RenderTarget& target ,std::string name = "newplayer", int health = 10, std::string texture = "IMAGES/trans_sprite_test.png");	
 
 	const sf::Vector2f& getPostion() const;
-
-
 
 	void updatePlayer();
 	

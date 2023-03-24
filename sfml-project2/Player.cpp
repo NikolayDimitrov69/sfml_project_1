@@ -36,27 +36,42 @@ const sf::Vector2f& Player::getPostion() const
 	return sf::Vector2f(m_Sprite.getPosition());
 }
 
+void Player::TurnLeft()
+{
+	if (m_Sprite.getScale().x > 0)
+		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
+}
+
+void Player::TurnRight()
+{
+	if (m_Sprite.getScale().x < 0)
+		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
+}
+
 void Player::updateInput()
 {
+	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		if (m_Sprite.getScale().x > 0)
-			m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
-		m_Sprite.move(-moveSpeed, 0.f);
+		TurnLeft();
+		if (playerBounds.left - moveSpeed > 0.f)
+			m_Sprite.move(-moveSpeed, 0.f);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		if (m_Sprite.getScale().x < 0)
-			m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
-		m_Sprite.move(moveSpeed, 0.f);
+		TurnRight();
+		if (playerBounds.left + playerBounds.width + moveSpeed < m_Target.getSize().x)
+			m_Sprite.move(moveSpeed, 0.f);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		m_Sprite.move(0.f, -moveSpeed);
+		if (playerBounds.top - moveSpeed > 0.f)
+			m_Sprite.move(0.f, -moveSpeed);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		m_Sprite.move(0.f, moveSpeed);
+		if (playerBounds.top + playerBounds.height + moveSpeed < m_Target.getSize().y)
+			m_Sprite.move(0.f, moveSpeed);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
@@ -115,6 +130,13 @@ void Player::renderAttack()
 	}
 }
 
+void Player::updatePlayer()
+{
+	updatePlayerInfo();
+	updateAttack();
+	updateInput();
+}
+
 void Player::renderPlayer()
 {
 	renderPlayerInfo();
@@ -122,10 +144,5 @@ void Player::renderPlayer()
 	renderAttack();
 }
 
-void Player::updatePlayer()
-{
-	updatePlayerInfo();
-	updateAttack();
-	updateInput();
-}
+
 
