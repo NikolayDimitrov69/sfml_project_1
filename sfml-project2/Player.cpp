@@ -1,5 +1,11 @@
 #include "Player.h"
 
+void Player::initPlayerHealth()
+{
+	m_Health = 100;
+	currentHealth = m_Health;
+}
+
 void Player::initPlayerInfo()
 {
 	font.loadFromFile("Fonts/arial.ttf");
@@ -28,12 +34,23 @@ Player::Player(sf::RenderTarget& target, std::string name, int health, std::stri
 	moveSpeed = 3.f;
 	initAttack();
 	initSprite(texture);
+	initPlayerHealth();
 	initPlayerInfo();
 }
 
 const sf::Vector2f& Player::getPostion() const
 {
 	return sf::Vector2f(m_Sprite.getPosition());
+}
+
+float Player::getMaxHealth() const
+{
+	return m_Health;
+}
+
+float Player::getCurrentHealth() const
+{
+	return currentHealth;
 }
 
 void Player::TurnLeft()
@@ -81,10 +98,7 @@ void Player::updateInput()
 
 void Player::updatePlayerInfo()
 {
-	std::stringstream ss;
-	ss << "HP: " << m_Health << '\n' << m_Name;
-	PlayerInfo.setString(ss.str());
-	PlayerInfo.setPosition(m_Sprite.getPosition().x - 50, m_Sprite.getPosition().y - 110);
+	healthbar.update(m_Sprite, m_Health, currentHealth);
 }
 
 void Player::fillAttackVector()
@@ -114,7 +128,8 @@ void Player::updateAttack()
 
 void Player::renderPlayerInfo()
 {
-	m_Target.draw(PlayerInfo);
+	//m_Target.draw(PlayerInfo);
+	healthbar.render(m_Target);
 }
 
 void Player::renderSprite()

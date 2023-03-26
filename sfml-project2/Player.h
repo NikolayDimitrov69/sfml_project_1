@@ -9,7 +9,9 @@ private:
 
 	//Player name and health
 	std::string m_Name;
-	int m_Health;
+	Healthbar healthbar;
+	float m_Health;
+	float currentHealth;
 	float moveSpeed;
 
 	//Player info font and text
@@ -27,6 +29,7 @@ private:
 	sf::Sprite m_Sprite;
 	
 	//Private initializer functions
+	void initPlayerHealth();
 	void initPlayerInfo();
 	void initAttack();
 	void initSprite(std::string& texture);
@@ -46,13 +49,16 @@ private:
 	//Updaters
 	void updateAttack();
 	void updatePlayerInfo();
-	
 	void updateInput();
 public:
 	
 	Player(sf::RenderTarget& target ,std::string name = "newplayer", int health = 10, std::string texture = "IMAGES/trans_sprite_test.png");	
 
 	const sf::Vector2f& getPostion() const;
+
+	float getMaxHealth() const;
+
+	float getCurrentHealth() const;
 
 	void updatePlayer();
 	

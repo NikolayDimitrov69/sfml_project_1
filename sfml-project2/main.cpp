@@ -22,7 +22,7 @@ int main()
 			}
 		}
 
-		window.clear(sf::Color::Black);
+		window.clear(sf::Color::White);
 
 		test.updatePlayer();
 
