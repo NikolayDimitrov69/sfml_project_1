@@ -2,7 +2,7 @@
 
 void Healthbar::initHealth()
 {
-	health.setFillColor(sf::Color::Red);
+	health.setFillColor(sf::Color::Green);
 }
 
 void Healthbar::initOutline()
@@ -12,7 +12,7 @@ void Healthbar::initOutline()
 	outline.setOutlineThickness(4.f);
 }
 
-Healthbar::Healthbar() : Percentage(100)
+Healthbar::Healthbar() : Percentage(1)
 {
 	initOutline();
 	initHealth();
@@ -20,7 +20,8 @@ Healthbar::Healthbar() : Percentage(100)
 
 void Healthbar::updatePercentage(const float& maxhp, const float& currenthp)
 {
-	Percentage = currenthp / maxhp;
+	if (currenthp >= 0 && currenthp <= maxhp)
+		Percentage = currenthp / maxhp;
 }
 
 void Healthbar::updateSize(const sf::Sprite& sprite)
@@ -38,9 +39,18 @@ void Healthbar::updatePosition(const sf::Sprite& sprite)
 	health.setPosition(outline.getGlobalBounds().left + 4.f, outline.getGlobalBounds().top + 4.f);
 }
 
+void Healthbar::updateColor()
+{
+	if (Percentage <= 0.3)
+		health.setFillColor(sf::Color::Red);
+	else
+		health.setFillColor(sf::Color::Green);
+}
+
 void Healthbar::update(const sf::Sprite& sprite, const float& maxhp, const float& currenthp)
 {
 	updatePercentage(maxhp, currenthp);
+	updateColor();
 	updateSize(sprite);
 	updatePosition(sprite);
 }

@@ -23,6 +23,9 @@ private:
 	Attack attack;
 	int maxAttacks;
 
+	//Player's cooldown time and max cooldown
+	int maxAttCooldown;
+	int attCooldown;
 	
 	//Player texture and sprite
 	sf::Texture m_Texture;

@@ -25,6 +25,8 @@ void Player::initSprite(std::string& texture)
 
 void Player::initAttack()
 {
+	maxAttCooldown = 30;
+	attCooldown = maxAttCooldown;
 	maxAttacks = 2;
 	attack.setTexture("IMAGES/megaman_attack.png");
 }
@@ -94,6 +96,13 @@ void Player::updateInput()
 	{
 		fillAttackVector();
 	}
+
+	//Test button - testing the healthbar class
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+		currentHealth -= 0.5;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+		currentHealth += 0.5;
+	//Dev move ^^^ >:)
 }
 
 void Player::updatePlayerInfo()
@@ -103,8 +112,9 @@ void Player::updatePlayerInfo()
 
 void Player::fillAttackVector()
 {
-	if (maxAttacks >= 0)
+	if (maxAttacks >= 0 && maxAttCooldown == attCooldown)
 	{
+		attCooldown = 0;
 		attack.changeDirection(m_Sprite.getScale().x < 0 ? -1 : 1);
 		attack.spawn(m_Sprite);
 
@@ -115,6 +125,8 @@ void Player::fillAttackVector()
 
 void Player::updateAttack()
 {
+	if (attCooldown < maxAttCooldown)
+		attCooldown += 1;
 	for (int i = 0; i < attacks.size(); i++)
 	{
 		attacks[i].update(m_Target);

@@ -8,6 +8,7 @@ void Attack::changeDirection(const int& direction)
 	m_Direction = direction;
 }
 
+
 void Attack::update(sf::RenderTarget& target)
 {
 	m_Sprite.move(m_Direction * 10.f, 0);
