@@ -13,11 +13,19 @@ private:
 	//Direction of attack, relative to the direction the player is facing
 	int m_Direction;
 
+	//The angle of the attack 
+	float angle;
+
+	//to describe
+	sf::Vector2f shootDir;
+
 	//Boolean for wether the attack is on-screen
 	bool outOfBounds;
 public:
 	//Default constructor, not meant to create the attack itself, use spawn() method to create an attack
 	Attack();
+
+	void setShootDir(const sf::Vector2f&, const sf::Vector2f&);
 
 	//Sets the texture from a given path
 	void setTexture(const std::string&);

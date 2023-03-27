@@ -5,7 +5,7 @@ class Player
 {
 private:
 	//Specifies the render target
-	sf::RenderTarget& m_Target;
+	sf::RenderTarget* m_Target;
 
 	//Player name and health
 	std::string m_Name;
@@ -38,7 +38,7 @@ private:
 	void initSprite(std::string& texture);
 
 	//Push_back attack whenever spawned
-	void fillAttackVector();
+	void fillAttackVector(const sf::Vector2f&);
 
 	//Renderers
 	void renderPlayerInfo();
@@ -52,10 +52,11 @@ private:
 	//Updaters
 	void updateAttack();
 	void updatePlayerInfo();
-	void updateInput();
+	void updateInput(const sf::Vector2f&);
 public:
-	
-	Player(sf::RenderTarget& target ,std::string name = "newplayer", int health = 10, std::string texture = "IMAGES/trans_sprite_test.png");	
+	Player();
+
+	Player(sf::RenderTarget* target ,std::string name = "newplayer", int health = 10, std::string texture = "IMAGES/trans_sprite_test.png");	
 
 	const sf::Vector2f& getPostion() const;
 
@@ -63,7 +64,7 @@ public:
 
 	float getCurrentHealth() const;
 
-	void updatePlayer();
+	void updatePlayer(const sf::Vector2f&);
 	
 	void renderPlayer();
 };

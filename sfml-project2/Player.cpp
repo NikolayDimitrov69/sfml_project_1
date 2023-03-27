@@ -20,7 +20,7 @@ void Player::initSprite(std::string& texture)
 	m_Sprite.setTexture(m_Texture);
 	m_Sprite.setScale(0.05, 0.05);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
-	m_Sprite.setPosition(m_Target.getSize().x / 2.f, m_Target.getSize().y / 2.f);
+	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
 }
 
 void Player::initAttack()
@@ -31,7 +31,7 @@ void Player::initAttack()
 	attack.setTexture("IMAGES/megaman_attack.png");
 }
 
-Player::Player(sf::RenderTarget& target, std::string name, int health, std::string texture) :m_Target(target), m_Name(name), m_Health(health)
+Player::Player(sf::RenderTarget* target, std::string name, int health, std::string texture) :m_Target(target), m_Name(name), m_Health(health)
 {
 	moveSpeed = 3.f;
 	initAttack();
@@ -67,7 +67,7 @@ void Player::TurnRight()
 		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
 }
 
-void Player::updateInput()
+void Player::updateInput(const sf::Vector2f& pos)
 {
 	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -79,7 +79,7 @@ void Player::updateInput()
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		TurnRight();
-		if (playerBounds.left + playerBounds.width + moveSpeed < m_Target.getSize().x)
+		if (playerBounds.left + playerBounds.width + moveSpeed < m_Target->getSize().x)
 			m_Sprite.move(moveSpeed, 0.f);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -89,12 +89,20 @@ void Player::updateInput()
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		if (playerBounds.top + playerBounds.height + moveSpeed < m_Target.getSize().y)
+		if (playerBounds.top + playerBounds.height + moveSpeed < m_Target->getSize().y)
 			m_Sprite.move(0.f, moveSpeed);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
-		fillAttackVector();
+		//add jump funcion
+	}
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		if (pos.x < m_Sprite.getPosition().x)
+			TurnLeft();
+		if (pos.x > m_Sprite.getPosition().x)
+			TurnRight();
+		fillAttackVector(pos);
 	}
 
 	//Test button - testing the healthbar class
@@ -105,17 +113,21 @@ void Player::updateInput()
 	//Dev move ^^^ >:)
 }
 
+Player::Player() : m_Target(nullptr)
+{}
+
 void Player::updatePlayerInfo()
 {
 	healthbar.update(m_Sprite, m_Health, currentHealth);
 }
 
-void Player::fillAttackVector()
+void Player::fillAttackVector(const sf::Vector2f& pos)
 {
-	if (maxAttacks >= 0 && maxAttCooldown == attCooldown)
+	if (maxAttacks >= 0 && maxAttCooldown == attCooldown && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
 	{
 		attCooldown = 0;
-		attack.changeDirection(m_Sprite.getScale().x < 0 ? -1 : 1);
+		attack.setShootDir(pos, m_Sprite.getPosition());
+		attack.changeDirection(pos.x < m_Sprite.getPosition().x ? -1 : 1);
 		attack.spawn(m_Sprite);
 
 		maxAttacks--;
@@ -129,7 +141,7 @@ void Player::updateAttack()
 		attCooldown += 1;
 	for (int i = 0; i < attacks.size(); i++)
 	{
-		attacks[i].update(m_Target);
+		attacks[i].update(*m_Target);
 		if (attacks[i].isOutOfBounds())
 		{
 			attacks.erase(attacks.begin() + i);
@@ -140,28 +152,27 @@ void Player::updateAttack()
 
 void Player::renderPlayerInfo()
 {
-	//m_Target.draw(PlayerInfo);
-	healthbar.render(m_Target);
+	healthbar.render(*m_Target);
 }
 
 void Player::renderSprite()
 {
-	m_Target.draw(m_Sprite);
+	m_Target->draw(m_Sprite);
 }
 
 void Player::renderAttack()
 {
 	for (auto& e : attacks)
 	{
-		e.render(m_Target);
+		e.render(*m_Target);
 	}
 }
 
-void Player::updatePlayer()
+void Player::updatePlayer(const sf::Vector2f& pos)
 {
 	updatePlayerInfo();
 	updateAttack();
-	updateInput();
+	updateInput(pos);
 }
 
 void Player::renderPlayer()
