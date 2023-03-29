@@ -1,3 +1,4 @@
+#include "precompheaders.h"
 #include "Attack.h"
 
 Attack::Attack() : m_Direction(1), outOfBounds(false), angle(0.f)
@@ -10,8 +11,6 @@ void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playe
 {
 	shootDir = mousepos - playerpos;
 	shootDir = shootDir / static_cast<float>(sqrt(pow(shootDir.x, 2) + pow(shootDir.y, 2)));
-
-
 
 	float julto = playerpos.y - mousepos.y;
 	float cherveno = playerpos.x - mousepos.x;
@@ -29,7 +28,7 @@ void Attack::changeDirection(const int& direction)
 
 void Attack::update(sf::RenderTarget& target)
 {
-	m_Sprite.move(5.f * shootDir);
+	m_Sprite.move(7.f * shootDir);
 	if (m_Sprite.getPosition().x > target.getSize().x || 
 		m_Sprite.getPosition().x < 0 || 
 		m_Sprite.getPosition().y < 0 || 

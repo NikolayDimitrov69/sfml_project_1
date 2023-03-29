@@ -1,3 +1,4 @@
+#include "precompheaders.h"
 #include "Game.h"
 
 void Game::initWindow()
@@ -10,6 +11,12 @@ void Game::initWindow()
 void Game::initPlayer()
 {
 	player = new Player(window);
+}
+
+void Game::updateMousePosition()
+{
+	mousePosWindow = sf::Mouse::getPosition(*window);
+	mousePosView = window->mapPixelToCoords(mousePosWindow);
 }
 
 void Game::pollEvents()
@@ -27,6 +34,12 @@ void Game::pollEvents()
 	}
 }
 
+void Game::checkCollision()
+{
+	if (player->getBottomHitbox() >= window->getSize().y)
+		player->setPhysicState(Physicstate::ON_GROUND);
+}
+
 Game::Game()
 {	
 	initWindow();
@@ -34,9 +47,11 @@ Game::Game()
 }
 
 void Game::update()
-{
+{	
 	pollEvents();
-	player->updatePlayer();
+	updateMousePosition();
+	checkCollision();
+	player->updatePlayer(mousePosView);
 }
 
 void Game::render()

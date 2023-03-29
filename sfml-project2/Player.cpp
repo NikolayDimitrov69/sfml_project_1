@@ -1,24 +1,17 @@
+#include "precompheaders.h"
 #include "Player.h"
 
 void Player::initPlayerHealth()
 {
-	m_Health = 100;
-	currentHealth = m_Health;
-}
-
-void Player::initPlayerInfo()
-{
-	font.loadFromFile("Fonts/arial.ttf");
-	PlayerInfo.setCharacterSize(20);
-	PlayerInfo.setFillColor(sf::Color::White);
-	PlayerInfo.setFont(font);
+	health.m_Health = 100;
+	health.currentHealth = health.m_Health;
 }
 
 void Player::initSprite(std::string& texture)
 {
 	m_Texture.loadFromFile(texture);
 	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setScale(0.05, 0.05);
+	m_Sprite.setScale(0.05f, 0.05f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
 	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
 }
@@ -31,13 +24,16 @@ void Player::initAttack()
 	attack.setTexture("IMAGES/megaman_attack.png");
 }
 
-Player::Player(sf::RenderTarget* target, std::string name, int health, std::string texture) :m_Target(target), m_Name(name), m_Health(health)
+Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std::string texture) :m_Target(target), m_Name(name)
 {
-	moveSpeed = 3.f;
+	//Will be asumed that the player is not on a solid object, if needed the game class will change that
+	physicstate = Physicstate::MID_AIR;
+	//Player will be spawned with its idle animation
+	playerstate = Playerstate::IDLE;
+	health.m_Health = newhealth;
 	initAttack();
 	initSprite(texture);
 	initPlayerHealth();
-	initPlayerInfo();
 }
 
 const sf::Vector2f& Player::getPostion() const
@@ -47,12 +43,32 @@ const sf::Vector2f& Player::getPostion() const
 
 float Player::getMaxHealth() const
 {
-	return m_Health;
+	return health.m_Health;
 }
 
 float Player::getCurrentHealth() const
 {
-	return currentHealth;
+	return health.currentHealth;
+}
+
+float Player::getBottomHitbox() const
+{
+	return m_Sprite.getGlobalBounds().top + m_Sprite.getGlobalBounds().height;
+}
+
+void Player::setPhysicState(const Physicstate& newstate)
+{
+	physicstate = newstate;
+}
+
+void Player::move_x(const float& dir_x)
+{
+	playerphysics.setVelocity_X(dir_x);
+}
+
+void Player::jump(const float& height)
+{
+	playerphysics.setVelocity_Y(height);
 }
 
 void Player::TurnLeft()
@@ -73,28 +89,22 @@ void Player::updateInput(const sf::Vector2f& pos)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		TurnLeft();
-		if (playerBounds.left - moveSpeed > 0.f)
-			m_Sprite.move(-moveSpeed, 0.f);
+		playerstate = Playerstate::MOVE_LEFT;
+		//if (playerBounds.left - moveSpeed > 0.f)
+		move_x(-1.f);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		TurnRight();
-		if (playerBounds.left + playerBounds.width + moveSpeed < m_Target->getSize().x)
-			m_Sprite.move(moveSpeed, 0.f);
+		playerstate = Playerstate::MOVE_RIGHT;
+		//if (playerBounds.left + playerBounds.width + moveSpeed < m_Target->getSize().x)
+		move_x(1.f);
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::ON_GROUND)
 	{
-		if (playerBounds.top - moveSpeed > 0.f)
-			m_Sprite.move(0.f, -moveSpeed);
-	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-	{
-		if (playerBounds.top + playerBounds.height + moveSpeed < m_Target->getSize().y)
-			m_Sprite.move(0.f, moveSpeed);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-	{
-		//add jump funcion
+		physicstate = Physicstate::MID_AIR;
+		playerstate = Playerstate::JUMPING;
+		jump(7.f);
 	}
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -107,9 +117,9 @@ void Player::updateInput(const sf::Vector2f& pos)
 
 	//Test button - testing the healthbar class
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-		currentHealth -= 0.5;
+		health.currentHealth -= 0.5;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-		currentHealth += 0.5;
+		health.currentHealth += 0.5;
 	//Dev move ^^^ >:)
 }
 
@@ -118,7 +128,7 @@ Player::Player() : m_Target(nullptr)
 
 void Player::updatePlayerInfo()
 {
-	healthbar.update(m_Sprite, m_Health, currentHealth);
+	health.healthbar.update(m_Sprite, health.m_Health, health.currentHealth);
 }
 
 void Player::fillAttackVector(const sf::Vector2f& pos)
@@ -150,9 +160,28 @@ void Player::updateAttack()
 	}
 }
 
+void Player::updatePlayerPhysics()
+{
+	//Gravity will be stoped, if player is on ground
+	if (physicstate == Physicstate::ON_GROUND)
+		playerphysics.stopGravity();
+
+	//Gravity will be applied only if the player is mid air, meaning no solid object bellow them
+	if (physicstate == Physicstate::MID_AIR)
+		applyGravity();
+
+	playerphysics.updateMovePhysics();
+	m_Sprite.move(playerphysics.getMoveVelocity());
+}
+
+void Player::applyGravity()
+{
+	playerphysics.updateGravity();
+}
+
 void Player::renderPlayerInfo()
 {
-	healthbar.render(*m_Target);
+	health.healthbar.render(*m_Target);
 }
 
 void Player::renderSprite()
@@ -172,7 +201,9 @@ void Player::updatePlayer(const sf::Vector2f& pos)
 {
 	updatePlayerInfo();
 	updateAttack();
+	updatePlayerPhysics();
 	updateInput(pos);
+	
 }
 
 void Player::renderPlayer()
