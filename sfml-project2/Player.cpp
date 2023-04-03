@@ -11,7 +11,8 @@ void Player::initSprite(std::string& texture)
 {
 	m_Texture.loadFromFile(texture);
 	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setScale(0.05f, 0.05f);
+	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
+	m_Sprite.setScale(4.f, 4.f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
 	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
 }
@@ -29,7 +30,7 @@ Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std:
 	//Will be asumed that the player is not on a solid object, if needed the game class will change that
 	physicstate = Physicstate::MID_AIR;
 	//Player will be spawned with its idle animation
-	playerstate = Playerstate::IDLE;
+	playerstate = Movementstate::IDLE;
 	health.m_Health = newhealth;
 	initAttack();
 	initSprite(texture);
@@ -41,17 +42,17 @@ const sf::Vector2f& Player::getPostion() const
 	return sf::Vector2f(m_Sprite.getPosition());
 }
 
-float Player::getMaxHealth() const
+const float& Player::getMaxHealth() const
 {
 	return health.m_Health;
 }
 
-float Player::getCurrentHealth() const
+const float& Player::getCurrentHealth() const
 {
 	return health.currentHealth;
 }
 
-float Player::getBottomHitbox() const
+const float& Player::getBottomHitbox() const
 {
 	return m_Sprite.getGlobalBounds().top + m_Sprite.getGlobalBounds().height;
 }
@@ -89,44 +90,45 @@ void Player::updateInput(const sf::Vector2f& pos)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		TurnLeft();
-		playerstate = Playerstate::MOVE_LEFT;
-		//if (playerBounds.left - moveSpeed > 0.f)
 		move_x(-1.f);
+		if (playerphysics.getMoveVelocity().y == 0)
+			playerstate = Movementstate::MOVING;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		TurnRight();
-		playerstate = Playerstate::MOVE_RIGHT;
-		//if (playerBounds.left + playerBounds.width + moveSpeed < m_Target->getSize().x)
 		move_x(1.f);
+		if (playerphysics.getMoveVelocity().y == 0)
+			playerstate = Movementstate::MOVING;
 	}
+	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::ON_GROUND)
 	{
 		physicstate = Physicstate::MID_AIR;
-		playerstate = Playerstate::JUMPING;
+		playerstate = Movementstate::JUMPING;
 		jump(7.f);
 	}
-
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+		actionstate = Actionstate::SHOOTING;
 		if (pos.x < m_Sprite.getPosition().x)
 			TurnLeft();
 		if (pos.x > m_Sprite.getPosition().x)
 			TurnRight();
 		fillAttackVector(pos);
 	}
+	else
+		actionstate = Actionstate::NOT_SHOOTING;
 
-	//Test button - testing the healthbar class
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-		health.currentHealth -= 0.5;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-		health.currentHealth += 0.5;
-	//Dev move ^^^ >:)
+	if (playerphysics.getMoveVelocity().y == 0 && physicstate == Physicstate::MID_AIR)
+		playerstate = Movementstate::FALLING;
+	else if (playerphysics.getMoveVelocity() == sf::Vector2f(0.f, 0.f))
+		playerstate = Movementstate::IDLE;
 }
 
 Player::Player() : m_Target(nullptr)
 {}
 
-void Player::updatePlayerInfo()
+void Player::updateHealth()
 {
 	health.healthbar.update(m_Sprite, health.m_Health, health.currentHealth);
 }
@@ -179,7 +181,26 @@ void Player::applyGravity()
 	playerphysics.updateGravity();
 }
 
-void Player::renderPlayerInfo()
+void Player::updateFrame()
+{
+	if (playerstate == Movementstate::IDLE)
+		frame.updateIdle();
+	else if (playerstate == Movementstate::MOVING)
+		frame.updateMoving();
+	if (actionstate == Actionstate::SHOOTING && playerstate != Movementstate::MOVING)
+		frame.updateShooting();
+	else if (actionstate == Actionstate::SHOOTING && playerstate == Movementstate::MOVING)
+		frame.updateShootingMoving();
+	if ((playerstate == Movementstate::JUMPING || playerstate == Movementstate::FALLING) && actionstate != Actionstate::SHOOTING)
+		frame.updateJumping();
+	else if ((playerstate == Movementstate::JUMPING || playerstate == Movementstate::FALLING) && actionstate == Actionstate::SHOOTING)
+		frame.updateJumpingShooting();
+
+	
+	m_Sprite.setTextureRect(frame.getCurrentFrame());
+}
+
+void Player::renderHealth()
 {
 	health.healthbar.render(*m_Target);
 }
@@ -199,16 +220,16 @@ void Player::renderAttack()
 
 void Player::updatePlayer(const sf::Vector2f& pos)
 {
-	updatePlayerInfo();
+	updateHealth();
 	updateAttack();
 	updatePlayerPhysics();
 	updateInput(pos);
-	
+	updateFrame();
 }
 
 void Player::renderPlayer()
 {
-	renderPlayerInfo();
+	renderHealth();
 	renderSprite();
 	renderAttack();
 }

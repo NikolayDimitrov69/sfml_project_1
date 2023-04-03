@@ -3,7 +3,7 @@
 
 void Game::initWindow()
 {
-	videomode = sf::VideoMode(800, 600);
+	videomode = sf::VideoMode(1600, 800);
 	window = new sf::RenderWindow(videomode, "Game", sf::Style::Close | sf::Style::Titlebar);
 	window->setFramerateLimit(144);
 }
@@ -50,8 +50,8 @@ void Game::update()
 {	
 	pollEvents();
 	updateMousePosition();
-	checkCollision();
 	player->updatePlayer(mousePosView);
+	checkCollision();
 }
 
 void Game::render()

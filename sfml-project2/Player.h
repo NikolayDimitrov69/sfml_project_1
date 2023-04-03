@@ -1,9 +1,13 @@
 #pragma once
 #include "Attack.h"
 #include "Physics.h"
+#include "Animation.h"
 
 //Playerstate will be used to easily track what the player is currently doing, will be useful with animations
-enum Playerstate {IDLE = 0, MOVE_RIGHT, MOVE_LEFT, JUMPING, FALLING, SHOOTING};
+enum Movementstate {IDLE = 0, MOVING, JUMPING, FALLING};
+
+//Although it might seems like a boolean at first, this action state is made so that new actions can easily be added in the future
+enum Actionstate {SHOOTING = 0, NOT_SHOOTING};
 
 enum Physicstate {MID_AIR = 0, ON_GROUND};
 
@@ -20,10 +24,13 @@ private:
 	sf::RenderTarget* m_Target;
 
 	//Current playerstate
-	Playerstate playerstate;
+	Movementstate playerstate;
 
 	//Current physics state, so the physic class knows which physic to apply to the player
 	Physicstate physicstate;
+
+	//Keeps a track of the player's action state, for now it only check whether the player is shooting or not
+	Actionstate actionstate;
 
 	//Player physics
 	Physics playerphysics;
@@ -42,6 +49,7 @@ private:
 	int attCooldown;
 	
 	//Player texture and sprite
+	Animation frame;
 	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
 	
@@ -54,7 +62,7 @@ private:
 	void fillAttackVector(const sf::Vector2f&);
 
 	//Renderers
-	void renderPlayerInfo();
+	void renderHealth();
 	void renderSprite();
 	void renderAttack();
 	
@@ -65,30 +73,33 @@ private:
 	//Updaters
 	void updateAttack();
 	//Updates the player's healthbar sprite
-	void updatePlayerInfo();
+	void updateHealth();
 	//Updates the input taking in the mouse position as an argument
 	void updateInput(const sf::Vector2f&);
-	
 	//Updates the player physics and moves the sprite of the player by the produced vector from class physics
 	void updatePlayerPhysics();
+	//
+	void updatePlayerstate();
 	//Applies the playerphysics's updateGravity method
 	void applyGravity();
+	//Updates the frame
+	void updateFrame();
 public:
 	Player();
 
-	Player(sf::RenderTarget* target ,std::string name = "newplayer", float newhealth = 10, std::string texture = "IMAGES/trans_sprite_test.png");	
+	Player(sf::RenderTarget* target ,std::string name = "newplayer", float newhealth = 10, std::string texture = "IMAGES/megaman.png");	
 
 	//Gets the vector position of the player's sprite
 	const sf::Vector2f& getPostion() const;
 
 	//Gets the max health of the player
-	float getMaxHealth() const;
+	const float& getMaxHealth() const;
 
 	//Gets the current health of the player
-	float getCurrentHealth() const;
+	const float& getCurrentHealth() const;
 
 	//Gets the position of the top + height of the sprite, will be used by game class for collision check
-	float getBottomHitbox() const;
+	const float& getBottomHitbox() const;
 
 	//Changes the physic state of the player, based on whats happening in the game
 	void setPhysicState(const Physicstate&);
