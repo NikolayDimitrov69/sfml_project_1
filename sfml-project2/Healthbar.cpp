@@ -1,3 +1,4 @@
+#include "precompheaders.h"
 #include "Healthbar.h"
 
 void Healthbar::initHealth()

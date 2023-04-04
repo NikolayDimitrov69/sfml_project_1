@@ -26,36 +26,36 @@ void Animation::IterateFrames(float seconds, unsigned numberOfFrames, float fram
 void Animation::updateIdle()
 {
 	currentFrame.top = 0;
-	IterateFrames(0.5f, 3, 28.f);
+	IterateFrames(0.5f, 3.f, 28.f);
 }
 
 void Animation::updateMoving()
 {
 	currentFrame.top = 25;
-	IterateFrames(0.1f, 3, 28.f);
+	IterateFrames(0.1f, 3.f, 28.f);
 }
 
 void Animation::updateShooting()
 {
 	currentFrame.top = 50;
-	IterateFrames(0.08f, 3, 28.f);
+	IterateFrames(0.08f, 3.f, 28.f);
 }
 
 void Animation::updateShootingMoving()
 {
 	currentFrame.top = 75;
-	IterateFrames(0.1f, 3, 28.f);
+	IterateFrames(0.1f, 3.f, 28.f);
 }
 
 void Animation::updateJumping()
 {
 	currentFrame.top = 100;
-	IterateFrames(0.3f, 3, 28.f);
+	IterateFrames(0.3f, 3.f, 28.f);
 }
 
 void Animation::updateJumpingShooting()
 {
 	currentFrame.top = 125;
-	IterateFrames(0.3f, 3, 28.f);
+	IterateFrames(0.3f, 3.f, 28.f);
 }
 

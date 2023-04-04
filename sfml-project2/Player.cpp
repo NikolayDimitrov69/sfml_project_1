@@ -42,6 +42,11 @@ const sf::Vector2f& Player::getPostion() const
 	return sf::Vector2f(m_Sprite.getPosition());
 }
 
+void Player::takeDamage(float damage)
+{
+	health.currentHealth -= damage;
+}
+
 const float& Player::getMaxHealth() const
 {
 	return health.m_Health;
@@ -62,6 +67,15 @@ void Player::setPhysicState(const Physicstate& newstate)
 	physicstate = newstate;
 }
 
+const float& Player::getLeftHitbox() const
+{
+	return m_Sprite.getGlobalBounds().left;
+}
+
+const float& Player::getRightHitbox() const {
+	return m_Sprite.getGlobalBounds().left + m_Sprite.getGlobalBounds().width;
+}
+
 void Player::move_x(const float& dir_x)
 {
 	playerphysics.setVelocity_X(dir_x);
@@ -70,6 +84,11 @@ void Player::move_x(const float& dir_x)
 void Player::jump(const float& height)
 {
 	playerphysics.setVelocity_Y(height);
+}
+
+const float& Player::getPlayerWidth() const
+{
+	return m_Sprite.getGlobalBounds().width;
 }
 
 void Player::TurnLeft()
@@ -102,11 +121,13 @@ void Player::updateInput(const sf::Vector2f& pos)
 			playerstate = Movementstate::MOVING;
 	}
 	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::ON_GROUND)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::ON_GROUND && keyPressable())
 	{
 		physicstate = Physicstate::MID_AIR;
 		playerstate = Movementstate::JUMPING;
-		jump(7.f);
+		jump(9.f);
+		std::cout << "jump\n";
+		
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = Actionstate::SHOOTING;
@@ -118,6 +139,12 @@ void Player::updateInput(const sf::Vector2f& pos)
 	}
 	else
 		actionstate = Actionstate::NOT_SHOOTING;
+	
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+		health.currentHealth--;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
+		health.currentHealth++;
+	
 
 	if (playerphysics.getMoveVelocity().y == 0 && physicstate == Physicstate::MID_AIR)
 		playerstate = Movementstate::FALLING;
@@ -195,7 +222,6 @@ void Player::updateFrame()
 		frame.updateJumping();
 	else if ((playerstate == Movementstate::JUMPING || playerstate == Movementstate::FALLING) && actionstate == Actionstate::SHOOTING)
 		frame.updateJumpingShooting();
-
 	
 	m_Sprite.setTextureRect(frame.getCurrentFrame());
 }
@@ -218,6 +244,11 @@ void Player::renderAttack()
 	}
 }
 
+sf::FloatRect Player::getGlobalBounds() const
+{
+	return m_Sprite.getGlobalBounds();
+}
+
 void Player::updatePlayer(const sf::Vector2f& pos)
 {
 	updateHealth();
@@ -227,11 +258,25 @@ void Player::updatePlayer(const sf::Vector2f& pos)
 	updateFrame();
 }
 
+const Physicstate& Player::getPhysState() const
+{
+	return physicstate;
+}
+
 void Player::renderPlayer()
 {
 	renderHealth();
 	renderSprite();
 	renderAttack();
+}
+
+bool Player::keyPressable()
+{
+	if (timer.getElapsedTime().asMilliseconds() >= 650) {
+		timer.restart();
+		return true;
+	}
+	return false;
 }
 
 

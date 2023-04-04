@@ -9,7 +9,7 @@ enum Movementstate {IDLE = 0, MOVING, JUMPING, FALLING};
 //Although it might seems like a boolean at first, this action state is made so that new actions can easily be added in the future
 enum Actionstate {SHOOTING = 0, NOT_SHOOTING};
 
-enum Physicstate {MID_AIR = 0, ON_GROUND};
+enum Physicstate {MID_AIR = 0, ON_GROUND, ON_SLOPE};
 
 struct Playerhealth {
 	Healthbar healthbar;
@@ -52,7 +52,11 @@ private:
 	Animation frame;
 	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
+
+	//Key timers
+	sf::Clock timer;
 	
+
 	//Private initializer functions
 	void initPlayerHealth();
 	void initAttack();
@@ -78,8 +82,6 @@ private:
 	void updateInput(const sf::Vector2f&);
 	//Updates the player physics and moves the sprite of the player by the produced vector from class physics
 	void updatePlayerPhysics();
-	//
-	void updatePlayerstate();
 	//Applies the playerphysics's updateGravity method
 	void applyGravity();
 	//Updates the frame
@@ -88,6 +90,8 @@ public:
 	Player();
 
 	Player(sf::RenderTarget* target ,std::string name = "newplayer", float newhealth = 10, std::string texture = "IMAGES/megaman.png");	
+
+	void takeDamage(float);
 
 	//Gets the vector position of the player's sprite
 	const sf::Vector2f& getPostion() const;
@@ -101,8 +105,18 @@ public:
 	//Gets the position of the top + height of the sprite, will be used by game class for collision check
 	const float& getBottomHitbox() const;
 
+	const float& getLeftHitbox() const;
+
+	const float& getRightHitbox() const;
+
+	const float& getPlayerWidth() const;
+
+	sf::FloatRect getGlobalBounds() const;
+
 	//Changes the physic state of the player, based on whats happening in the game
 	void setPhysicState(const Physicstate&);
+
+	const Physicstate& getPhysState() const;
 
 	//updates the physics vector's X variable;
 	void move_x(const float&);
@@ -115,5 +129,7 @@ public:
 	
 	//renders the player
 	void renderPlayer();
+
+	bool keyPressable();
 };
 

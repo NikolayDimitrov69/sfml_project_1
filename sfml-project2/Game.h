@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "Slope.h";
 
 class Game
 {
@@ -12,6 +13,11 @@ private:
 	//Player pointer
 	Player* player;
 
+	//Sloper vector and pointer
+	std::vector<Slope> slopes;
+	Slope slope;
+	sf::Clock slopeSpawnTimer;
+
 	//Initializer functions
 	void initWindow();
 	void initPlayer();
@@ -19,6 +25,10 @@ private:
 	//Containers for mouse position
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
+
+	void updateSlopeVector();
+
+	void renderSlopeVector();
 
 	//Pollevents updater
 	void pollEvents();
