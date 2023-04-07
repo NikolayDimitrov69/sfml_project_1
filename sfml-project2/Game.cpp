@@ -52,7 +52,6 @@ void Game::updateEnemyVector()
 	{
 		enemy.setRenderTarget(*window);
 		enemy.randomizeSpawnPosition();
-		enemy.setDirection(player->getPostion());
 		enemy.spawn();
 		enemies.push_back(enemy);
 		enemySpawnTimer.restart();
@@ -60,7 +59,7 @@ void Game::updateEnemyVector()
 
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		enemies[i].update();
+		enemies[i].updateHoming(player->getPostion());
 		if (enemies[i].outOfBounds())
 			enemies.erase(enemies.begin() + i);
 		else if (enemies[i].getGlobalBounds().intersects(player->getGlobalBounds()))

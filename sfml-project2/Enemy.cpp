@@ -18,6 +18,7 @@ Enemy::Enemy()
 	sprite.setTexture(texture);
 	sprite.setTextureRect(sf::IntRect(0, 0, 50, 32));
 	sprite.setScale(-3.f, 3.f);
+	sprite.setOrigin(sprite.getLocalBounds().width / 1.5f, sprite.getLocalBounds().height / 2.f);
 	frame.setDimension(50, 32);
 	frame.setIdleSpeed(0.075f);
 }
@@ -47,9 +48,9 @@ void Enemy::randomizeSpawnPosition()
 	//Random switch case for wether the enemy will be spawned from left or right side of the screen
 	switch (rand() % 2)
 	{
-	case 0: randomSpawnpos.x = 0.f - sprite.getGlobalBounds().width; if(sprite.getScale().x < 0) sprite.setScale(-1.f * sprite.getScale().x, sprite.getScale().y);
+	case 0: randomSpawnpos.x = 0.f - sprite.getGlobalBounds().width; if (sprite.getScale().y > 0) sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
 		break;
-	case 1: randomSpawnpos.x = static_cast<float>(target->getSize().x); if (sprite.getScale().x > 0) sprite.setScale(-1.f * sprite.getScale().x, sprite.getScale().y);
+	case 1: randomSpawnpos.x = static_cast<float>(target->getSize().x); if (sprite.getScale().y < 0) sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
 		break;
 	default:
 		break;
@@ -59,16 +60,8 @@ void Enemy::randomizeSpawnPosition()
 
 void Enemy::setDirection(const sf::Vector2f& playerpos)
 {
-	//Movement vector
-	direction = playerpos - randomSpawnpos;
-	//Unit movement vector
-	direction = direction / static_cast<float>(sqrt(pow(direction.x, 2) + pow(direction.y, 2)));
-
-	float julto = playerpos.y;
-	float cherveno = playerpos.x;
-	float tangens = julto / cherveno;
-	angle = static_cast<float>(atan(tangens));
-	angle = (angle * 180) / 3.1415;
+	direction = normalize(playerpos - sprite.getPosition());
+	angle = findAngleCos(sprite.getPosition(), playerpos);
 }
 
 const sf::FloatRect& Enemy::getGlobalBounds() const
@@ -90,9 +83,21 @@ void Enemy::spawn()
 	sprite.setPosition(randomSpawnpos);
 }
 
-void Enemy::update()
+void Enemy::updateHoming(const sf::Vector2f& playerpos)
 {
+	//Movement unit vector
+	direction = normalize(playerpos - sprite.getPosition());
+	
+
+	angle = findAngleCos(sprite.getPosition(), playerpos);
+	if (playerpos.y > sprite.getPosition().y)
+		angle = -angle;
+
+	
 	sprite.setRotation(angle);
+
+
+
 	sprite.move(ENEMY_SPEED * direction);
 	healthbar.update(sprite, maxHP, currentHP);
 	updateFrame();

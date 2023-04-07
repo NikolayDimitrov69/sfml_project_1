@@ -13,14 +13,8 @@ const sf::FloatRect& Attack::getGlobalBounds() const {
 
 void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playerpos)
 {
-	shootDir = mousepos - playerpos;
-	shootDir = shootDir / static_cast<float>(sqrt(pow(shootDir.x, 2) + pow(shootDir.y, 2)));
-
-	float julto = playerpos.y - mousepos.y;
-	float cherveno = playerpos.x - mousepos.x;
-	float tangens = julto / cherveno;
-	angle = static_cast<float>(atan(tangens));
-	angle = (angle * 180) / 3.1415;
+	shootDir = normalize(mousepos - playerpos);
+	angle = findAngleTan(playerpos, mousepos);
 }
 
 void Attack::changeDirection(const int& direction)
@@ -32,7 +26,7 @@ void Attack::changeDirection(const int& direction)
 
 void Attack::update(sf::RenderTarget& target)
 {
-	m_Sprite.move(7.f * shootDir);
+	m_Sprite.move(ATTACK_MOVE_SPEED * shootDir);
 	if (m_Sprite.getPosition().x > target.getSize().x || 
 		m_Sprite.getPosition().x < 0 || 
 		m_Sprite.getPosition().y < 0 || 
@@ -47,7 +41,7 @@ bool Attack::isOutOfBounds() const
 
 void Attack::spawn(const sf::Sprite& sprite)
 {
-	m_Sprite.setPosition(sprite.getPosition().x, sprite.getPosition().y - m_Sprite.getLocalBounds().height / 2);
+	m_Sprite.setPosition(sprite.getPosition().x, sprite.getPosition().y - m_Sprite.getLocalBounds().height / 2.f);
 	m_Sprite.setScale(m_Direction, 1);
 }
 

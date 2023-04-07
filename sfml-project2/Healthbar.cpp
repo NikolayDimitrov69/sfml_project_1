@@ -31,8 +31,7 @@ void Healthbar::updateSize(const sf::Sprite& sprite)
 {
 	outline.setSize(sf::Vector2f(sprite.getGlobalBounds().width, 6.f));
 	float fullHp = outline.getGlobalBounds().width - (2.f * outline.getOutlineThickness());
-	health.setSize(sf::Vector2f(fullHp * Percentage,
-				   6.f));
+	health.setSize(sf::Vector2f(fullHp * Percentage, 6.f));
 }
 
 void Healthbar::updatePosition(const sf::Sprite& sprite)

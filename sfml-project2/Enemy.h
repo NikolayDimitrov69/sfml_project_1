@@ -1,15 +1,16 @@
 #pragma once
 #include "Animation.h"
 #include "Healthbar.h"
+#include "Math.h"
 
-constexpr float ENEMY_SPEED = 2.f;
+constexpr float ENEMY_SPEED = 1.5f;
 constexpr float ENEMY_DAMAGE = 20.f;
 
 class Enemy
 {
 private:
 	sf::RenderTarget* target;
-	
+
 	Healthbar healthbar;
 	float maxHP;
 	float currentHP;
@@ -50,7 +51,7 @@ public:
 
 	void spawn();
 
-	void update();
+	void updateHoming(const sf::Vector2f& playerpos);
 
 	void render();
 };

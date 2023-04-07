@@ -156,6 +156,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Healthbar.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Math.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="precompheaders.cpp">
@@ -177,6 +178,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Healthbar.h" />
+    <ClInclude Include="Math.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="precompheaders.h" />

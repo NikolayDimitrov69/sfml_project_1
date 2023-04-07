@@ -1,5 +1,8 @@
 #pragma once
 #include "Healthbar.h"
+#include "Math.h"
+
+constexpr float ATTACK_MOVE_SPEED = 7.f;
 
 class Attack
 {
