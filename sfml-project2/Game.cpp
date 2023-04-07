@@ -6,7 +6,6 @@ void Game::initWindow()
 	videomode = sf::VideoMode(1600, 800);
 	window = new sf::RenderWindow(videomode, "Game", sf::Style::Close | sf::Style::Titlebar);
 	window->setFramerateLimit(144);
-	
 }
 
 void Game::initPlayer()
@@ -34,7 +33,7 @@ void Game::updateSlopeVector()
 	for (size_t i = 0; i < slopes.size(); i++)
 	{
 		slopes[i].update();
-		if (slopes[i].getSlopeTop() >= window->getSize().y)
+		if (slopes[i].getGlobalBounds().top >= window->getSize().y)
 			slopes.erase(slopes.begin() + i);
 
 		if (slopes[i].getGlobalBounds().intersects(player->getGlobalBounds())) {
@@ -45,6 +44,44 @@ void Game::updateSlopeVector()
 		}
 	}
 
+}
+
+void Game::updateEnemyVector()
+{
+	if (enemySpawnTimer.getElapsedTime().asSeconds() >= 2.f)
+	{
+		enemy.setRenderTarget(*window);
+		enemy.randomizeSpawnPosition();
+		enemy.setDirection(player->getPostion());
+		enemy.spawn();
+		enemies.push_back(enemy);
+		enemySpawnTimer.restart();
+	}
+
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		enemies[i].update();
+		if (enemies[i].outOfBounds())
+			enemies.erase(enemies.begin() + i);
+		else if (enemies[i].getGlobalBounds().intersects(player->getGlobalBounds()))
+		{
+			player->takeDamage(enemies[i].dealDamage());
+			enemies.erase(enemies.begin() + i);
+		}
+		else if(player->iterateAttackVector(enemies[i].getGlobalBounds())){
+			enemies[i].takeDamage(player->dealDamage());
+			if (enemies[i].getCurrentHP() <= 0.f)
+				enemies.erase(enemies.begin() + i);
+		}
+	}
+}
+
+void Game::renderEnemyVector()
+{
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		enemies[i].render();
+	}
 }
 
 void Game::renderSlopeVector()
@@ -72,7 +109,7 @@ void Game::pollEvents()
 
 void Game::checkCollision()
 {
-	if (player->getBottomHitbox() >= window->getSize().y)
+	if (player->getGlobalBounds().top + player->getGlobalBounds().height >= window->getSize().y)
 		player->setPhysicState(Physicstate::ON_GROUND);
 	else
 		player->setPhysicState(Physicstate::MID_AIR);
@@ -80,6 +117,7 @@ void Game::checkCollision()
 
 Game::Game()
 {
+	enemySpawnTimer.restart();
 	slopeSpawnTimer.restart();
 	initWindow();
 	initPlayer();
@@ -92,14 +130,18 @@ void Game::update()
 	updateSlopeVector();
 	updateMousePosition();
 	player->updatePlayer(mousePosView);
-	
+	updateEnemyVector();
 }
 
 void Game::render()
 {
 	window->clear(sf::Color::White);
 
+	background.render(*window);
+
 	renderSlopeVector();
+
+	renderEnemyVector();
 
 	player->renderPlayer();
 

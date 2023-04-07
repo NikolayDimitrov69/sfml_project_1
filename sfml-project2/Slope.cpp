@@ -4,50 +4,50 @@
 Slope::Slope()
 {
 	prev_pos.x = -1;
-	fallSpeed = 1.2f;
+	fallSpeed = INIT_SLOPE_FALL_SPEED;
 	slopeTexture.loadFromFile("IMAGES/platform.jpg");
 	slopeSprite.setTexture(slopeTexture);
 	slopeSprite.setScale(3.f, 3.f);
 }
 
-const float& Slope::getSlopeTop() const
-{
-	return slopeSprite.getGlobalBounds().top;
-}
-
-const float& Slope::getSlopeLeft() const
-{
-	return slopeSprite.getGlobalBounds().left;
-}
-
-const float& Slope::getSlopeRight() const
-{
-	return slopeSprite.getGlobalBounds().left + slopeSprite.getGlobalBounds().width;
-}
-
-sf::FloatRect Slope::getGlobalBounds() const
+const sf::FloatRect& Slope::getGlobalBounds() const
 {
 	return slopeSprite.getGlobalBounds();
 }
 
 void Slope::setRandomVertPos(sf::RenderTarget& target)
 {
-	float min = -300.f;
-	float max = 300.f;
+	float min = -200.f;
+	float max = 200.f;
 	float randx{};
+
+	float farRight = (3.f * target.getSize().x) / 4.f - slopeSprite.getGlobalBounds().width;
+	float farLeft = target.getSize().x / 4.f;
+
+	if (prev_pos.x == farRight)
+	{
+		min *= 2;
+		max = 1;
+	}
+	if (prev_pos.x == farLeft)
+	{
+		min = -1;
+		max *= 2;
+	}
+
 	randx = min + rand() % static_cast<int>(max - min + 1);
 
 	if (prev_pos.x == -1)
-		prev_pos.x = static_cast<float>(rand() % static_cast<int>(target.getSize().x - slopeSprite.getGlobalBounds().width));
+		prev_pos.x = static_cast<float>(target.getSize().x + rand() % static_cast<int>(target.getSize().x/2.f - slopeSprite.getGlobalBounds().width));
 
 	float finalpos = prev_pos.x + randx;
-	if (finalpos >= target.getSize().x - slopeSprite.getGlobalBounds().width)
-		finalpos = target.getSize().x - slopeSprite.getGlobalBounds().width;
-	if (finalpos < 0)
-		finalpos = 0;
+	if (finalpos >= farRight)
+		finalpos = farRight;
+	if (finalpos < farLeft)
+		finalpos = farLeft;
 
-	slopeSprite.setPosition(finalpos,
-		0.f);
+	slopeSprite.setPosition(finalpos, 0.f);
+
 	prev_pos = slopeSprite.getPosition();
 }
 

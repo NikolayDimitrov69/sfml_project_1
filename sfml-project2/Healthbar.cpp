@@ -21,7 +21,9 @@ Healthbar::Healthbar() : Percentage(1)
 
 void Healthbar::updatePercentage(const float& maxhp, const float& currenthp)
 {
-	if (currenthp >= 0 && currenthp <= maxhp)
+	if (currenthp < 0)
+		Percentage = 0.f;
+	else if (currenthp >= 0 && currenthp <= maxhp)
 		Percentage = currenthp / maxhp;
 }
 

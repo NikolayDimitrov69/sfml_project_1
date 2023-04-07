@@ -7,6 +7,10 @@ Attack::Attack() : m_Direction(1), outOfBounds(false), angle(0.f)
 	shootDir.y = -1;
 }
 
+const sf::FloatRect& Attack::getGlobalBounds() const {
+	return m_Sprite.getGlobalBounds();
+}
+
 void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playerpos)
 {
 	shootDir = mousepos - playerpos;

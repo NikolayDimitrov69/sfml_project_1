@@ -44,5 +44,7 @@ public:
 
 	//Gets variable outOfBounds
 	bool isOutOfBounds() const;
+
+	const sf::FloatRect& getGlobalBounds() const;
 };
 

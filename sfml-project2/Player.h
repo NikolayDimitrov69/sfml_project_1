@@ -3,13 +3,10 @@
 #include "Physics.h"
 #include "Animation.h"
 
-//Playerstate will be used to easily track what the player is currently doing, will be useful with animations
-enum Movementstate {IDLE = 0, MOVING, JUMPING, FALLING};
-
-//Although it might seems like a boolean at first, this action state is made so that new actions can easily be added in the future
-enum Actionstate {SHOOTING = 0, NOT_SHOOTING};
-
-enum Physicstate {MID_AIR = 0, ON_GROUND, ON_SLOPE};
+constexpr int ATTACK_COOLDOWN = 400; //As milliseconds
+constexpr int JUMP_COOLDOWN = 650; //As milliseconds
+constexpr float JUMP_FORCE = 9.f;
+constexpr float PLAYER_DAMAGE = 34.f;
 
 struct Playerhealth {
 	Healthbar healthbar;
@@ -38,15 +35,15 @@ private:
 	//Player name and health
 	std::string m_Name;
 	Playerhealth health;
+
+	float damage;
 	
 	//Player attack, attack container and max attack counter
 	std::vector<Attack> attacks;
 	Attack attack;
-	int maxAttacks;
 
 	//Player's cooldown time and max cooldown
-	int maxAttCooldown;
-	int attCooldown;
+	sf::Clock attCooldown;
 	
 	//Player texture and sprite
 	Animation frame;
@@ -56,7 +53,6 @@ private:
 	//Key timers
 	sf::Clock timer;
 	
-
 	//Private initializer functions
 	void initPlayerHealth();
 	void initAttack();
@@ -79,7 +75,7 @@ private:
 	//Updates the player's healthbar sprite
 	void updateHealth();
 	//Updates the input taking in the mouse position as an argument
-	void updateInput(const sf::Vector2f&);
+	void updateInputAndSates(const sf::Vector2f&);
 	//Updates the player physics and moves the sprite of the player by the produced vector from class physics
 	void updatePlayerPhysics();
 	//Applies the playerphysics's updateGravity method
@@ -91,6 +87,12 @@ public:
 
 	Player(sf::RenderTarget* target ,std::string name = "newplayer", float newhealth = 10, std::string texture = "IMAGES/megaman.png");	
 
+	const float& dealDamage() const;
+
+	//Iterates the attack vector and removes the attack which has hit an enemy, meant to be used by the game class each frame
+	bool iterateAttackVector(const sf::FloatRect&);
+
+	//Function for taking damage
 	void takeDamage(float);
 
 	//Gets the vector position of the player's sprite
@@ -102,20 +104,13 @@ public:
 	//Gets the current health of the player
 	const float& getCurrentHealth() const;
 
-	//Gets the position of the top + height of the sprite, will be used by game class for collision check
-	const float& getBottomHitbox() const;
-
-	const float& getLeftHitbox() const;
-
-	const float& getRightHitbox() const;
-
-	const float& getPlayerWidth() const;
-
+	//Gets the global bounds of the player sprite
 	sf::FloatRect getGlobalBounds() const;
 
 	//Changes the physic state of the player, based on whats happening in the game
 	void setPhysicState(const Physicstate&);
 
+	//Returns the physic state of the player
 	const Physicstate& getPhysState() const;
 
 	//updates the physics vector's X variable;
@@ -130,6 +125,7 @@ public:
 	//renders the player
 	void renderPlayer();
 
+	//Check if timer is above Jump cooldown
 	bool keyPressable();
 };
 

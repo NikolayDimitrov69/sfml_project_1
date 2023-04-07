@@ -1,6 +1,10 @@
 #pragma once
 #include "Player.h"
-#include "Slope.h";
+#include "Slope.h"
+#include "Background.h"
+#include "Enemy.h"
+
+enum Gamestate {MENU = 0, PLAYING, GAME_OVER};
 
 class Game
 {
@@ -13,10 +17,18 @@ private:
 	//Player pointer
 	Player* player;
 
-	//Sloper vector and pointer
+	//Background
+	Background background;
+
+	//Sloper vector
 	std::vector<Slope> slopes;
 	Slope slope;
 	sf::Clock slopeSpawnTimer;
+
+	//Enemy vector
+	std::vector<Enemy> enemies;
+	Enemy enemy;
+	sf::Clock enemySpawnTimer;
 
 	//Initializer functions
 	void initWindow();
@@ -25,6 +37,10 @@ private:
 	//Containers for mouse position
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
+
+	void updateEnemyVector();
+
+	void renderEnemyVector();
 
 	void updateSlopeVector();
 

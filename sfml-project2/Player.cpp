@@ -3,7 +3,7 @@
 
 void Player::initPlayerHealth()
 {
-	health.m_Health = 100;
+	health.m_Health = 100.f;
 	health.currentHealth = health.m_Health;
 }
 
@@ -12,6 +12,8 @@ void Player::initSprite(std::string& texture)
 	m_Texture.loadFromFile(texture);
 	m_Sprite.setTexture(m_Texture);
 	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
+	frame.setDimension(28, 25);
+	frame.setIdleSpeed(0.5f);
 	m_Sprite.setScale(4.f, 4.f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
 	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
@@ -19,14 +21,12 @@ void Player::initSprite(std::string& texture)
 
 void Player::initAttack()
 {
-	maxAttCooldown = 30;
-	attCooldown = maxAttCooldown;
-	maxAttacks = 2;
 	attack.setTexture("IMAGES/megaman_attack.png");
 }
 
 Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std::string texture) :m_Target(target), m_Name(name)
 {
+	damage = PLAYER_DAMAGE;
 	//Will be asumed that the player is not on a solid object, if needed the game class will change that
 	physicstate = Physicstate::MID_AIR;
 	//Player will be spawned with its idle animation
@@ -37,6 +37,24 @@ Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std:
 	initPlayerHealth();
 }
 
+const float& Player::dealDamage() const
+{
+	return damage;
+}
+
+bool Player::iterateAttackVector(const sf::FloatRect& enemyBounds)
+{
+	for (size_t i = 0; i < attacks.size(); i++)
+	{
+		if (attacks[i].getGlobalBounds().intersects(enemyBounds))
+		{
+			attacks.erase(attacks.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+
 const sf::Vector2f& Player::getPostion() const
 {
 	return sf::Vector2f(m_Sprite.getPosition());
@@ -44,7 +62,8 @@ const sf::Vector2f& Player::getPostion() const
 
 void Player::takeDamage(float damage)
 {
-	health.currentHealth -= damage;
+	if (health.currentHealth > 0.f)
+		health.currentHealth -= damage;
 }
 
 const float& Player::getMaxHealth() const
@@ -57,25 +76,6 @@ const float& Player::getCurrentHealth() const
 	return health.currentHealth;
 }
 
-const float& Player::getBottomHitbox() const
-{
-	return m_Sprite.getGlobalBounds().top + m_Sprite.getGlobalBounds().height;
-}
-
-void Player::setPhysicState(const Physicstate& newstate)
-{
-	physicstate = newstate;
-}
-
-const float& Player::getLeftHitbox() const
-{
-	return m_Sprite.getGlobalBounds().left;
-}
-
-const float& Player::getRightHitbox() const {
-	return m_Sprite.getGlobalBounds().left + m_Sprite.getGlobalBounds().width;
-}
-
 void Player::move_x(const float& dir_x)
 {
 	playerphysics.setVelocity_X(dir_x);
@@ -84,11 +84,6 @@ void Player::move_x(const float& dir_x)
 void Player::jump(const float& height)
 {
 	playerphysics.setVelocity_Y(height);
-}
-
-const float& Player::getPlayerWidth() const
-{
-	return m_Sprite.getGlobalBounds().width;
 }
 
 void Player::TurnLeft()
@@ -103,7 +98,7 @@ void Player::TurnRight()
 		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
 }
 
-void Player::updateInput(const sf::Vector2f& pos)
+void Player::updateInputAndSates(const sf::Vector2f& pos)
 {
 	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -125,9 +120,8 @@ void Player::updateInput(const sf::Vector2f& pos)
 	{
 		physicstate = Physicstate::MID_AIR;
 		playerstate = Movementstate::JUMPING;
-		jump(9.f);
-		std::cout << "jump\n";
-		
+		jump(JUMP_FORCE);
+		std::cout << "jump\n";	
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = Actionstate::SHOOTING;
@@ -139,12 +133,6 @@ void Player::updateInput(const sf::Vector2f& pos)
 	}
 	else
 		actionstate = Actionstate::NOT_SHOOTING;
-	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-		health.currentHealth--;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-		health.currentHealth++;
-	
 
 	if (playerphysics.getMoveVelocity().y == 0 && physicstate == Physicstate::MID_AIR)
 		playerstate = Movementstate::FALLING;
@@ -162,29 +150,24 @@ void Player::updateHealth()
 
 void Player::fillAttackVector(const sf::Vector2f& pos)
 {
-	if (maxAttacks >= 0 && maxAttCooldown == attCooldown && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
+	if (attCooldown.getElapsedTime().asMilliseconds() >= ATTACK_COOLDOWN && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
 	{
-		attCooldown = 0;
+		attCooldown.restart();
 		attack.setShootDir(pos, m_Sprite.getPosition());
 		attack.changeDirection(pos.x < m_Sprite.getPosition().x ? -1 : 1);
 		attack.spawn(m_Sprite);
-
-		maxAttacks--;
 		attacks.push_back(attack);
 	}
 }
 
 void Player::updateAttack()
 {
-	if (attCooldown < maxAttCooldown)
-		attCooldown += 1;
 	for (int i = 0; i < attacks.size(); i++)
 	{
 		attacks[i].update(*m_Target);
 		if (attacks[i].isOutOfBounds())
 		{
 			attacks.erase(attacks.begin() + i);
-			maxAttacks++;
 		}
 	}
 }
@@ -210,19 +193,7 @@ void Player::applyGravity()
 
 void Player::updateFrame()
 {
-	if (playerstate == Movementstate::IDLE)
-		frame.updateIdle();
-	else if (playerstate == Movementstate::MOVING)
-		frame.updateMoving();
-	if (actionstate == Actionstate::SHOOTING && playerstate != Movementstate::MOVING)
-		frame.updateShooting();
-	else if (actionstate == Actionstate::SHOOTING && playerstate == Movementstate::MOVING)
-		frame.updateShootingMoving();
-	if ((playerstate == Movementstate::JUMPING || playerstate == Movementstate::FALLING) && actionstate != Actionstate::SHOOTING)
-		frame.updateJumping();
-	else if ((playerstate == Movementstate::JUMPING || playerstate == Movementstate::FALLING) && actionstate == Actionstate::SHOOTING)
-		frame.updateJumpingShooting();
-	
+	frame.update(playerstate, actionstate);
 	m_Sprite.setTextureRect(frame.getCurrentFrame());
 }
 
@@ -254,8 +225,13 @@ void Player::updatePlayer(const sf::Vector2f& pos)
 	updateHealth();
 	updateAttack();
 	updatePlayerPhysics();
-	updateInput(pos);
+	updateInputAndSates(pos);
 	updateFrame();
+}
+
+void Player::setPhysicState(const Physicstate& newstate)
+{
+	physicstate = newstate;
 }
 
 const Physicstate& Player::getPhysState() const
@@ -272,7 +248,7 @@ void Player::renderPlayer()
 
 bool Player::keyPressable()
 {
-	if (timer.getElapsedTime().asMilliseconds() >= 650) {
+	if (timer.getElapsedTime().asMilliseconds() >= JUMP_COOLDOWN) {
 		timer.restart();
 		return true;
 	}
