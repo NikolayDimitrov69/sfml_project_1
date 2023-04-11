@@ -2,10 +2,17 @@
 #include "Background.h"
 
 Background::Background()
+{}
+
+void Background::setTexture(const std::string& path)
 {
-	backgroundTexture.loadFromFile("IMAGES/background.jpg");
+	backgroundTexture.loadFromFile(path);
 	backgroundSprite.setTexture(backgroundTexture);
-	backgroundSprite.setScale(1.f, 0.8f);
+}
+
+void Background::setScale(const sf::Vector2f& scale)
+{
+	backgroundSprite.setScale(scale);
 }
 
 void Background::render(sf::RenderTarget& target)

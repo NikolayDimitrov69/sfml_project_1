@@ -14,6 +14,7 @@ void Player::initSprite(std::string& texture)
 	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
 	frame.setDimension(28, 25);
 	frame.setIdleSpeed(0.5f);
+	frame.setTextureSize(m_Texture.getSize());
 	m_Sprite.setScale(4.f, 4.f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
 	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
@@ -46,9 +47,13 @@ bool Player::iterateAttackVector(const sf::FloatRect& enemyBounds)
 {
 	for (size_t i = 0; i < attacks.size(); i++)
 	{
-		if (attacks[i].getGlobalBounds().intersects(enemyBounds))
-		{
+		if (attacks[i].getActionState() == Actionstate::DYING && attacks[i].isFrameFinished()) {
 			attacks.erase(attacks.begin() + i);
+			return false;
+		}
+		if (attacks[i].getActionState() != Actionstate::DYING && attacks[i].getGlobalBounds().intersects(enemyBounds))
+		{
+			attacks[i].setActionState(Actionstate::DYING);
 			return true;
 		}
 	}
@@ -150,9 +155,9 @@ void Player::updateHealth()
 
 void Player::fillAttackVector(const sf::Vector2f& pos)
 {
-	if (attCooldown.getElapsedTime().asMilliseconds() >= ATTACK_COOLDOWN && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
+	if (attCooldown >= ATTACK_COOLDOWN && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
 	{
-		attCooldown.restart();
+		attCooldown = 0.f;
 		attack.setShootDir(pos, m_Sprite.getPosition());
 		attack.changeDirection(pos.x < m_Sprite.getPosition().x ? -1 : 1);
 		attack.spawn(m_Sprite);
@@ -222,6 +227,7 @@ sf::FloatRect Player::getGlobalBounds() const
 
 void Player::updatePlayer(const sf::Vector2f& pos)
 {
+	attCooldown += 1.f;
 	updateHealth();
 	updateAttack();
 	updatePlayerPhysics();
@@ -248,8 +254,10 @@ void Player::renderPlayer()
 
 bool Player::keyPressable()
 {
-	if (timer.getElapsedTime().asMilliseconds() >= JUMP_COOLDOWN) {
-		timer.restart();
+	timer += 1.f;
+
+	if (timer >= JUMP_COOLDOWN) {
+		timer = 0.f;
 		return true;
 	}
 	return false;

@@ -3,8 +3,8 @@
 #include "Physics.h"
 #include "Animation.h"
 
-constexpr int ATTACK_COOLDOWN = 400; //As milliseconds
-constexpr int JUMP_COOLDOWN = 650; //As milliseconds
+constexpr float ATTACK_COOLDOWN = 50.f; 
+constexpr float JUMP_COOLDOWN = 1.5f; 
 constexpr float JUMP_FORCE = 9.f;
 constexpr float PLAYER_DAMAGE = 34.f;
 
@@ -43,7 +43,7 @@ private:
 	Attack attack;
 
 	//Player's cooldown time and max cooldown
-	sf::Clock attCooldown;
+	float attCooldown;
 	
 	//Player texture and sprite
 	Animation frame;
@@ -51,7 +51,7 @@ private:
 	sf::Sprite m_Sprite;
 
 	//Key timers
-	sf::Clock timer;
+	float timer;
 	
 	//Private initializer functions
 	void initPlayerHealth();

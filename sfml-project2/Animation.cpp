@@ -3,7 +3,19 @@
 
 Animation::Animation()
 {
+	restarted = false;
+	finished = false;
 	animTimer.restart();
+}
+
+bool Animation::isFinished() const
+{
+	return restarted && finished;
+}
+
+void Animation::setTextureSize(sf::Vector2u size)
+{
+	textureSize = size;
 }
 
 const sf::IntRect& Animation::getCurrentFrame() const
@@ -11,7 +23,7 @@ const sf::IntRect& Animation::getCurrentFrame() const
 	return currentFrame;
 }
 
-void Animation::setDimension(float width, float heigth)
+void Animation::setDimension(int width, int heigth)
 {
 	frameWidth = width;
 	frameHeigth = heigth;
@@ -23,8 +35,14 @@ void Animation::IterateFrames(float seconds, unsigned numberOfFrames)
 	if (animTimer.getElapsedTime().asSeconds() >= seconds)
 	{
 		currentFrame.left += frameWidth;
-		if (currentFrame.left >= numberOfFrames * frameWidth)
+		if (currentFrame.left >= numberOfFrames * frameWidth) {
 			currentFrame.left = 0.f;
+			finished = true;
+		}
+		else
+		{
+			finished = false;
+		}
 		animTimer.restart();
 	}
 }
@@ -38,6 +56,18 @@ void Animation::updateIdle()
 {
 	currentFrame.top = 0;
 	IterateFrames(idleSpeed, 3.f);
+}
+
+void Animation::updateDying()
+{
+	currentFrame.top = textureSize.y - frameHeigth;
+	if (!restarted)
+	{
+		finished = false;
+		currentFrame.left = 0.f;
+		restarted = true;		
+	}
+	IterateFrames(0.15f, 3.f);
 }
 
 void Animation::updateMoving()
@@ -72,7 +102,9 @@ void Animation::updateJumpingShooting()
 
 void Animation::update(const Movementstate& mv_state, const Actionstate& ac_state)
 {
-	if (mv_state == Movementstate::IDLE)
+	if (ac_state == Actionstate::DYING)
+		updateDying();
+	else if (mv_state == Movementstate::IDLE)
 		updateIdle();
 	else if (mv_state == Movementstate::MOVING)
 		updateMoving();

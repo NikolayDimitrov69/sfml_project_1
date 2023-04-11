@@ -1,13 +1,14 @@
 #include "precompheaders.h"
 #include "Slope.h"
 
-Slope::Slope()
+Slope::Slope(const sf::Texture& texture)
 {
-	prev_pos.x = -1;
-	fallSpeed = INIT_SLOPE_FALL_SPEED;
-	slopeTexture.loadFromFile("IMAGES/platform.jpg");
-	slopeSprite.setTexture(slopeTexture);
-	slopeSprite.setScale(3.f, 3.f);
+	slopeSprite.setTexture(texture);
+}
+
+void Slope::setPostion(const sf::Vector2f& pos)
+{
+	slopeSprite.setPosition(pos);
 }
 
 const sf::FloatRect& Slope::getGlobalBounds() const
@@ -15,14 +16,14 @@ const sf::FloatRect& Slope::getGlobalBounds() const
 	return slopeSprite.getGlobalBounds();
 }
 
-void Slope::setRandomVertPos(sf::RenderTarget& target)
+void Slope::setRandomVertPos(const sf::Vector2u& targetSize, sf::Vector2f& prev_pos)
 {
 	float min = -200.f;
 	float max = 200.f;
 	float randx{};
 
-	float farRight = (3.f * target.getSize().x) / 4.f - slopeSprite.getGlobalBounds().width;
-	float farLeft = target.getSize().x / 4.f;
+	float farRight = (3.f * targetSize.x) / 4.f - slopeSprite.getGlobalBounds().width;
+	float farLeft = targetSize.x / 4.f;
 
 	if (prev_pos.x == farRight)
 	{
@@ -38,7 +39,7 @@ void Slope::setRandomVertPos(sf::RenderTarget& target)
 	randx = min + rand() % static_cast<int>(max - min + 1);
 
 	if (prev_pos.x == -1)
-		prev_pos.x = static_cast<float>(target.getSize().x + rand() % static_cast<int>(target.getSize().x/2.f - slopeSprite.getGlobalBounds().width));
+		prev_pos.x = static_cast<float>(targetSize.x + rand() % static_cast<int>(targetSize.x/2.f - slopeSprite.getGlobalBounds().width));
 
 	float finalpos = prev_pos.x + randx;
 	if (finalpos >= farRight)
@@ -54,6 +55,16 @@ void Slope::setRandomVertPos(sf::RenderTarget& target)
 void Slope::setFallSpeed(const float& newSpeed)
 {
 	fallSpeed = newSpeed;
+}
+
+void Slope::setScale(const sf::Vector2f& size)
+{
+	slopeSprite.setScale(size);
+}
+
+const sf::Vector2f& Slope::getPosition() const
+{
+	return slopeSprite.getPosition();
 }
 
 void Slope::update()

@@ -19,21 +19,27 @@ void Game::updateMousePosition()
 	mousePosView = window->mapPixelToCoords(mousePosWindow);
 }
 
+
 void Game::updateSlopeVector()
 {
-	if (slopeSpawnTimer.getElapsedTime().asSeconds() >= 1.5f)
+	slopeSpawnTimer += 1.f;
+  
+	if (slopeSpawnTimer >= SLOPER_SPAWN_TIMER)
 	{
-		slope.setRandomVertPos(*window);
-
+		Slope slope(slope_texture);
+		slope.setFallSpeed(INIT_SLOPE_FALL_SPEED);
+		slope.setScale(sf::Vector2f(3.f, 3.f));
+		slope.setRandomVertPos(window->getSize(), previous_pos);
+		previous_pos = slope.getPosition();
 		slopes.push_back(slope);
 
-		slopeSpawnTimer.restart();
+		slopeSpawnTimer = 0.f;
 	}
 
 	for (size_t i = 0; i < slopes.size(); i++)
 	{
 		slopes[i].update();
-		if (slopes[i].getGlobalBounds().top >= window->getSize().y)
+		if (slopes[i].getGlobalBounds().top - slopes[i].getGlobalBounds().height * 1.5f >= window->getSize().y)
 			slopes.erase(slopes.begin() + i);
 
 		if (slopes[i].getGlobalBounds().intersects(player->getGlobalBounds())) {
@@ -48,30 +54,40 @@ void Game::updateSlopeVector()
 
 void Game::updateEnemyVector()
 {
-	if (enemySpawnTimer.getElapsedTime().asSeconds() >= 2.f)
+	enemySpawnTimer += 1.f;
+
+	if (enemySpawnTimer >= ENEMY_SPAWN_TIMER)
 	{
-		enemy.setRenderTarget(*window);
-		enemy.randomizeSpawnPosition();
-		enemy.spawn();
+		Enemy enemy(enemy_texture);
+		enemy.randomizeSpawnPosition(window->getSize());
 		enemies.push_back(enemy);
-		enemySpawnTimer.restart();
+		enemySpawnTimer = 0.f;
 	}
 
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
 		enemies[i].updateHoming(player->getPostion());
-		if (enemies[i].outOfBounds())
+		checkEnemyCollision(i);
+	}
+}
+
+void Game::checkEnemyCollision(const size_t& i)
+{
+	if (enemies[i].outOfBounds(window->getSize()))
+		enemies.erase(enemies.begin() + i);
+	else if (enemies[i].getGlobalBounds().intersects(player->getGlobalBounds()) && enemies[i].getActionstate() != Actionstate::DYING)
+	{
+		player->takeDamage(enemies[i].dealDamage());
+		enemies[i].takeDamage(ENEMY_MAX_HEALTH);
+	}
+	else if (enemies[i].getActionstate() != Actionstate::DYING && player->iterateAttackVector(enemies[i].getGlobalBounds())) {
+		enemies[i].takeDamage(player->dealDamage());
+	}
+	if (enemies[i].getCurrentHP() <= 0) {
+		enemies[i].setActionState(Actionstate::DYING);
+
+		if (enemies[i].isFrameFinished())
 			enemies.erase(enemies.begin() + i);
-		else if (enemies[i].getGlobalBounds().intersects(player->getGlobalBounds()))
-		{
-			player->takeDamage(enemies[i].dealDamage());
-			enemies.erase(enemies.begin() + i);
-		}
-		else if(player->iterateAttackVector(enemies[i].getGlobalBounds())){
-			enemies[i].takeDamage(player->dealDamage());
-			if (enemies[i].getCurrentHP() <= 0.f)
-				enemies.erase(enemies.begin() + i);
-		}
 	}
 }
 
@@ -79,7 +95,7 @@ void Game::renderEnemyVector()
 {
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		enemies[i].render();
+		enemies[i].render(*window);
 	}
 }
 
@@ -96,40 +112,87 @@ void Game::pollEvents()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case sf::Event::Closed:
-			window->close();
+			gamestate = Gamestate::QUIT;
 			break;
 		case sf::Event::KeyPressed:
-			if (event.key.code == sf::Keyboard::Escape)
-				window->close();
+			if (event.key.code == sf::Keyboard::Escape && gamestate != Gamestate::PAUSED) 
+				gamestate = Gamestate::PAUSED; 
+			else if (event.key.code == sf::Keyboard::Escape && gamestate == Gamestate::PAUSED) 
+				gamestate = Gamestate::PLAYING;
 			break;
 		}
 	}
 }
 
+void Game::initSpawnSlope()
+{
+	Slope slope(slope_texture);
+	slope.setScale(sf::Vector2f(10.f, 10.f));
+	slope.setPostion(sf::Vector2f(player->getGlobalBounds().left - slope.getGlobalBounds().width / 2.7f, 
+								  player->getGlobalBounds().top + player->getGlobalBounds().height));
+	slope.setFallSpeed(0.4f);
+	slopes.push_back(slope);
+}
+
 void Game::checkCollision()
 {
-	if (player->getGlobalBounds().top + player->getGlobalBounds().height >= window->getSize().y)
-		player->setPhysicState(Physicstate::ON_GROUND);
+	if (player->getGlobalBounds().top >= window->getSize().y)
+		gamestate = Gamestate::OVER;
 	else
 		player->setPhysicState(Physicstate::MID_AIR);
 }
 
 Game::Game()
 {
-	enemySpawnTimer.restart();
-	slopeSpawnTimer.restart();
-	initWindow();
-	initPlayer();
+	slope_texture.loadFromFile("IMAGES/platform.jpg");
+	previous_pos.x = -1.f;
+	background.setTexture("IMAGES/background.jpg");
+	background.setScale(sf::Vector2f(1.f, 0.8f));
+	gamestate = Gamestate::MENU;
+	enemySpawnTimer = 0.f;
+	slopeSpawnTimer = 0.f;
+	enemy_texture.loadFromFile("IMAGES/skull.png");
+	initWindow();	
+	initPlayer();	
+	initSpawnSlope();
+}
+
+void Game::updateMenu()
+{
+	if (gamestate == Gamestate::PAUSED)
+		gamestate = pause_window.update(*window, mousePosView);
+}
+
+void Game::renderMenu()
+{
+	if (gamestate == Gamestate::PAUSED)
+		pause_window.render(*window);
+}
+
+void Game::updatePlayer()
+{
+	player->updatePlayer(mousePosView);
+	if (player->getCurrentHealth() <= 0) {
+		gamestate = Gamestate::OVER;
+	}
 }
 
 void Game::update()
 {
 	pollEvents();
-	checkCollision();
-	updateSlopeVector();
+	updateMenu();
 	updateMousePosition();
-	player->updatePlayer(mousePosView);
-	updateEnemyVector();
+	if (gamestate == Gamestate::QUIT)
+		window->close();
+	
+	if (gamestate == Gamestate::PLAYING)
+	{
+		checkCollision();
+		updateSlopeVector();
+		updatePlayer();
+		updateEnemyVector();
+	}
+	
 }
 
 void Game::render()
@@ -144,6 +207,8 @@ void Game::render()
 
 	player->renderPlayer();
 
+	renderMenu();
+	
 	window->display();
 }
 

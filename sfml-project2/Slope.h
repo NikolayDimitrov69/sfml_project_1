@@ -5,19 +5,21 @@ constexpr float INIT_SLOPE_FALL_SPEED = 1.2f;
 class Slope
 {
 private:
-	sf::RenderTarget* target;
-
-	sf::Texture slopeTexture;
 	sf::Sprite slopeSprite;
-	sf::Vector2f prev_pos;
 	float fallSpeed;
 public:
-	Slope();
+	Slope(const sf::Texture& texture);
+
+	void setPostion(const sf::Vector2f& pos);
+
+	void setScale(const sf::Vector2f& size);
+
+	const sf::Vector2f& getPosition() const;
 
 	const sf::FloatRect& getGlobalBounds() const;
 
 	//Sets random vertical position of the next slope, based on the location of the previos slope.
-	void setRandomVertPos(sf::RenderTarget&);
+	void setRandomVertPos(const sf::Vector2u& targetSize, sf::Vector2f& prev_pos);
 
 	void setFallSpeed(const float&);
 

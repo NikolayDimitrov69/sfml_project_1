@@ -5,12 +5,11 @@
 
 constexpr float ENEMY_SPEED = 1.5f;
 constexpr float ENEMY_DAMAGE = 20.f;
+constexpr float ENEMY_MAX_HEALTH = 100.f;
 
 class Enemy
 {
 private:
-	sf::RenderTarget* target;
-
 	Healthbar healthbar;
 	float maxHP;
 	float currentHP;
@@ -19,7 +18,6 @@ private:
 	Actionstate ac_state;
 
 	Animation frame;
-	sf::Texture texture;
 	sf::Sprite sprite;
 	
 	float damage;
@@ -31,28 +29,34 @@ private:
 	void updateFrame();
 	
 public:
-	Enemy();
+	Enemy(const sf::Texture& texture);
 	
+	void setTexure(const sf::Texture& texture);
+
+	bool isFrameFinished() const;
+
+	const Actionstate& getActionstate();
+
+	void setActionState(const Actionstate& state);
+
 	void takeDamage(float);
 
 	const float& getCurrentHP() const;
 
 	const float& dealDamage() const;
 
-	void setRenderTarget(sf::RenderTarget&);
-
-	void randomizeSpawnPosition();
+	void randomizeSpawnPosition(const sf::Vector2u& targetSize);
 
 	void setDirection(const sf::Vector2f&);
 
 	const sf::FloatRect& getGlobalBounds() const;
 
-	bool outOfBounds();
-
-	void spawn();
+	bool outOfBounds(const sf::Vector2u& targetSize);
 
 	void updateHoming(const sf::Vector2f& playerpos);
 
-	void render();
+	void update(const sf::Vector2f& targetSize);
+
+	void render(sf::RenderTarget& target);
 };
 

@@ -3,8 +3,10 @@
 #include "Slope.h"
 #include "Background.h"
 #include "Enemy.h"
+#include "Pause.h"
 
-enum Gamestate {MENU = 0, PLAYING, GAME_OVER};
+constexpr float ENEMY_SPAWN_TIMER = 400.f;
+constexpr float SLOPER_SPAWN_TIMER = 225.f;
 
 class Game
 {
@@ -14,6 +16,10 @@ private:
 	sf::Event event;
 	sf::VideoMode videomode;
 
+	Pause pause_window;
+
+	Gamestate gamestate;
+
 	//Player pointer
 	Player* player;
 
@@ -22,13 +28,14 @@ private:
 
 	//Sloper vector
 	std::vector<Slope> slopes;
-	Slope slope;
-	sf::Clock slopeSpawnTimer;
+	sf::Vector2f previous_pos;
+	sf::Texture slope_texture;
+	float slopeSpawnTimer;
 
 	//Enemy vector
 	std::vector<Enemy> enemies;
-	Enemy enemy;
-	sf::Clock enemySpawnTimer;
+	sf::Texture enemy_texture;
+	float enemySpawnTimer;
 
 	//Initializer functions
 	void initWindow();
@@ -40,6 +47,8 @@ private:
 
 	void updateEnemyVector();
 
+	void checkEnemyCollision(const size_t& i);
+
 	void renderEnemyVector();
 
 	void updateSlopeVector();
@@ -49,6 +58,8 @@ private:
 	//Pollevents updater
 	void pollEvents();
 
+	void initSpawnSlope();
+
 	//Mouse position updater
 	void updateMousePosition();
 
@@ -56,6 +67,13 @@ private:
 	void checkCollision();
 public:
 	Game();
+
+	//Will render different types of menus if any, based on current game state
+	void renderMenu();
+
+	void updateMenu();
+
+	void updatePlayer();
 
 	void update();
 
