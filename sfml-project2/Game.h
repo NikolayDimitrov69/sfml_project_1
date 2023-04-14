@@ -4,6 +4,7 @@
 #include "Background.h"
 #include "Enemy.h"
 #include "Pause.h"
+#include "Gameover.h"
 
 constexpr float ENEMY_SPAWN_TIMER = 400.f;
 constexpr float SLOPER_SPAWN_TIMER = 225.f;
@@ -11,6 +12,11 @@ constexpr float SLOPER_SPAWN_TIMER = 225.f;
 class Game
 {
 private:
+	sf::Font font;
+	sf::Text uiText;
+
+	unsigned int points;
+
 	//Window variables
 	sf::RenderWindow* window;
 	sf::Event event;
@@ -18,10 +24,13 @@ private:
 
 	Pause pause_window;
 
+	Gameover go_window;
+
 	Gamestate gamestate;
 
 	//Player pointer
 	Player* player;
+	sf::Texture player_texture;
 
 	//Background
 	Background background;
@@ -65,7 +74,23 @@ private:
 
 	//Will check for collision between the player and an object on the screen
 	void checkCollision();
+	void initTextures();
+	void initVariables();
+
+	void initFont();
+	void initText();
+
+	void updateText();
+
+	void renderText();
+
+	//Clears all vectors
+	void clearVectors();
+
+	//Will restart the game by clearing all vectors and calling all initializer functions again
+	void restartGame();
 public:
+	
 	Game();
 
 	//Will render different types of menus if any, based on current game state

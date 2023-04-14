@@ -10,7 +10,11 @@ void Game::initWindow()
 
 void Game::initPlayer()
 {
-	player = new Player(window);
+	if (player != nullptr)
+	{
+		delete player;
+	}
+	player = new Player(window->getSize(), player_texture);
 }
 
 void Game::updateMousePosition()
@@ -85,9 +89,10 @@ void Game::checkEnemyCollision(const size_t& i)
 	}
 	if (enemies[i].getCurrentHP() <= 0) {
 		enemies[i].setActionState(Actionstate::DYING);
-
-		if (enemies[i].isFrameFinished())
+		if (enemies[i].isFrameFinished()) {
 			enemies.erase(enemies.begin() + i);
+			points++;
+		}
 	}
 }
 
@@ -142,17 +147,71 @@ void Game::checkCollision()
 		player->setPhysicState(Physicstate::MID_AIR);
 }
 
-Game::Game()
+void Game::initTextures()
 {
+	player_texture.loadFromFile("IMAGES/megaman.png");
 	slope_texture.loadFromFile("IMAGES/platform.jpg");
-	previous_pos.x = -1.f;
 	background.setTexture("IMAGES/background.jpg");
+	enemy_texture.loadFromFile("IMAGES/skull.png");
+}
+
+void Game::initVariables()
+{
+	points = 0;
+	previous_pos.x = -1.f;
 	background.setScale(sf::Vector2f(1.f, 0.8f));
-	gamestate = Gamestate::MENU;
+	gamestate = Gamestate::PAUSED;
 	enemySpawnTimer = 0.f;
 	slopeSpawnTimer = 0.f;
-	enemy_texture.loadFromFile("IMAGES/skull.png");
+}
+
+void Game::initFont()
+{
+	if (!font.loadFromFile("Fonts/EA Sports Covers SC 1.5.ttf")) {
+		std::cerr << "ERROR::GAME::INITFONT::Failed to load font!\n";
+	}
+}
+
+void Game::initText()
+{
+	uiText.setFont(font);
+	uiText.setFillColor(sf::Color::Black);
+	uiText.setCharacterSize(48);
+}
+
+void Game::updateText()
+{
+	std::stringstream ss;
+	ss << "Points: " << points << '\n';
+	uiText.setString(ss.str());
+}
+
+void Game::renderText()
+{
+	window->draw(uiText);
+}
+
+void Game::clearVectors()
+{
+	enemies.clear();
+	slopes.clear();
+}
+
+void Game::restartGame()
+{
+	clearVectors();
+	initVariables();
+	initPlayer();
+	initSpawnSlope();
+}
+
+Game::Game()
+{	
 	initWindow();	
+	initTextures();
+	initFont();
+	initText();
+	initVariables();
 	initPlayer();	
 	initSpawnSlope();
 }
@@ -161,17 +220,21 @@ void Game::updateMenu()
 {
 	if (gamestate == Gamestate::PAUSED)
 		gamestate = pause_window.update(*window, mousePosView);
+	if (gamestate == Gamestate::OVER)
+		go_window.update(mousePosView, window->getSize());
 }
 
 void Game::renderMenu()
 {
 	if (gamestate == Gamestate::PAUSED)
 		pause_window.render(*window);
+	if (gamestate == Gamestate::OVER)
+		go_window.render(*window);
 }
 
 void Game::updatePlayer()
 {
-	player->updatePlayer(mousePosView);
+	player->updatePlayer(mousePosView, window->getSize());
 	if (player->getCurrentHealth() <= 0) {
 		gamestate = Gamestate::OVER;
 	}
@@ -182,17 +245,22 @@ void Game::update()
 	pollEvents();
 	updateMenu();
 	updateMousePosition();
+
 	if (gamestate == Gamestate::QUIT)
 		window->close();
+
+	if (gamestate == Gamestate::RESTART)
+		restartGame();
 	
 	if (gamestate == Gamestate::PLAYING)
 	{
 		checkCollision();
 		updateSlopeVector();
 		updatePlayer();
-		updateEnemyVector();
+		updateEnemyVector();	
+		updateText();
 	}
-	
+
 }
 
 void Game::render()
@@ -205,7 +273,10 @@ void Game::render()
 
 	renderEnemyVector();
 
-	player->renderPlayer();
+	player->renderPlayer(*window);
+
+	if(gamestate !=  Gamestate::MENU)
+		renderText();
 
 	renderMenu();
 	

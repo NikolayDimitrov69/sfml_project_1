@@ -7,25 +7,25 @@ void Player::initPlayerHealth()
 	health.currentHealth = health.m_Health;
 }
 
-void Player::initSprite(std::string& texture)
+void Player::initSprite(const sf::Texture& texture, const sf::Vector2u& targetSize)
 {
-	m_Texture.loadFromFile(texture);
-	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
+	
 	frame.setDimension(28, 25);
 	frame.setIdleSpeed(0.5f);
-	frame.setTextureSize(m_Texture.getSize());
+	frame.setTextureSize(texture.getSize());
+	m_Sprite.setTexture(texture);
+	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
 	m_Sprite.setScale(4.f, 4.f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
-	m_Sprite.setPosition(m_Target->getSize().x / 2.f, m_Target->getSize().y / 2.f);
+	m_Sprite.setPosition(targetSize.x / 2.f, targetSize.y / 2.f);
 }
 
 void Player::initAttack()
 {
-	attack.setTexture("IMAGES/megaman_attack.png");
+	attack_texture.loadFromFile("IMAGES/megaman_attack.png");
 }
 
-Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std::string texture) :m_Target(target), m_Name(name)
+Player::Player(const sf::Vector2u& targetSize, const sf::Texture& texture, std::string name, float newhealth) : m_Name(name)
 {
 	damage = PLAYER_DAMAGE;
 	//Will be asumed that the player is not on a solid object, if needed the game class will change that
@@ -34,7 +34,7 @@ Player::Player(sf::RenderTarget* target, std::string name, float newhealth, std:
 	playerstate = Movementstate::IDLE;
 	health.m_Health = newhealth;
 	initAttack();
-	initSprite(texture);
+	initSprite(texture, targetSize);
 	initPlayerHealth();
 }
 
@@ -103,7 +103,7 @@ void Player::TurnRight()
 		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
 }
 
-void Player::updateInputAndSates(const sf::Vector2f& pos)
+void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
 	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
@@ -130,11 +130,11 @@ void Player::updateInputAndSates(const sf::Vector2f& pos)
 	}
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = Actionstate::SHOOTING;
-		if (pos.x < m_Sprite.getPosition().x)
+		if (mousePos.x < m_Sprite.getPosition().x)
 			TurnLeft();
-		if (pos.x > m_Sprite.getPosition().x)
+		if (mousePos.x > m_Sprite.getPosition().x)
 			TurnRight();
-		fillAttackVector(pos);
+		createDoubleAttack(mousePos, targetSize);
 	}
 	else
 		actionstate = Actionstate::NOT_SHOOTING;
@@ -145,31 +145,51 @@ void Player::updateInputAndSates(const sf::Vector2f& pos)
 		playerstate = Movementstate::IDLE;
 }
 
-Player::Player() : m_Target(nullptr)
-{}
-
 void Player::updateHealth()
 {
 	health.healthbar.update(m_Sprite, health.m_Health, health.currentHealth);
 }
 
-void Player::fillAttackVector(const sf::Vector2f& pos)
+void Player::createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
-	if (attCooldown >= ATTACK_COOLDOWN && pos.x > 0 && pos.y > 0 && pos.x < m_Target->getSize().x && pos.y < m_Target->getSize().y)
+	if (attCooldown >= ATTACK_COOLDOWN && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
-		attack.setShootDir(pos, m_Sprite.getPosition());
-		attack.changeDirection(pos.x < m_Sprite.getPosition().x ? -1 : 1);
+		Attack attack(attack_texture);
+		attack.setShootDir(mousePos, m_Sprite.getPosition());
+		attack.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
 		attack.spawn(m_Sprite);
 		attacks.push_back(attack);
 	}
 }
 
-void Player::updateAttack()
+void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
+{
+	if (attCooldown >= ATTACK_COOLDOWN && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
+	{
+		attCooldown = 0.f;
+		Attack attack(attack_texture);
+		attack.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
+		attack.setShootDir(mousePos, m_Sprite.getPosition(), 5);
+		
+		attack.spawn(m_Sprite);
+
+		Attack attack2(attack_texture);
+		attack2.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
+		attack2.setShootDir(mousePos, m_Sprite.getPosition(), -5);
+		attack2.spawn(m_Sprite);
+
+		attacks.push_back(attack);
+
+		attacks.push_back(attack2);
+	}
+}
+
+void Player::updateAttack(const sf::Vector2u& targetSize)
 {
 	for (int i = 0; i < attacks.size(); i++)
 	{
-		attacks[i].update(*m_Target);
+		attacks[i].update(targetSize);
 		if (attacks[i].isOutOfBounds())
 		{
 			attacks.erase(attacks.begin() + i);
@@ -202,21 +222,21 @@ void Player::updateFrame()
 	m_Sprite.setTextureRect(frame.getCurrentFrame());
 }
 
-void Player::renderHealth()
+void Player::renderHealth(sf::RenderTarget& target)
 {
-	health.healthbar.render(*m_Target);
+	health.healthbar.render(target);
 }
 
-void Player::renderSprite()
+void Player::renderSprite(sf::RenderTarget& target)
 {
-	m_Target->draw(m_Sprite);
+	target.draw(m_Sprite);
 }
 
-void Player::renderAttack()
+void Player::renderAttack(sf::RenderTarget& target)
 {
 	for (auto& e : attacks)
 	{
-		e.render(*m_Target);
+		e.render(target);
 	}
 }
 
@@ -225,13 +245,14 @@ sf::FloatRect Player::getGlobalBounds() const
 	return m_Sprite.getGlobalBounds();
 }
 
-void Player::updatePlayer(const sf::Vector2f& pos)
+void Player::updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
+	timer += 1.f;
 	attCooldown += 1.f;
 	updateHealth();
-	updateAttack();
+	updateAttack(targetSize);
 	updatePlayerPhysics();
-	updateInputAndSates(pos);
+	updateInputAndSates(mousePos, targetSize);
 	updateFrame();
 }
 
@@ -245,17 +266,15 @@ const Physicstate& Player::getPhysState() const
 	return physicstate;
 }
 
-void Player::renderPlayer()
+void Player::renderPlayer(sf::RenderTarget& target)
 {
-	renderHealth();
-	renderSprite();
-	renderAttack();
+	renderHealth(target);
+	renderSprite(target);
+	renderAttack(target);
 }
 
 bool Player::keyPressable()
 {
-	timer += 1.f;
-
 	if (timer >= JUMP_COOLDOWN) {
 		timer = 0.f;
 		return true;

@@ -17,9 +17,6 @@ struct Playerhealth {
 class Player
 {
 private:
-	//Specifies the render target
-	sf::RenderTarget* m_Target;
-
 	//Current playerstate
 	Movementstate playerstate;
 
@@ -32,22 +29,24 @@ private:
 	//Player physics
 	Physics playerphysics;
 
-	//Player name and health
+	//Player name
 	std::string m_Name;
+
+	//Player health
 	Playerhealth health;
 
+	//The player's damage
 	float damage;
 	
 	//Player attack, attack container and max attack counter
 	std::vector<Attack> attacks;
-	Attack attack;
+	sf::Texture attack_texture;
 
 	//Player's cooldown time and max cooldown
 	float attCooldown;
 	
 	//Player texture and sprite
 	Animation frame;
-	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
 
 	//Key timers
@@ -56,26 +55,27 @@ private:
 	//Private initializer functions
 	void initPlayerHealth();
 	void initAttack();
-	void initSprite(std::string& texture);
+	void initSprite(const sf::Texture& texture, const sf::Vector2u& targetSize);
 
 	//Push_back attack whenever spawned
-	void fillAttackVector(const sf::Vector2f&);
+	void createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
+	void createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
 
 	//Renderers
-	void renderHealth();
-	void renderSprite();
-	void renderAttack();
+	void renderHealth(sf::RenderTarget& target);
+	void renderSprite(sf::RenderTarget& target);
+	void renderAttack(sf::RenderTarget& target);
 	
 	//Simple function for flipping the sprite left/right based on its current scale
 	void TurnLeft();
 	void TurnRight();
 
 	//Updaters
-	void updateAttack();
+	void updateAttack(const sf::Vector2u& targetSize);
 	//Updates the player's healthbar sprite
 	void updateHealth();
 	//Updates the input taking in the mouse position as an argument
-	void updateInputAndSates(const sf::Vector2f&);
+	void updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
 	//Updates the player physics and moves the sprite of the player by the produced vector from class physics
 	void updatePlayerPhysics();
 	//Applies the playerphysics's updateGravity method
@@ -83,9 +83,7 @@ private:
 	//Updates the frame
 	void updateFrame();
 public:
-	Player();
-
-	Player(sf::RenderTarget* target ,std::string name = "newplayer", float newhealth = 10, std::string texture = "IMAGES/megaman.png");	
+	Player(const sf::Vector2u& targetSize, const sf::Texture& texture, std::string name = "newplayer", float newhealth = 10);
 
 	const float& dealDamage() const;
 
@@ -120,10 +118,10 @@ public:
 	void jump(const float&);
 
 	//updates the player and takes vector as an argument, which this game is the mouse position
-	void updatePlayer(const sf::Vector2f&);
+	void updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
 	
 	//renders the player
-	void renderPlayer();
+	void renderPlayer(sf::RenderTarget& target);
 
 	//Check if timer is above Jump cooldown
 	bool keyPressable();

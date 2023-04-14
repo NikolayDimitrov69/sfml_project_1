@@ -7,14 +7,22 @@ void Attack::updateFrame()
 	m_Sprite.setTextureRect(frame.getCurrentFrame());
 }
 
-Attack::Attack() : m_Direction(1), outOfBounds(false), angle(0.f)
-{
+void Attack::initVariables() {
 	shootDir.x = -1;
 	shootDir.y = -1;
 	state = Movementstate::IDLE;
 	ac_state = Actionstate::NOT_SHOOTING;
-	frame.setDimension(194, 60);
+}
+
+Attack::Attack(const sf::Texture& attack_texture) : m_Direction(1), outOfBounds(false), angle(0.f)
+{
+	initVariables();
+
+	m_Sprite.setTexture(attack_texture);
 	m_Sprite.setTextureRect(sf::IntRect(0, 0, 194, 60));
+
+	frame.setTextureSize(attack_texture.getSize());
+	frame.setDimension(194, 60);
 	frame.setIdleSpeed(0.03f);
 }
 
@@ -32,28 +40,42 @@ const sf::FloatRect& Attack::getGlobalBounds() const {
 	return m_Sprite.getGlobalBounds();
 }
 
-void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playerpos)
+void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playerpos, const float& offsetAngle)
 {
-	shootDir = normalize(mousepos - playerpos);
+	sf::Vector2f unitVectorPlayerMouse = normalize(mousepos - playerpos);
 	angle = findAngleTan(playerpos, mousepos);
-}
+	//if offset is 0, then shootDir will simply be the vector between the player and the mouse position
+	if (offsetAngle == 0)
+	{
+		shootDir = unitVectorPlayerMouse;
+	}
+	else //the vector will be created by the following formula
+	{
+		float r = vectorLenght(mousepos - playerpos);
+		shootDir.x = r * cos((angle + offsetAngle) * 3.1415f / 180.f);
+		shootDir.y = r * sin((angle + offsetAngle) * 3.1415f / 180.f);
 
-void Attack::changeDirection(const int& direction)
-{
-	m_Direction = direction;
+		shootDir = normalize(shootDir) * m_Direction;
+
+		angle += offsetAngle;
+	}
 	m_Sprite.setRotation(angle);
 }
 
+void Attack::changeDirection(const float& direction)
+{
+	m_Direction = direction;
+}
 
-void Attack::update(sf::RenderTarget& target)
+void Attack::update(const sf::Vector2u& targetSize)
 {
 	if (ac_state == Actionstate::NOT_SHOOTING)
 	{
 		m_Sprite.move(ATTACK_MOVE_SPEED * shootDir);
-		if (m_Sprite.getPosition().x > target.getSize().x ||
+		if (m_Sprite.getPosition().x > targetSize.x ||
 			m_Sprite.getPosition().x < 0 ||
 			m_Sprite.getPosition().y < 0 ||
-			m_Sprite.getPosition().y > target.getSize().y)
+			m_Sprite.getPosition().y > targetSize.y)
 			outOfBounds = true;
 	}
 	updateFrame();
@@ -68,13 +90,6 @@ void Attack::spawn(const sf::Sprite& sprite)
 {
 	m_Sprite.setPosition(sprite.getPosition().x, sprite.getPosition().y - m_Sprite.getLocalBounds().height / 2.f);
 	m_Sprite.setScale(m_Direction, 1);
-}
-
-void Attack::setTexture(const std::string& texture_Path)
-{
-	m_Texture.loadFromFile(texture_Path);
-	m_Sprite.setTexture(m_Texture);
-	frame.setTextureSize(m_Texture.getSize());
 }
 
 const Actionstate& Attack::getActionState() const

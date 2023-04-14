@@ -39,7 +39,7 @@ void Slope::setRandomVertPos(const sf::Vector2u& targetSize, sf::Vector2f& prev_
 	randx = min + rand() % static_cast<int>(max - min + 1);
 
 	if (prev_pos.x == -1)
-		prev_pos.x = static_cast<float>(targetSize.x + rand() % static_cast<int>(targetSize.x/2.f - slopeSprite.getGlobalBounds().width));
+		prev_pos.x = static_cast<float>(farLeft + rand() % static_cast<int>(farRight - farLeft + 1 - slopeSprite.getGlobalBounds().width));
 
 	float finalpos = prev_pos.x + randx;
 	if (finalpos >= farRight)

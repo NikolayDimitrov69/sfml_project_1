@@ -63,9 +63,9 @@ void Enemy::randomizeSpawnPosition(const sf::Vector2u& targetSize)
 	//Random switch case for wether the enemy will be spawned from left or right side of the screen
 	switch (rand() % 2)
 	{
-	case 0: randomSpawnpos.x = 0.f - sprite.getGlobalBounds().width; if (sprite.getScale().y > 0) sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
+	case 0: randomSpawnpos.x = 0.f - sprite.getGlobalBounds().width; sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
 		break;
-	case 1: randomSpawnpos.x = static_cast<float>(targetSize.x); if (sprite.getScale().y < 0) sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
+	case 1: randomSpawnpos.x = static_cast<float>(targetSize.x);
 		break;
 	default:
 		break;

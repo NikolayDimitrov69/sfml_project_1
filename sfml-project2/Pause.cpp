@@ -30,16 +30,14 @@ Gamestate Pause::update(const sf::RenderTarget& rendertarget, const sf::Vector2f
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		if (resume_sprite.getGlobalBounds().contains(mousePos))
-		{
 			return Gamestate::PLAYING;
-		}
 		if (quit_sprite.getGlobalBounds().contains(mousePos))
-		{
 			return Gamestate::QUIT;
-		}
+		if (restart_sprite.getGlobalBounds().contains(mousePos))
+			return Gamestate::RESTART;
 	}
 
-	return PAUSED;
+	return Gamestate::PAUSED;
 }
 
 void Pause::render(sf::RenderTarget& rendertarget)
