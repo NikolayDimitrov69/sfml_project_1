@@ -42,7 +42,7 @@ private:
 	float slopeSpawnTimer;
 
 	//Enemy vector
-	std::vector<Enemy> enemies;
+	std::vector<IEnemy *> enemies;
 	sf::Texture enemy_texture;
 	float enemySpawnTimer;
 

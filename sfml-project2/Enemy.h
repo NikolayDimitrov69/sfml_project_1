@@ -1,13 +1,11 @@
 #pragma once
-#include "Animation.h"
-#include "Healthbar.h"
-#include "Math.h"
+#include "IEnemy.h"
 
 constexpr float ENEMY_SPEED = 1.5f;
 constexpr float ENEMY_DAMAGE = 20.f;
 constexpr float ENEMY_MAX_HEALTH = 100.f;
 
-class Enemy
+class Enemy : public IEnemy
 {
 private:
 	Healthbar healthbar;
@@ -47,15 +45,11 @@ public:
 
 	void randomizeSpawnPosition(const sf::Vector2u& targetSize);
 
-	void setDirection(const sf::Vector2f&);
-
 	const sf::FloatRect& getGlobalBounds() const;
 
 	bool outOfBounds(const sf::Vector2u& targetSize);
 
-	void updateHoming(const sf::Vector2f& playerpos);
-
-	void update(const sf::Vector2f& targetSize);
+	void update(const sf::Vector2f& playerpos);
 
 	void render(sf::RenderTarget& target);
 };

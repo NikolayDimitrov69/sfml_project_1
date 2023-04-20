@@ -75,12 +75,6 @@ void Enemy::randomizeSpawnPosition(const sf::Vector2u& targetSize)
 	sprite.setPosition(randomSpawnpos);
 }
 
-void Enemy::setDirection(const sf::Vector2f& playerpos)
-{
-	direction = normalize(playerpos - sprite.getPosition());
-	angle = findAngleCos(sprite.getPosition(), playerpos);
-}
-
 const sf::FloatRect& Enemy::getGlobalBounds() const
 {
 	return sprite.getGlobalBounds();
@@ -95,7 +89,7 @@ bool Enemy::outOfBounds(const sf::Vector2u& targetSize)
 	return false;
 }
 
-void Enemy::updateHoming(const sf::Vector2f& playerpos)
+void Enemy::update(const sf::Vector2f& playerpos)
 {
 	//Enemy stops moving when dying
 	if (ac_state == Actionstate::NOT_SHOOTING) {

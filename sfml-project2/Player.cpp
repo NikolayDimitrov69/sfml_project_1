@@ -179,6 +179,7 @@ void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u
 		attack2.setShootDir(mousePos, m_Sprite.getPosition(), -5);
 		attack2.spawn(m_Sprite);
 
+
 		attacks.push_back(attack);
 
 		attacks.push_back(attack2);

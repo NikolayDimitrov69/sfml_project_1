@@ -57,6 +57,9 @@
     <ClCompile Include="Gameover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IEnemy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Gameover.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IEnemy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

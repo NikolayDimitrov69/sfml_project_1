@@ -62,37 +62,38 @@ void Game::updateEnemyVector()
 
 	if (enemySpawnTimer >= ENEMY_SPAWN_TIMER)
 	{
-		Enemy enemy(enemy_texture);
-		enemy.randomizeSpawnPosition(window->getSize());
+		Enemy* enemy = new Enemy(enemy_texture);
+		enemy->randomizeSpawnPosition(window->getSize());
 		enemies.push_back(enemy);
 		enemySpawnTimer = 0.f;
 	}
 
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		enemies[i].updateHoming(player->getPostion());
+		enemies[i]->update(player->getPostion());
 		checkEnemyCollision(i);
 	}
 }
 
 void Game::checkEnemyCollision(const size_t& i)
 {
-	if (enemies[i].outOfBounds(window->getSize()))
+	if (enemies[i]->outOfBounds(window->getSize()))
 		enemies.erase(enemies.begin() + i);
-	else if (enemies[i].getGlobalBounds().intersects(player->getGlobalBounds()) && enemies[i].getActionstate() != Actionstate::DYING)
+	else if (enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()) && enemies[i]->getActionstate() != Actionstate::DYING)
 	{
-		player->takeDamage(enemies[i].dealDamage());
-		enemies[i].takeDamage(ENEMY_MAX_HEALTH);
+		player->takeDamage(enemies[i]->dealDamage());
+		enemies[i]->setActionState(Actionstate::DYING);
 	}
-	else if (enemies[i].getActionstate() != Actionstate::DYING && player->iterateAttackVector(enemies[i].getGlobalBounds())) {
-		enemies[i].takeDamage(player->dealDamage());
-	}
-	if (enemies[i].getCurrentHP() <= 0) {
-		enemies[i].setActionState(Actionstate::DYING);
-		if (enemies[i].isFrameFinished()) {
-			enemies.erase(enemies.begin() + i);
+	else if (enemies[i]->getActionstate() != Actionstate::DYING && player->iterateAttackVector(enemies[i]->getGlobalBounds())) {
+		enemies[i]->takeDamage(player->dealDamage());
+		if (enemies[i]->getCurrentHP() <= 0) {
 			points++;
+			enemies[i]->setActionState(Actionstate::DYING);
 		}
+	}
+	if (enemies[i]->isFrameFinished()) {
+		delete enemies[i];
+		enemies.erase(enemies.begin() + i);
 	}
 }
 
@@ -100,7 +101,7 @@ void Game::renderEnemyVector()
 {
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		enemies[i].render(*window);
+		enemies[i]->render(*window);
 	}
 }
 
