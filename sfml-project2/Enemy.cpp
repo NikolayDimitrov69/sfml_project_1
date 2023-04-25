@@ -1,11 +1,6 @@
 #include "precompheaders.h"
 #include "Enemy.h"
 
-void Enemy::updateFrame()
-{
-	frame.update(state, ac_state);
-	sprite.setTextureRect(frame.getCurrentFrame());
-}
 
 Enemy::Enemy(const sf::Texture& texture)
 {
@@ -22,74 +17,7 @@ Enemy::Enemy(const sf::Texture& texture)
 	frame.setIdleSpeed(0.075f);
 }
 
-void Enemy::setTexure(const sf::Texture& texture)
-{
-	sprite.setTexture(texture);
-	frame.setTextureSize(texture.getSize());
-}
-
-bool Enemy::isFrameFinished() const
-{
-	return frame.isFinished();
-}
-
-const Actionstate& Enemy::getActionstate()
-{
-	return ac_state;
-}
-
-void Enemy::setActionState(const Actionstate& state)
-{
-	ac_state = state;
-}
-
-void Enemy::takeDamage(float damage)
-{
-	currentHP -= damage;
-}
-
-const float& Enemy::getCurrentHP() const
-{
-	return currentHP;
-}
-
-const float& Enemy::dealDamage() const
-{
-	return damage;
-}
-
-void Enemy::randomizeSpawnPosition(const sf::Vector2u& targetSize)
-{
-	//Random switch case for wether the enemy will be spawned from left or right side of the screen
-	switch (rand() % 2)
-	{
-	case 0: randomSpawnpos.x = 0.f - sprite.getGlobalBounds().width; sprite.setScale(sprite.getScale().x, -1.f * sprite.getScale().y);
-		break;
-	case 1: randomSpawnpos.x = static_cast<float>(targetSize.x);
-		break;
-	default:
-		break;
-	}
-	randomSpawnpos.y = static_cast<float>(rand() % targetSize.y);
-
-	sprite.setPosition(randomSpawnpos);
-}
-
-const sf::FloatRect& Enemy::getGlobalBounds() const
-{
-	return sprite.getGlobalBounds();
-}
-
-bool Enemy::outOfBounds(const sf::Vector2u& targetSize)
-{
-	if (sprite.getPosition().x > targetSize.x || sprite.getPosition().x < 0 - sprite.getGlobalBounds().width)
-	{
-		return true;
-	}
-	return false;
-}
-
-void Enemy::update(const sf::Vector2f& playerpos)
+void Enemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize)
 {
 	//Enemy stops moving when dying
 	if (ac_state == Actionstate::NOT_SHOOTING) {
@@ -105,9 +33,17 @@ void Enemy::update(const sf::Vector2f& playerpos)
 	updateFrame();
 }
 
-void Enemy::render(sf::RenderTarget& target)
+void Enemy::render(sf::RenderTarget& renderTarget)
 {
-	target.draw(sprite);
+	renderTarget.draw(sprite);
 	if (ac_state == Actionstate::NOT_SHOOTING)
-		healthbar.render(target);
+	{
+		healthbar.render(renderTarget);
+	}
 }
+
+bool Enemy::attackHasHit(const sf::FloatRect& object)
+{
+	return false;
+}
+

@@ -108,7 +108,7 @@ void Animation::update(const Movementstate& mv_state, const Actionstate& ac_stat
 		updateIdle();
 	else if (mv_state == Movementstate::MOVING)
 		updateMoving();
-	if (ac_state == Actionstate::SHOOTING && mv_state != Movementstate::MOVING)
+	if (ac_state == Actionstate::SHOOTING && mv_state == Movementstate::IDLE)
 		updateShooting();
 	else if (ac_state == Actionstate::SHOOTING && mv_state == Movementstate::MOVING)
 		updateShootingMoving();

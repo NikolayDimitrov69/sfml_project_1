@@ -172,6 +172,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">precompheaders.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="RangedEnemy.cpp" />
     <ClCompile Include="Slope.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="precompheaders.h" />
+    <ClInclude Include="RangedEnemy.h" />
     <ClInclude Include="Slope.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

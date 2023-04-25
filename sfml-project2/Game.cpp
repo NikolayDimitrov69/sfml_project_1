@@ -56,45 +56,74 @@ void Game::updateSlopeVector()
 
 }
 
+void Game::spawnRangedEnemy()
+{
+	IEnemy* enemy = new RangedEnemy(rangedEnemy_texture);
+	enemy->randomizeSpawnPosition(window->getSize());
+	enemies.push_back(enemy);
+}
+
+void Game::spawnHomingEnemy()
+{
+	IEnemy* enemy = new Enemy(enemy_texture);
+	enemy->randomizeSpawnPosition(window->getSize());
+	enemies.push_back(enemy);
+}
+
+void Game::spawnRandomEnemy()
+{
+	int a = rand() % 100;
+	if (a > 0 && a <= 30)
+	{
+		spawnRangedEnemy();
+	}
+	else if (a > 30 && a < 100)
+	{
+		spawnHomingEnemy();
+	}
+	
+	enemySpawnTimer = 0.f;
+}
+
 void Game::updateEnemyVector()
 {
 	enemySpawnTimer += 1.f;
 
 	if (enemySpawnTimer >= ENEMY_SPAWN_TIMER)
 	{
-		Enemy* enemy = new Enemy(enemy_texture);
-		enemy->randomizeSpawnPosition(window->getSize());
-		enemies.push_back(enemy);
-		enemySpawnTimer = 0.f;
+		spawnRandomEnemy();
 	}
 
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		enemies[i]->update(player->getPostion());
+		enemies[i]->update(player->getPostion(), window->getSize());
 		checkEnemyCollision(i);
 	}
 }
 
 void Game::checkEnemyCollision(const size_t& i)
 {
-	if (enemies[i]->outOfBounds(window->getSize()))
+	if (enemies[i]->outOfBounds(window->getSize())) {
+		delete enemies[i];
 		enemies.erase(enemies.begin() + i);
-	else if (enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()) && enemies[i]->getActionstate() != Actionstate::DYING)
+	}
+	else if (enemies[i]->isFrameFinished()) {
+		delete enemies[i];
+		enemies.erase(enemies.begin() + i);
+	}
+	else if (enemies[i]->getActionstate() != Actionstate::DYING && (enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()) || enemies[i]->attackHasHit(player->getGlobalBounds())))
 	{
 		player->takeDamage(enemies[i]->dealDamage());
 		enemies[i]->setActionState(Actionstate::DYING);
 	}
-	else if (enemies[i]->getActionstate() != Actionstate::DYING && player->iterateAttackVector(enemies[i]->getGlobalBounds())) {
+	else if (enemies[i]->getActionstate() != Actionstate::DYING && player->attackHasHit(enemies[i]->getGlobalBounds())) {
 		enemies[i]->takeDamage(player->dealDamage());
 		if (enemies[i]->getCurrentHP() <= 0) {
 			points++;
 			enemies[i]->setActionState(Actionstate::DYING);
 		}
 	}
-	if (enemies[i]->isFrameFinished()) {
-		delete enemies[i];
-		enemies.erase(enemies.begin() + i);
-	}
+	
 }
 
 void Game::renderEnemyVector()
@@ -154,6 +183,7 @@ void Game::initTextures()
 	slope_texture.loadFromFile("IMAGES/platform.jpg");
 	background.setTexture("IMAGES/background.jpg");
 	enemy_texture.loadFromFile("IMAGES/skull.png");
+	rangedEnemy_texture.loadFromFile("IMAGES/ranged_skull.png");
 }
 
 void Game::initVariables()

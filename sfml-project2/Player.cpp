@@ -43,7 +43,7 @@ const float& Player::dealDamage() const
 	return damage;
 }
 
-bool Player::iterateAttackVector(const sf::FloatRect& enemyBounds)
+bool Player::attackHasHit(const sf::FloatRect& enemyBounds)
 {
 	for (size_t i = 0; i < attacks.size(); i++)
 	{

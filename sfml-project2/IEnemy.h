@@ -5,31 +5,53 @@
 
 class IEnemy
 {
+protected:
+	Healthbar healthbar;
+	float maxHP;
+	float currentHP;
+
+	Movementstate state;
+	Actionstate ac_state;
+
+	Animation frame;
+	sf::Sprite sprite;
+
+	float damage;
+
+	float angle;
+	sf::Vector2f direction;
+	sf::Vector2f randomSpawnpos;
+
+	void updateFrame();
 public:
-	virtual void setTexure(const sf::Texture& texture) = 0;
+	void setTexure(const sf::Texture& texture);
 
-	virtual bool isFrameFinished() const = 0;
+	bool isFrameFinished() const;
 
-	virtual const Actionstate& getActionstate() = 0;
+	const Actionstate& getActionstate();
 
-	virtual void setActionState(const Actionstate& state) = 0;
+	void setActionState(const Actionstate& state);
 
-	virtual void takeDamage(float) = 0;
+	void takeDamage(float);
 
-	virtual const float& getCurrentHP() const = 0;
+	const float& getCurrentHP() const;
 
-	virtual const float& dealDamage() const = 0;
+	const float& dealDamage() const;
 
-	virtual void randomizeSpawnPosition(const sf::Vector2u& targetSize) = 0;
+	const sf::Vector2f& getPosition() const;
 
-	virtual const sf::FloatRect& getGlobalBounds() const = 0;
+	void randomizeSpawnPosition(const sf::Vector2u& targetSize);
 
-	virtual bool outOfBounds(const sf::Vector2u& targetSize) = 0;
+	const sf::FloatRect& getGlobalBounds() const;
 
-	virtual void update(const sf::Vector2f& playerpos) = 0;
+	bool outOfBounds(const sf::Vector2u& targetSize);
 
-	virtual void render(sf::RenderTarget& target) = 0;
+	virtual bool attackHasHit(const sf::FloatRect& object) = 0;
+
+	virtual void update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize) = 0;
 	
+	virtual void render(sf::RenderTarget& target) = 0;
+
 	virtual ~IEnemy() = default;
 };
 

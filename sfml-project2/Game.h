@@ -3,10 +3,11 @@
 #include "Slope.h"
 #include "Background.h"
 #include "Enemy.h"
+#include "RangedEnemy.h"
 #include "Pause.h"
 #include "Gameover.h"
 
-constexpr float ENEMY_SPAWN_TIMER = 400.f;
+constexpr float ENEMY_SPAWN_TIMER = 100.f;
 constexpr float SLOPER_SPAWN_TIMER = 225.f;
 
 class Game
@@ -44,6 +45,7 @@ private:
 	//Enemy vector
 	std::vector<IEnemy *> enemies;
 	sf::Texture enemy_texture;
+	sf::Texture rangedEnemy_texture;
 	float enemySpawnTimer;
 
 	//Initializer functions
@@ -53,6 +55,12 @@ private:
 	//Containers for mouse position
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
+
+	void spawnRangedEnemy();
+
+	void spawnHomingEnemy();
+
+	void spawnRandomEnemy();
 
 	void updateEnemyVector();
 
