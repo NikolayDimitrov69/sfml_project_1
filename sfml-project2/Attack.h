@@ -3,13 +3,17 @@
 #include "Math.h"
 #include "Animation.h"
 
-constexpr float ATTACK_MOVE_SPEED = 7.f;
+constexpr float DEFAULT_ATTACK_MOVE_SPEED = 7.f;
 
 class Attack
 {
 private:
 	Animation frame;
 	
+	float attackMoveSpeed;
+
+	float attackScale;
+
 	//Sprite for attack
 	sf::Sprite m_Sprite;
 	
@@ -34,7 +38,7 @@ private:
 	void initVariables();
 public:
 	//Default constructor, not meant to create the attack itself, use spawn() method to create an attack
-	Attack(const sf::Texture& attack_texture);
+	Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed = DEFAULT_ATTACK_MOVE_SPEED, const float& scale = 1.f);
 
 	bool isFrameFinished() const;
 

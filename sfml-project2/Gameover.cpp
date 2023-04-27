@@ -17,6 +17,7 @@ Gameover::Gameover()
 	frame.setDimension(134, 18);
 	frame.setIdleSpeed(0.15f);
 	frame.setTextureSize(go_texture.getSize());
+	frame.setNumberOfFrames(3);
 }
 
 void Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)

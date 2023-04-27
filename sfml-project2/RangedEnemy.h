@@ -4,7 +4,7 @@
 
 constexpr float RANGED_ENEMY_SPEED = 1.f;
 constexpr float RANGED_ENEMY_DAMAGE = 10.f;
-constexpr float RANGED_ENEMY_MAX_HEALTH = 100.f;
+constexpr float RANGED_ENEMY_MAX_HEALTH = 50.f;
 constexpr float RANGED_ENEMY_ATTACK_COOLDOWN = 300.f;
 constexpr float RANGED_ENEMY_MOVING_TIMER = 400.f;
 

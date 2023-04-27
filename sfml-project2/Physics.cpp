@@ -26,7 +26,7 @@ void Physics::setVelocity_X(const float& dir_x)
 
 void Physics::setVelocity_Y(const float& y)
 {
-	if (moveVelocity.y == 0)
+	if (moveVelocity.y >= 0)
 		moveVelocity.y = -1.f * y;
 }
 

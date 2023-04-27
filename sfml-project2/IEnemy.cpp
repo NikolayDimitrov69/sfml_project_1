@@ -78,3 +78,13 @@ bool IEnemy::outOfBounds(const sf::Vector2u& targetSize)
 	}
 	return false;
 }
+
+bool IEnemy::immunityOver() const
+{
+	return immunityCoolDown >= MAX_IMMUNITY_TIMER;
+}
+
+void IEnemy::resetImmunityTimer()
+{
+	immunityCoolDown = 0.f;
+}

@@ -16,6 +16,8 @@ private:
 	int frameWidth;
 	int frameHeigth;
 
+	int numberOfFrames;
+
 	float idleSpeed;
 
 	//We want to know to size of the texture, firstly because the death animation of every entity will be at the bottom of their spritesheet
@@ -26,6 +28,8 @@ private:
 	bool finished;
 public:
 	Animation();
+
+	void setNumberOfFrames(int nframes);
 
 	bool isFinished() const;
 

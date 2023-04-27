@@ -3,10 +3,13 @@
 #include "Physics.h"
 #include "Animation.h"
 
-constexpr float ATTACK_COOLDOWN = 50.f; 
+constexpr float ATTACK_COOLDOWN = 30.f; 
 constexpr float JUMP_COOLDOWN = 1.5f; 
 constexpr float JUMP_FORCE = 9.f;
-constexpr float PLAYER_DAMAGE = 34.f;
+constexpr float PLAYER_DAMAGE = 20.f;
+constexpr float PLAYER_DOUBLE_ATTACK_TIMER = 800.f;
+constexpr unsigned PLAYER_MAX_DOUBLE_JUMPS = 3;
+constexpr float PLAYER_MIN_DOUBLE_JUMP_TIMER = 80.f;
 
 struct Playerhealth {
 	Healthbar healthbar;
@@ -37,6 +40,11 @@ private:
 
 	//The player's damage
 	float damage;
+
+	//Count of doublejumps the player has
+	unsigned doubleJumps;
+	bool doubleJumpedOnce;
+	float doubleJumpTimer;
 	
 	//Player attack, attack container and max attack counter
 	std::vector<Attack> attacks;
@@ -44,6 +52,7 @@ private:
 
 	//Player's cooldown time and max cooldown
 	float attCooldown;
+	float doubleAttCooldown;
 	
 	//Player texture and sprite
 	Animation frame;
@@ -82,8 +91,13 @@ private:
 	void applyGravity();
 	//Updates the frame
 	void updateFrame();
+	//Variable initializer
+	void initVariables(float newhealth);
 public:
+	
 	Player(const sf::Vector2u& targetSize, const sf::Texture& texture, std::string name = "newplayer", float newhealth = 10);
+
+	void heal(float amount);
 
 	const float& dealDamage() const;
 
@@ -92,6 +106,10 @@ public:
 
 	//Function for taking damage
 	void takeDamage(float);
+
+	int getDoubleJumps() const;
+
+	void gainDoubleJump();
 
 	//Gets the vector position of the player's sprite
 	const sf::Vector2f& getPostion() const;
@@ -117,6 +135,8 @@ public:
 	//updates the physics vector's Y variable;
 	void jump(const float&);
 
+	void updateTimers();
+
 	//updates the player and takes vector as an argument, which this game is the mouse position
 	void updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
 	
@@ -125,5 +145,7 @@ public:
 
 	//Check if timer is above Jump cooldown
 	bool keyPressable();
+
+	void resetDoubleAttTimer();
 };
 

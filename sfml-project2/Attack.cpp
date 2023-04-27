@@ -14,16 +14,17 @@ void Attack::initVariables() {
 	ac_state = Actionstate::NOT_SHOOTING;
 }
 
-Attack::Attack(const sf::Texture& attack_texture) : m_Direction(1), outOfBounds(false), angle(0.f)
+Attack::Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed, const float& scale) : m_Direction(1), outOfBounds(false), angle(0.f)
 {
 	initVariables();
-
+	attackMoveSpeed = nattackMoveSpeed;
 	m_Sprite.setTexture(attack_texture);
-	m_Sprite.setTextureRect(sf::IntRect(0, 0, 194, 60));
-
+	m_Sprite.setTextureRect(sf::IntRect(0, 0, attackWidth, attackHeigth));
+	attackScale = scale;
 	frame.setTextureSize(attack_texture.getSize());
-	frame.setDimension(194, 60);
+	frame.setDimension(attackWidth, attackHeigth);
 	frame.setIdleSpeed(0.03f);
+	frame.setNumberOfFrames(3);
 }
 
 bool Attack::isFrameFinished() const
@@ -71,7 +72,7 @@ void Attack::update(const sf::Vector2u& targetSize)
 {
 	if (ac_state == Actionstate::NOT_SHOOTING)
 	{
-		m_Sprite.move(ATTACK_MOVE_SPEED * shootDir);
+		m_Sprite.move(attackMoveSpeed * shootDir);
 		if (m_Sprite.getPosition().x > targetSize.x ||
 			m_Sprite.getPosition().x < 0 ||
 			m_Sprite.getPosition().y < 0 ||
@@ -89,7 +90,7 @@ bool Attack::isOutOfBounds() const
 void Attack::spawn(const sf::Sprite& sprite)
 {
 	m_Sprite.setPosition(sprite.getPosition().x, sprite.getPosition().y - m_Sprite.getLocalBounds().height / 2.f);
-	m_Sprite.setScale(m_Direction, 1);
+	m_Sprite.setScale(m_Direction * attackScale, 1 * attackScale);
 }
 
 const Actionstate& Attack::getActionState() const

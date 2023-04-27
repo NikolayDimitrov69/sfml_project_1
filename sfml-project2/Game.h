@@ -6,9 +6,11 @@
 #include "RangedEnemy.h"
 #include "Pause.h"
 #include "Gameover.h"
+#include "Item.h"
 
-constexpr float ENEMY_SPAWN_TIMER = 100.f;
-constexpr float SLOPER_SPAWN_TIMER = 225.f;
+constexpr float ENEMY_SPAWN_TIMER = 200.f;
+constexpr float SLOPE_SPAWN_TIMER = 225.f;
+constexpr float ITEM_SLOPE_SPAWN_TIMER = 1000.f;
 
 class Game
 {
@@ -42,6 +44,12 @@ private:
 	sf::Texture slope_texture;
 	float slopeSpawnTimer;
 
+	//Items things lol
+	sf::Texture heartTexture;
+	sf::Texture doubleAttTexture;
+	std::vector<Item> items;
+	float itemSlopeSpawnTimer;
+
 	//Enemy vector
 	std::vector<IEnemy *> enemies;
 	sf::Texture enemy_texture;
@@ -56,6 +64,8 @@ private:
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
 
+	void spawnItemAndItemSlope();
+
 	void spawnRangedEnemy();
 
 	void spawnHomingEnemy();
@@ -67,6 +77,12 @@ private:
 	void checkEnemyCollision(const size_t& i);
 
 	void renderEnemyVector();
+
+	void spawnSlope();
+
+	void updateItemsAndItemSlopes();
+
+	void renderItemsAndItemSlopes();
 
 	void updateSlopeVector();
 
@@ -92,6 +108,8 @@ private:
 
 	void renderText();
 
+	void applyItemEffect(Itemspec spec);
+
 	//Clears all vectors
 	void clearVectors();
 
@@ -101,7 +119,7 @@ public:
 	
 	Game();
 
-	//Will render different types of menus if any, based on current game state
+	//Will render different types of menus, based on current game state
 	void renderMenu();
 
 	void updateMenu();

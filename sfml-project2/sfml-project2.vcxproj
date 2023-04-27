@@ -157,6 +157,7 @@
     <ClCompile Include="Gameover.cpp" />
     <ClCompile Include="Healthbar.cpp" />
     <ClCompile Include="IEnemy.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Pause.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Gameover.h" />
     <ClInclude Include="Healthbar.h" />
     <ClInclude Include="IEnemy.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Pause.h" />
     <ClInclude Include="Physics.h" />

@@ -3,6 +3,8 @@
 #include "Healthbar.h"
 #include "Math.h"
 
+constexpr float MAX_IMMUNITY_TIMER = 0.f;
+
 class IEnemy
 {
 protected:
@@ -12,6 +14,8 @@ protected:
 
 	Movementstate state;
 	Actionstate ac_state;
+
+	float immunityCoolDown;
 
 	Animation frame;
 	sf::Sprite sprite;
@@ -45,6 +49,10 @@ public:
 	const sf::FloatRect& getGlobalBounds() const;
 
 	bool outOfBounds(const sf::Vector2u& targetSize);
+
+	bool immunityOver() const;
+
+	void resetImmunityTimer();
 
 	virtual bool attackHasHit(const sf::FloatRect& object) = 0;
 

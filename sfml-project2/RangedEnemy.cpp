@@ -6,7 +6,7 @@ void RangedEnemy::createAttack(const sf::Vector2f& playerpos)
 	if (attackCooldown >= RANGED_ENEMY_ATTACK_COOLDOWN)
 	{
 		attackCooldown = 0.f;
-		Attack attack(attackTexture);
+		Attack attack(attackTexture, 10, 10, 4.f, 7.f);
 		attack.setShootDir(playerpos, sprite.getPosition());
 		attack.changeDirection(playerpos.x < sprite.getPosition().x ? -1 : 1);
 		attack.spawn(sprite);
@@ -16,7 +16,8 @@ void RangedEnemy::createAttack(const sf::Vector2f& playerpos)
 
 RangedEnemy::RangedEnemy(const sf::Texture& texture)
 {
-	attackTexture.loadFromFile("IMAGES/megaman_attack.png");
+	immunityCoolDown = MAX_IMMUNITY_TIMER;
+	attackTexture.loadFromFile("IMAGES/ranged_skull_attack.png");
 	attackCooldown = 0.f;
 	state = Movementstate::MOVING;
 	ac_state = Actionstate::NOT_SHOOTING;
@@ -27,6 +28,7 @@ RangedEnemy::RangedEnemy(const sf::Texture& texture)
 	sprite.setTextureRect(sf::IntRect(0, 0, 50, 32));
 	sprite.setScale(-3.f, 3.f);
 	sprite.setOrigin(sprite.getLocalBounds().width / 1.5f, sprite.getLocalBounds().height / 2.f);
+	frame.setNumberOfFrames(3);
 	frame.setDimension(50, 32);
 	frame.setIdleSpeed(0.075f);
 }
@@ -60,6 +62,7 @@ void RangedEnemy::updateDirection()
 void RangedEnemy::updateTimers()
 {
 	attackCooldown += 1.f;
+	immunityCoolDown += 1.f;
 	if (movingTimer != -1.f)
 		movingTimer += 1.f;
 }
@@ -101,10 +104,10 @@ void RangedEnemy::renderAttack(sf::RenderTarget& target)
 
 void RangedEnemy::render(sf::RenderTarget& target)
 {
-	renderAttack(target);
 	target.draw(sprite);
 	if (ac_state != Actionstate::DYING)
 	{
+		renderAttack(target);
 		healthbar.render(target);
 	}
 }

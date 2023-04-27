@@ -8,6 +8,11 @@ Animation::Animation()
 	animTimer.restart();
 }
 
+void Animation::setNumberOfFrames(int nframes)
+{
+	numberOfFrames = nframes;
+}
+
 bool Animation::isFinished() const
 {
 	return restarted && finished;
@@ -55,7 +60,7 @@ void Animation::setIdleSpeed(float speed)
 void Animation::updateIdle()
 {
 	currentFrame.top = 0;
-	IterateFrames(idleSpeed, 3.f);
+	IterateFrames(idleSpeed, numberOfFrames);
 }
 
 void Animation::updateDying()
@@ -67,37 +72,37 @@ void Animation::updateDying()
 		currentFrame.left = 0.f;
 		restarted = true;		
 	}
-	IterateFrames(0.15f, 3.f);
+	IterateFrames(0.15f, numberOfFrames);
 }
 
 void Animation::updateMoving()
 {
 	currentFrame.top = frameHeigth;
-	IterateFrames(0.1f, 3.f);
+	IterateFrames(0.1f, numberOfFrames);
 }
 
 void Animation::updateShooting()
 {
 	currentFrame.top = frameHeigth * 2;
-	IterateFrames(0.08f, 3.f);
+	IterateFrames(0.08f, numberOfFrames);
 }
 
 void Animation::updateShootingMoving()
 {
 	currentFrame.top = frameHeigth * 3;
-	IterateFrames(0.1f, 3.f);
+	IterateFrames(0.1f, numberOfFrames);
 }
 
 void Animation::updateJumping()
 {
 	currentFrame.top = frameHeigth * 4;
-	IterateFrames(0.3f, 3.f);
+	IterateFrames(0.3f, numberOfFrames);
 }
 
 void Animation::updateJumpingShooting()
 {
 	currentFrame.top = frameHeigth * 5;
-	IterateFrames(0.3f, 3.f);
+	IterateFrames(0.3f, numberOfFrames);
 }
 
 void Animation::update(const Movementstate& mv_state, const Actionstate& ac_state)
