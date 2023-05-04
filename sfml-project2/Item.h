@@ -1,6 +1,6 @@
 #pragma once
 #include "Animation.h"
-enum Itemspec {HEAL = 0, DOUBLE_ATTACK};
+enum Itemspec {HEAL = 0, DOUBLE_ATTACK, DOUBLE_JUMP, BOOST_ATTACK};
 
 class Item
 {

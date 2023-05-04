@@ -32,7 +32,7 @@ Gamestate Pause::update(const sf::RenderTarget& rendertarget, const sf::Vector2f
 		if (resume_sprite.getGlobalBounds().contains(mousePos))
 			return Gamestate::PLAYING;
 		if (quit_sprite.getGlobalBounds().contains(mousePos))
-			return Gamestate::QUIT;
+			return Gamestate::HOME;
 		if (restart_sprite.getGlobalBounds().contains(mousePos))
 			return Gamestate::RESTART;
 	}

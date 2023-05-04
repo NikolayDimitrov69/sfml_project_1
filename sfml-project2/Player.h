@@ -6,13 +6,14 @@
 constexpr float ATTACK_COOLDOWN = 30.f; 
 constexpr float JUMP_COOLDOWN = 1.5f; 
 constexpr float JUMP_FORCE = 9.f;
-constexpr float PLAYER_DAMAGE = 20.f;
+constexpr float PLAYER_DAMAGE = 30.f;
 constexpr float PLAYER_DOUBLE_ATTACK_TIMER = 800.f;
 constexpr unsigned PLAYER_MAX_DOUBLE_JUMPS = 3;
-constexpr float PLAYER_MIN_DOUBLE_JUMP_TIMER = 80.f;
+constexpr float PLAYER_MIN_DOUBLE_JUMP_TIMER = 60.f;
+constexpr float PLAYER_BOOST_ATTACK_TIMER = 800.f;
 
 struct Playerhealth {
-	Healthbar healthbar;
+	Bar healthbar;
 	float m_Health;
 	float currentHealth;
 };
@@ -26,11 +27,13 @@ private:
 	//Current physics state, so the physic class knows which physic to apply to the player
 	Physicstate physicstate;
 
-	//Keeps a track of the player's action state, for now it only check whether the player is shooting or not
+	//Keeps a track of the player's action state
 	Actionstate actionstate;
 
 	//Player physics
 	Physics playerphysics;
+
+	float attackCooldown;
 
 	//Player name
 	std::string m_Name;
@@ -52,6 +55,7 @@ private:
 
 	//Player's cooldown time and max cooldown
 	float attCooldown;
+	float boostAttackTimer;
 	float doubleAttCooldown;
 	
 	//Player texture and sprite
@@ -79,9 +83,10 @@ private:
 	void TurnLeft();
 	void TurnRight();
 
+	void updateAttackCooldown();
 	//Updaters
 	void updateAttack(const sf::Vector2u& targetSize);
-	//Updates the player's healthbar sprite
+	//Updates the player's Bar sprite
 	void updateHealth();
 	//Updates the input taking in the mouse position as an argument
 	void updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
@@ -137,6 +142,8 @@ public:
 
 	void updateTimers();
 
+	void resetBoostTimer();
+
 	//updates the player and takes vector as an argument, which this game is the mouse position
 	void updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
 	
@@ -147,5 +154,9 @@ public:
 	bool keyPressable();
 
 	void resetDoubleAttTimer();
+
+	float getDoubleAttackTimer() const;
+
+	float getBoostAttackTimer() const;
 };
 

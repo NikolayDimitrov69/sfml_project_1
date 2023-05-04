@@ -5,6 +5,7 @@ void Player::initPlayerHealth()
 {
 	health.m_Health = 100.f;
 	health.currentHealth = health.m_Health;
+	health.healthbar.setSize(m_Sprite.getGlobalBounds().width, 6.f);
 }
 
 void Player::initSprite(const sf::Texture& texture, const sf::Vector2u& targetSize)
@@ -27,6 +28,8 @@ void Player::initAttack()
 
 void Player::initVariables(float newhealth)
 {
+	boostAttackTimer = PLAYER_BOOST_ATTACK_TIMER;
+	attackCooldown = ATTACK_COOLDOWN;
 	doubleJumpTimer = 0.f;
 	doubleJumpedOnce = false;
 	doubleJumps = 0;
@@ -97,7 +100,8 @@ int Player::getDoubleJumps() const
 
 void Player::gainDoubleJump()
 {
-	doubleJumps += 1;
+	if (doubleJumps <= PLAYER_MAX_DOUBLE_JUMPS)
+		doubleJumps += 1;
 }
 
 const float& Player::getMaxHealth() const
@@ -130,6 +134,19 @@ void Player::TurnRight()
 {
 	if (m_Sprite.getScale().x < 0)
 		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
+}
+
+void Player::updateAttackCooldown()
+{
+	if (boostAttackTimer < PLAYER_BOOST_ATTACK_TIMER)
+	{
+		attackCooldown = ATTACK_COOLDOWN / 2;
+	}
+	else
+	{
+		attackCooldown = ATTACK_COOLDOWN;
+	}
+
 }
 
 void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
@@ -200,7 +217,7 @@ void Player::updateHealth()
 
 void Player::createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
-	if (attCooldown >= ATTACK_COOLDOWN && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
+	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
 		Attack attack(attack_texture, 194, 60);
@@ -213,7 +230,7 @@ void Player::createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u
 
 void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
-	if (attCooldown >= ATTACK_COOLDOWN && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
+	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
 		Attack attack(attack_texture, 194, 60);
@@ -299,6 +316,7 @@ void Player::updateTimers()
 	timer += 1.f;
 	attCooldown += 1.f;
 	doubleAttCooldown += 1.f;
+	boostAttackTimer += 1.f;
 
 	if (physicstate == Physicstate::MID_AIR)
 	{
@@ -310,8 +328,14 @@ void Player::updateTimers()
 	}
 }
 
+void Player::resetBoostTimer()
+{
+	boostAttackTimer = 0.f;
+}
+
 void Player::updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
+	updateAttackCooldown();
 	updateTimers();
 	updateHealth();
 	updateAttack(targetSize);
@@ -332,9 +356,9 @@ const Physicstate& Player::getPhysState() const
 
 void Player::renderPlayer(sf::RenderTarget& target)
 {
-	renderHealth(target);
 	renderSprite(target);
 	renderAttack(target);
+	renderHealth(target);
 }
 
 bool Player::keyPressable()
@@ -349,6 +373,16 @@ bool Player::keyPressable()
 void Player::resetDoubleAttTimer()
 {
 	doubleAttCooldown = 0.f;
+}
+
+float Player::getDoubleAttackTimer() const
+{
+	return doubleAttCooldown;
+}
+
+float Player::getBoostAttackTimer() const
+{
+	return boostAttackTimer;
 }
 
 

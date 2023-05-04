@@ -1,6 +1,12 @@
 #include "precompheaders.h"
 #include "Game.h"
 
+void Game::initMenus()
+{
+	go_window.setTexture(gameoverTexture, 3, 7.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
+	home_window.setTexture(homeTexture, 1, 5.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.f));
+}
+
 void Game::initWindow()
 {
 	videomode = sf::VideoMode(1600, 800);
@@ -15,6 +21,31 @@ void Game::initPlayer()
 		delete player;
 	}
 	player = new Player(window->getSize(), player_texture);
+}
+
+void Game::initProgressBar()
+{
+	progressBar.setSize(window->getSize().x / 2.f, 20.f);
+	progressBar.setPosition(sf::Vector2f(window->getSize().x/ 4.f, 25));
+}
+
+void Game::setupItemEffectBar(ItemEffectBar& ieb, sf::Texture& texture, float verticalPos)
+{
+	ieb.sprite.setTexture(texture);
+	ieb.sprite.setTextureRect(sf::IntRect(0, 0, texture.getSize().x / 4.f, texture.getSize().y));
+	ieb.sprite.setScale(5.f, 5.f);
+	ieb.sprite.setPosition(0.f,verticalPos);
+	ieb.barTimer.setPosition(sf::Vector2f(ieb.sprite.getPosition().x +
+		ieb.sprite.getGlobalBounds().width,
+		ieb.sprite.getPosition().y +
+		ieb.sprite.getGlobalBounds().height / 4.f));
+	ieb.barTimer.setSize(150.f, 20.f);
+}
+
+void Game::initItemEffectBar()
+{
+	setupItemEffectBar(player_doubleAttackTimer, doubleAttTexture, window->getSize().y / 3.f);
+	setupItemEffectBar(player_boostAttackTimer, boostAttack, window->getSize().y / 3.f + boostAttack.getSize().y * 5.f);
 }
 
 void Game::updateMousePosition()
@@ -36,6 +67,27 @@ void Game::spawnSlope()
 	slopeSpawnTimer = 0.f;
 }
 
+void Game::updateItemEffectBar()
+{
+	player_doubleAttackTimer.barTimer.updateStatic(PLAYER_DOUBLE_ATTACK_TIMER, PLAYER_DOUBLE_ATTACK_TIMER - player->getDoubleAttackTimer());
+	player_boostAttackTimer.barTimer.updateStatic(PLAYER_BOOST_ATTACK_TIMER, PLAYER_BOOST_ATTACK_TIMER - player->getBoostAttackTimer());
+}
+
+void Game::renderItemEffectBar()
+{
+	if (player->getDoubleAttackTimer() <= PLAYER_DOUBLE_ATTACK_TIMER && gamestate == Gamestate::PLAYING)
+	{
+		player_doubleAttackTimer.barTimer.render(*window);
+		window->draw(player_doubleAttackTimer.sprite);
+	}
+	if (player->getBoostAttackTimer() <= PLAYER_BOOST_ATTACK_TIMER && gamestate == Gamestate::PLAYING)
+	{
+		player_boostAttackTimer.barTimer.render(*window);
+		window->draw(player_boostAttackTimer.sprite);
+	}
+	
+}
+
 void Game::spawnItemAndItemSlope()
 {
 	Slope slope(slope_texture);
@@ -44,11 +96,15 @@ void Game::spawnItemAndItemSlope()
 	
 	Item item;
 
-	switch (rand() % 2)
+	switch (rand() % 4)
 	{
 	case 0: item = Item(heartTexture, Itemspec::HEAL, 0.5f);
 		break;
 	case 1: item = Item(doubleAttTexture, Itemspec::DOUBLE_ATTACK, 0.5f);
+		break;
+	case 2: item = Item(doubleJumpTexture, Itemspec::DOUBLE_JUMP, 0.5f);
+		break;
+	case 3: item = Item(boostAttack, Itemspec::BOOST_ATTACK, 0.5f);
 		break;
 	default:
 		break;
@@ -76,9 +132,13 @@ void Game::applyItemEffect(Itemspec spec)
 {
 	switch (spec)
 	{
-	case HEAL: player->heal(20);
+	case HEAL: player->heal(20); points += 2;
 		break;
-	case DOUBLE_ATTACK: player->resetDoubleAttTimer();
+	case DOUBLE_ATTACK: player->resetDoubleAttTimer(); points += 4;
+		break;
+	case DOUBLE_JUMP: player->gainDoubleJump(); points += 5;
+		break;
+	case BOOST_ATTACK: player->resetBoostTimer(); points += 2;
 		break;
 	default:
 		break;
@@ -99,7 +159,6 @@ void Game::updateItemsAndItemSlopes()
 		if (items[i].getGlobalBounds().intersects(player->getGlobalBounds()))
 		{
 			applyItemEffect(items[i].getItemSpec());
-			points += 3.f;
 			items.erase(items.begin() + i);
 		}
 	}
@@ -207,6 +266,7 @@ void Game::checkEnemyCollision(const size_t& i)
 		enemies[i]->resetImmunityTimer();
 		if (enemies[i]->getCurrentHP() <= 0) {
 			points++;
+			currentProgress += 3.f;
 			enemies[i]->setActionState(Actionstate::DYING);
 		}
 	}
@@ -237,7 +297,7 @@ void Game::pollEvents()
 			gamestate = Gamestate::QUIT;
 			break;
 		case sf::Event::KeyPressed:
-			if (event.key.code == sf::Keyboard::Escape && gamestate != Gamestate::PAUSED) 
+			if (event.key.code == sf::Keyboard::Escape && gamestate == Gamestate::PLAYING) 
 				gamestate = Gamestate::PAUSED; 
 			else if (event.key.code == sf::Keyboard::Escape && gamestate == Gamestate::PAUSED) 
 				gamestate = Gamestate::PLAYING;
@@ -273,14 +333,20 @@ void Game::initTextures()
 	rangedEnemy_texture.loadFromFile("IMAGES/ranged_skull.png");
 	heartTexture.loadFromFile("IMAGES/heart.png");
 	doubleAttTexture.loadFromFile("IMAGES/double_attack.png");
+	doubleJumpTexture.loadFromFile("IMAGES/double_jump.png");
+	boostAttack.loadFromFile("IMAGES/boost_attack.png");
+	gameoverTexture.loadFromFile("IMAGES/gameover.png");
+	homeTexture.loadFromFile("IMAGES/home_screen.png");
 }
 
 void Game::initVariables()
 {
+	currentProgress = 0.f;
+	maxProgress = 250.f;
 	points = 0;
 	previous_pos.x = -1.f;
 	background.setScale(sf::Vector2f(1.f, 0.8f));
-	gamestate = Gamestate::PAUSED;
+	gamestate = Gamestate::HOME;
 	enemySpawnTimer = 0.f;
 	slopeSpawnTimer = 0.f;
 	itemSlopeSpawnTimer = 0.f;
@@ -336,7 +402,10 @@ Game::Game()
 	initText();
 	initVariables();
 	initPlayer();	
+	initItemEffectBar();
 	initSpawnSlope();
+	initProgressBar();
+	initMenus();
 }
 
 void Game::updateMenu()
@@ -344,7 +413,9 @@ void Game::updateMenu()
 	if (gamestate == Gamestate::PAUSED)
 		gamestate = pause_window.update(*window, mousePosView);
 	if (gamestate == Gamestate::OVER)
-		go_window.update(mousePosView, window->getSize());
+		gamestate = go_window.update(mousePosView, window->getSize(), OVER);
+	if (gamestate == Gamestate::HOME)
+		gamestate = home_window.update(mousePosView, window->getSize(), HOME);
 }
 
 void Game::renderMenu()
@@ -353,6 +424,8 @@ void Game::renderMenu()
 		pause_window.render(*window);
 	if (gamestate == Gamestate::OVER)
 		go_window.render(*window);
+	if (gamestate == Gamestate::HOME)
+		home_window.render(*window);
 }
 
 void Game::updatePlayer()
@@ -363,20 +436,36 @@ void Game::updatePlayer()
 	}
 }
 
+void Game::updateProgress()
+{
+	currentProgress += PROGRESSION_PER_FRAME;
+	progressBar.updateStatic(maxProgress, currentProgress);
+}
+
 void Game::update()
 {
 	pollEvents();
 	updateMenu();
 	updateMousePosition();
+	updateItemEffectBar();
 
 	if (gamestate == Gamestate::QUIT)
 		window->close();
 
-	if (gamestate == Gamestate::RESTART)
+	if (gamestate == Gamestate::RESTART) {
 		restartGame();
+		gamestate = Gamestate::PLAYING;
+	}
 	
+	if (gamestate == Gamestate::HOME)
+	{
+		restartGame();
+		gamestate = Gamestate::HOME;
+	}
+
 	if (gamestate == Gamestate::PLAYING)
 	{
+		updateProgress();
 		checkCollision();
 		updateSlopeVector();
 		updateItemsAndItemSlopes();
@@ -392,20 +481,25 @@ void Game::render()
 	window->clear(sf::Color::White);
 
 	background.render(*window);
+	
+	renderItemEffectBar();
 
-	renderItemsAndItemSlopes();
+	if (gamestate != HOME) {
+		renderItemsAndItemSlopes();
 
-	renderSlopeVector();
+		renderSlopeVector();
 
-	renderEnemyVector();
+		renderEnemyVector();
 
-	player->renderPlayer(*window);
-
-	if(gamestate !=  Gamestate::MENU)
+		player->renderPlayer(*window);
+	}
+	if (gamestate == Gamestate::PLAYING) {
 		renderText();
+		progressBar.render(*window);
+	}
 
 	renderMenu();
-	
+
 	window->display();
 }
 

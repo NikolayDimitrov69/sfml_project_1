@@ -155,11 +155,12 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gameover.cpp" />
-    <ClCompile Include="Healthbar.cpp" />
+    <ClCompile Include="Bar.cpp" />
     <ClCompile Include="IEnemy.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -183,10 +184,11 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gameover.h" />
-    <ClInclude Include="Healthbar.h" />
+    <ClInclude Include="Bar.h" />
     <ClInclude Include="IEnemy.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Math.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Pause.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />

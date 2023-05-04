@@ -1,6 +1,6 @@
 #pragma once
 
-enum Gamestate { MENU = 0, PLAYING, PAUSED, OVER, RESTART, QUIT};
+enum Gamestate { MENU = 0, PLAYING, PAUSED, OVER, STAGE_COMPLETE, HOME, RESTART, QUIT};
 
 class Pause
 {

@@ -28,6 +28,7 @@ RangedEnemy::RangedEnemy(const sf::Texture& texture)
 	sprite.setTextureRect(sf::IntRect(0, 0, 50, 32));
 	sprite.setScale(-3.f, 3.f);
 	sprite.setOrigin(sprite.getLocalBounds().width / 1.5f, sprite.getLocalBounds().height / 2.f);
+	healthbar.setSize(sprite.getGlobalBounds().width, 6.f);
 	frame.setNumberOfFrames(3);
 	frame.setDimension(50, 32);
 	frame.setIdleSpeed(0.075f);
@@ -71,9 +72,9 @@ void RangedEnemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targ
 {
 	updateDirection();
 
-	updateAngle(playerpos);
-
 	updateTimers();
+
+	updateAngle(playerpos);
 
 	if (movingTimer >= RANGED_ENEMY_MOVING_TIMER)
 	{

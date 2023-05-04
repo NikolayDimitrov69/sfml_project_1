@@ -1,6 +1,6 @@
 #pragma once
 #include "Animation.h"
-#include "Healthbar.h"
+#include "Bar.h"
 #include "Math.h"
 
 constexpr float MAX_IMMUNITY_TIMER = 0.f;
@@ -8,7 +8,7 @@ constexpr float MAX_IMMUNITY_TIMER = 0.f;
 class IEnemy
 {
 protected:
-	Healthbar healthbar;
+	Bar healthbar;
 	float maxHP;
 	float currentHP;
 

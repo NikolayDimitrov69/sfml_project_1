@@ -4,19 +4,32 @@
 #include "Background.h"
 #include "Enemy.h"
 #include "RangedEnemy.h"
-#include "Pause.h"
 #include "Gameover.h"
 #include "Item.h"
 
 constexpr float ENEMY_SPAWN_TIMER = 200.f;
 constexpr float SLOPE_SPAWN_TIMER = 225.f;
 constexpr float ITEM_SLOPE_SPAWN_TIMER = 1000.f;
+constexpr float PROGRESSION_PER_FRAME = 0.01f;
+
+struct ItemEffectBar {
+	sf::Sprite sprite;
+	Bar barTimer;
+};
 
 class Game
 {
 private:
 	sf::Font font;
 	sf::Text uiText;
+
+	float currentProgress;
+	float maxProgress;
+
+	ItemEffectBar player_doubleAttackTimer;
+	ItemEffectBar player_boostAttackTimer;
+
+	Bar progressBar;
 
 	unsigned int points;
 
@@ -28,6 +41,8 @@ private:
 	Pause pause_window;
 
 	Gameover go_window;
+
+	Gameover home_window;
 
 	Gamestate gamestate;
 
@@ -44,9 +59,14 @@ private:
 	sf::Texture slope_texture;
 	float slopeSpawnTimer;
 
+	sf::Texture gameoverTexture;
+	sf::Texture homeTexture;
+
 	//Items things lol
 	sf::Texture heartTexture;
 	sf::Texture doubleAttTexture;
+	sf::Texture doubleJumpTexture;
+	sf::Texture boostAttack;
 	std::vector<Item> items;
 	float itemSlopeSpawnTimer;
 
@@ -57,12 +77,20 @@ private:
 	float enemySpawnTimer;
 
 	//Initializer functions
+	void initMenus();
 	void initWindow();
 	void initPlayer();
+	void initProgressBar();
+	void setupItemEffectBar(ItemEffectBar& ieb,sf::Texture& texture, float verticalPos);
+	void initItemEffectBar();
 
 	//Containers for mouse position
 	sf::Vector2i mousePosWindow;
 	sf::Vector2f mousePosView;
+
+	void updateItemEffectBar();
+
+	void renderItemEffectBar();
 
 	void spawnItemAndItemSlope();
 
@@ -125,6 +153,8 @@ public:
 	void updateMenu();
 
 	void updatePlayer();
+
+	void updateProgress();
 
 	void update();
 
