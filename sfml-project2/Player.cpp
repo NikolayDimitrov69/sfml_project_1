@@ -65,6 +65,11 @@ const float& Player::dealDamage() const
 	return damage;
 }
 
+void Player::parentTo(float speed)
+{
+	playerphysics.setVelocity_Y(speed);
+}
+
 bool Player::attackHasHit(const sf::FloatRect& enemyBounds)
 {
 	for (size_t i = 0; i < attacks.size(); i++)
@@ -184,7 +189,6 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 	{
 		doubleJumpedOnce = true;
 		jump(JUMP_FORCE);
-		std::cout << "double jumped!\n";
 		doubleJumpTimer = 0.f;
 		doubleJumps--;
 	}

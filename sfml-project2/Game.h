@@ -44,6 +44,8 @@ private:
 
 	Gameover home_window;
 
+	Gameover stage_complete_window;
+
 	Gamestate gamestate;
 
 	//Player pointer
@@ -61,6 +63,7 @@ private:
 
 	sf::Texture gameoverTexture;
 	sf::Texture homeTexture;
+	sf::Texture stageCompleteTexture;
 
 	//Items things lol
 	sf::Texture heartTexture;

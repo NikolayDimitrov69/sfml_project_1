@@ -106,6 +106,8 @@ public:
 
 	const float& dealDamage() const;
 
+	void parentTo(float speed);
+
 	//Iterates the attack vector and removes the attack which has hit an enemy, meant to be used by the game class each frame
 	bool attackHasHit(const sf::FloatRect&);
 

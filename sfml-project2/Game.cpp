@@ -5,6 +5,7 @@ void Game::initMenus()
 {
 	go_window.setTexture(gameoverTexture, 3, 7.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
 	home_window.setTexture(homeTexture, 1, 5.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.f));
+	stage_complete_window.setTexture(stageCompleteTexture, 1, 8.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
 }
 
 void Game::initWindow()
@@ -337,6 +338,7 @@ void Game::initTextures()
 	boostAttack.loadFromFile("IMAGES/boost_attack.png");
 	gameoverTexture.loadFromFile("IMAGES/gameover.png");
 	homeTexture.loadFromFile("IMAGES/home_screen.png");
+	stageCompleteTexture.loadFromFile("IMAGES/stage_complete.png");
 }
 
 void Game::initVariables()
@@ -381,7 +383,12 @@ void Game::renderText()
 
 void Game::clearVectors()
 {
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		delete enemies[i];
+	}
 	enemies.clear();
+	
 	slopes.clear();
 	items.clear();
 }
@@ -416,6 +423,8 @@ void Game::updateMenu()
 		gamestate = go_window.update(mousePosView, window->getSize(), OVER);
 	if (gamestate == Gamestate::HOME)
 		gamestate = home_window.update(mousePosView, window->getSize(), HOME);
+	if (gamestate == Gamestate::STAGE_COMPLETE)
+		gamestate = stage_complete_window.update(mousePosView, window->getSize(), STAGE_COMPLETE);
 }
 
 void Game::renderMenu()
@@ -426,6 +435,8 @@ void Game::renderMenu()
 		go_window.render(*window);
 	if (gamestate == Gamestate::HOME)
 		home_window.render(*window);
+	if (gamestate == Gamestate::STAGE_COMPLETE)
+		stage_complete_window.render(*window);
 }
 
 void Game::updatePlayer()
@@ -440,6 +451,10 @@ void Game::updateProgress()
 {
 	currentProgress += PROGRESSION_PER_FRAME;
 	progressBar.updateStatic(maxProgress, currentProgress);
+	if (currentProgress >= maxProgress)
+	{
+		gamestate = Gamestate::STAGE_COMPLETE;
+	}
 }
 
 void Game::update()
@@ -512,4 +527,8 @@ Game::~Game()
 {
 	delete player;
 	delete window;
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		delete enemies[i];
+	}
 }

@@ -34,7 +34,7 @@ void Gameover::setTexture(const sf::Texture& texture, unsigned frames, float sca
 	frame.setIdleSpeed(0.15f);
 	frame.setTextureSize(texture.getSize());
 	frame.setNumberOfFrames(frames);
-	click_sprite.setPosition(go_sprite.getPosition().x, go_sprite.getPosition().y + click_sprite.getGlobalBounds().height * 3.f);
+	click_sprite.setPosition(go_sprite.getPosition().x, go_sprite.getPosition().y + click_sprite.getGlobalBounds().height * 3.5f);
 }
 
 Gamestate Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, Gamestate state)
@@ -44,9 +44,11 @@ Gamestate Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& tar
 	{
 		pressTimer = 0.f;
 		if (state == Gamestate::OVER)
-			return  Gamestate::PAUSED;
+			return  Gamestate::HOME;
 		if (state == Gamestate::HOME)
 			return  Gamestate::PLAYING;
+		if (state == Gamestate::STAGE_COMPLETE)
+			return Gamestate::HOME;
 	}
 	updateFrame();
 	return state;

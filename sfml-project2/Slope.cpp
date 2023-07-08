@@ -52,6 +52,11 @@ void Slope::setRandomVertPos(const sf::Vector2u& targetSize, sf::Vector2f& prev_
 	prev_pos = slopeSprite.getPosition();
 }
 
+float Slope::getFallSpeed() const
+{
+	return fallSpeed;
+}
+
 void Slope::setFallSpeed(const float& newSpeed)
 {
 	fallSpeed = newSpeed;
