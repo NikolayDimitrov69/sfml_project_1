@@ -2,9 +2,13 @@
 #include "Animation.h"
 
 Animation::Animation()
+	: restarted(false)
+	, finished(false)
+	, idleSpeed(0.f)
+	, frameHeigth(0)
+	, frameWidth(0)
+	, numberOfFrames(0)
 {
-	restarted = false;
-	finished = false;
 	animTimer.restart();
 }
 
@@ -105,21 +109,21 @@ void Animation::updateJumpingShooting()
 	IterateFrames(0.3f, numberOfFrames);
 }
 
-void Animation::update(const Movementstate& mv_state, const Actionstate& ac_state)
+void Animation::update(const EMovementState& mv_state, const EActionState& ac_state)
 {
-	if (ac_state == Actionstate::DYING)
+	if (ac_state == EActionState::DYING)
 		updateDying();
-	else if (mv_state == Movementstate::IDLE)
+	else if (mv_state == EMovementState::IDLE)
 		updateIdle();
-	else if (mv_state == Movementstate::MOVING)
+	else if (mv_state == EMovementState::MOVING)
 		updateMoving();
-	if (ac_state == Actionstate::SHOOTING && mv_state == Movementstate::IDLE)
+	if (ac_state == EActionState::SHOOTING && mv_state == EMovementState::IDLE)
 		updateShooting();
-	else if (ac_state == Actionstate::SHOOTING && mv_state == Movementstate::MOVING)
+	else if (ac_state == EActionState::SHOOTING && mv_state == EMovementState::MOVING)
 		updateShootingMoving();
-	if ((mv_state == Movementstate::JUMPING || mv_state == Movementstate::FALLING) && ac_state != Actionstate::SHOOTING)
+	if ((mv_state == EMovementState::JUMPING || mv_state == EMovementState::FALLING) && ac_state != EActionState::SHOOTING)
 		updateJumping();
-	else if ((mv_state == Movementstate::JUMPING || mv_state == Movementstate::FALLING) && ac_state == Actionstate::SHOOTING)
+	else if ((mv_state == EMovementState::JUMPING || mv_state == EMovementState::FALLING) && ac_state == EActionState::SHOOTING)
 		updateJumpingShooting();
 }
 

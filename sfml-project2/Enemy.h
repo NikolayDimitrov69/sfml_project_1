@@ -1,10 +1,6 @@
 #pragma once
 #include "IEnemy.h"
 
-constexpr float ENEMY_SPEED = 1.5f;
-constexpr float ENEMY_DAMAGE = 20.f;
-constexpr float ENEMY_MAX_HEALTH = 100.f;
-
 class Enemy : public IEnemy
 {	
 public:

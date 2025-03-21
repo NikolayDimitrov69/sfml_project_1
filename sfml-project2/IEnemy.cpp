@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "IEnemy.h"
+#include "Constants.h"
 
 void IEnemy::updateFrame()
 {
@@ -18,12 +19,12 @@ bool IEnemy::isFrameFinished() const
 	return frame.isFinished();
 }
 
-const Actionstate& IEnemy::getActionstate()
+const EActionState& IEnemy::getActionstate()
 {
 	return ac_state;
 }
 
-void IEnemy::setActionState(const Actionstate& state)
+void IEnemy::setActionState(const EActionState& state)
 {
 	ac_state = state;
 }
@@ -81,7 +82,7 @@ bool IEnemy::outOfBounds(const sf::Vector2u& targetSize)
 
 bool IEnemy::immunityOver() const
 {
-	return immunityCoolDown >= MAX_IMMUNITY_TIMER;
+	return immunityCoolDown >= ENEMY_MAX_IMMUNITY_TIMER;
 }
 
 void IEnemy::resetImmunityTimer()

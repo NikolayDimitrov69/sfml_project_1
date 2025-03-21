@@ -1,12 +1,5 @@
 #pragma once
-
-//Playerstate will be used to easily track what the player is currently doing, will be useful with animations
-enum Movementstate { IDLE = 0, MOVING, JUMPING, FALLING, NONE };
-
-//Although it might seems like a boolean at first, this action state is made so that new actions can easily be added in the future
-enum Actionstate { SHOOTING = 0, NOT_SHOOTING, DYING };
-
-enum Physicstate { MID_AIR = 0, ON_GROUND, ON_SLOPE };
+#include "Enums.h"
 
 class Animation
 {
@@ -61,6 +54,6 @@ public:
 	void setDimension(int, int);
 
 	//Updater that updates the frame based on the movement and action states of an entity
-	void update(const Movementstate&, const Actionstate&);
+	void update(const EMovementState&, const EActionState&);
 };
 

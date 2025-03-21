@@ -187,7 +187,9 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="Background.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gameover.h" />
     <ClInclude Include="Bar.h" />

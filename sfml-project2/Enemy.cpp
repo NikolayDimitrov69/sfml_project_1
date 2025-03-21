@@ -1,12 +1,13 @@
 #include "precompheaders.h"
 #include "Enemy.h"
+#include "Constants.h"
 
 
 Enemy::Enemy(const sf::Texture& texture)
 {
-	immunityCoolDown = MAX_IMMUNITY_TIMER;
-	state = Movementstate::IDLE;
-	ac_state = Actionstate::NOT_SHOOTING;
+	immunityCoolDown = ENEMY_MAX_IMMUNITY_TIMER;
+	state = EMovementState::IDLE;
+	ac_state = EActionState::NOT_SHOOTING;
 	damage = ENEMY_DAMAGE;
 	maxHP = ENEMY_MAX_HEALTH;
 	currentHP = maxHP;
@@ -25,7 +26,7 @@ void Enemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize
 	immunityCoolDown += 1.f;
 
 	//Enemy stops moving when dying
-	if (ac_state == Actionstate::NOT_SHOOTING) {
+	if (ac_state == EActionState::NOT_SHOOTING) {
 		direction = normalize(playerpos - sprite.getPosition());
 		angle = findAngleCos(sprite.getPosition(), playerpos);
 		if (playerpos.y > sprite.getPosition().y)
@@ -41,7 +42,7 @@ void Enemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize
 void Enemy::render(sf::RenderTarget& renderTarget)
 {
 	renderTarget.draw(sprite);
-	if (ac_state == Actionstate::NOT_SHOOTING)
+	if (ac_state == EActionState::NOT_SHOOTING)
 	{
 		healthbar.render(renderTarget);
 	}

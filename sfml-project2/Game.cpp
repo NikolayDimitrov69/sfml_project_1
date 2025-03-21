@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "RangedEnemy.h"
 #include "Enemy.h"
+#include "Constants.h"
 
 void Game::initMenus()
 {
@@ -62,7 +63,7 @@ void Game::updateMousePosition()
 void Game::spawnSlope()
 {
 	Slope slope(slope_texture);
-	slope.setFallSpeed(INIT_SLOPE_FALL_SPEED);
+	slope.setFallSpeed(GAME_INIT_SLOPE_FALL_SPEED);
 	slope.setScale(sf::Vector2f(3.f, 3.f));
 	slope.setRandomVertPos(window->getSize(), previous_pos);
 	previous_pos = slope.getPosition();
@@ -79,12 +80,12 @@ void Game::updateItemEffectBar()
 
 void Game::renderItemEffectBar()
 {
-	if (player->getDoubleAttackTimer() <= PLAYER_DOUBLE_ATTACK_TIMER && gamestate == Gamestate::PLAYING)
+	if (player->getDoubleAttackTimer() <= PLAYER_DOUBLE_ATTACK_TIMER && gamestate == EGameState::Playing)
 	{
 		player_doubleAttackTimer.barTimer.render(*window);
 		window->draw(player_doubleAttackTimer.sprite);
 	}
-	if (player->getBoostAttackTimer() <= PLAYER_BOOST_ATTACK_TIMER && gamestate == Gamestate::PLAYING)
+	if (player->getBoostAttackTimer() <= PLAYER_BOOST_ATTACK_TIMER && gamestate == EGameState::Playing)
 	{
 		player_boostAttackTimer.barTimer.render(*window);
 		window->draw(player_boostAttackTimer.sprite);
@@ -102,13 +103,13 @@ void Game::spawnItemAndItemSlope()
 
 	switch (rand() % 4)
 	{
-	case 0: item = Item(heartTexture, Itemspec::HEAL, 0.5f);
+	case 0: item = Item(heartTexture, EItemType::HEAL, 0.5f);
 		break;
-	case 1: item = Item(doubleAttTexture, Itemspec::DOUBLE_ATTACK, 0.5f);
+	case 1: item = Item(doubleAttTexture, EItemType::DOUBLE_ATTACK, 0.5f);
 		break;
-	case 2: item = Item(doubleJumpTexture, Itemspec::DOUBLE_JUMP, 0.5f);
+	case 2: item = Item(doubleJumpTexture, EItemType::DOUBLE_JUMP, 0.5f);
 		break;
-	case 3: item = Item(boostAttack, Itemspec::BOOST_ATTACK, 0.5f);
+	case 3: item = Item(boostAttack, EItemType::BOOST_ATTACK, 0.5f);
 		break;
 	default:
 		break;
@@ -132,17 +133,17 @@ void Game::spawnItemAndItemSlope()
 }
 
 
-void Game::applyItemEffect(Itemspec spec)
+void Game::applyItemEffect(EItemType spec)
 {
 	switch (spec)
 	{
-	case HEAL: player->heal(20); points += 2;
+	case EItemType::HEAL: player->heal(20); points += 2;
 		break;
-	case DOUBLE_ATTACK: player->resetDoubleAttTimer(); points += 4;
+	case EItemType::DOUBLE_ATTACK: player->resetDoubleAttTimer(); points += 4;
 		break;
-	case DOUBLE_JUMP: player->gainDoubleJump(); points += 5;
+	case EItemType::DOUBLE_JUMP: player->gainDoubleJump(); points += 5;
 		break;
-	case BOOST_ATTACK: player->resetBoostTimer(); points += 2;
+	case EItemType::BOOST_ATTACK: player->resetBoostTimer(); points += 2;
 		break;
 	default:
 		break;
@@ -152,7 +153,7 @@ void Game::applyItemEffect(Itemspec spec)
 void Game::updateItemsAndItemSlopes()
 {
 	itemSlopeSpawnTimer += 1.f;
-	if (itemSlopeSpawnTimer >= ITEM_SLOPE_SPAWN_TIMER)
+	if (itemSlopeSpawnTimer >= GAME_ITEM_SLOPE_SPAWN_TIMER)
 	{
 		spawnItemAndItemSlope();
 	}
@@ -180,7 +181,7 @@ void Game::updateSlopeVector()
 {
 	slopeSpawnTimer += 1.f;	
 
-	if (slopeSpawnTimer >= SLOPE_SPAWN_TIMER)
+	if (slopeSpawnTimer >= GAME_SLOPE_SPAWN_TIMER)
 	{
 		spawnSlope();
 	}
@@ -194,7 +195,7 @@ void Game::updateSlopeVector()
 		if (slopes[i].getGlobalBounds().intersects(player->getGlobalBounds())) {
 			if (player->getGlobalBounds().top + player->getGlobalBounds().height <= slopes[i].getGlobalBounds().top + 5.f)
 			{
-				player->setPhysicState(Physicstate::ON_GROUND);
+				player->setPhysicState(EPhysicState::ON_GROUND);
 			}
 		}
 	}
@@ -256,22 +257,22 @@ void Game::checkEnemyCollision(const size_t& i)
 		delete enemies[i];
 		enemies.erase(enemies.begin() + i);
 	}
-	else if (enemies[i]->getActionstate() != Actionstate::DYING && enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()))
+	else if (enemies[i]->getActionstate() != EActionState::DYING && enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()))
 	{
 		player->takeDamage(enemies[i]->dealDamage());
-		enemies[i]->setActionState(Actionstate::DYING);
+		enemies[i]->setActionState(EActionState::DYING);
 	}
 	else if (enemies[i]->attackHasHit(player->getGlobalBounds()))
 	{
 		player->takeDamage(enemies[i]->dealDamage());
 	}
-	else if (enemies[i]->getActionstate() != Actionstate::DYING && player->attackHasHit(enemies[i]->getGlobalBounds()) && enemies[i]->immunityOver()) {
+	else if (enemies[i]->getActionstate() != EActionState::DYING && player->attackHasHit(enemies[i]->getGlobalBounds()) && enemies[i]->immunityOver()) {
 		enemies[i]->takeDamage(player->dealDamage());
 		enemies[i]->resetImmunityTimer();
 		if (enemies[i]->getCurrentHP() <= 0) {
 			points++;
 			currentProgress += 3.f;
-			enemies[i]->setActionState(Actionstate::DYING);
+			enemies[i]->setActionState(EActionState::DYING);
 		}
 	}
 	
@@ -298,13 +299,13 @@ void Game::pollEvents()
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case sf::Event::Closed:
-			gamestate = Gamestate::QUIT;
+			gamestate = EGameState::Quit;
 			break;
 		case sf::Event::KeyPressed:
-			if (event.key.code == sf::Keyboard::Escape && gamestate == Gamestate::PLAYING) 
-				gamestate = Gamestate::PAUSED; 
-			else if (event.key.code == sf::Keyboard::Escape && gamestate == Gamestate::PAUSED) 
-				gamestate = Gamestate::PLAYING;
+			if (event.key.code == sf::Keyboard::Escape && gamestate == EGameState::Playing) 
+				gamestate = EGameState::Paused; 
+			else if (event.key.code == sf::Keyboard::Escape && gamestate == EGameState::Paused) 
+				gamestate = EGameState::Playing;
 			break;
 		}
 	}
@@ -323,9 +324,9 @@ void Game::initSpawnSlope()
 void Game::checkCollision()
 {
 	if (player->getGlobalBounds().top >= window->getSize().y)
-		gamestate = Gamestate::OVER;
+		gamestate = EGameState::GameOver;
 	else
-		player->setPhysicState(Physicstate::MID_AIR);
+		player->setPhysicState(EPhysicState::MID_AIR);
 }
 
 void Game::initTextures()
@@ -351,7 +352,7 @@ void Game::initVariables()
 	points = 0;
 	previous_pos.x = -1.f;
 	background.setScale(sf::Vector2f(1.f, 0.8f));
-	gamestate = Gamestate::HOME;
+	gamestate = EGameState::Home;
 	enemySpawnTimer = 0.f;
 	slopeSpawnTimer = 0.f;
 	itemSlopeSpawnTimer = 0.f;
@@ -420,25 +421,25 @@ Game::Game()
 
 void Game::updateMenu()
 {
-	if (gamestate == Gamestate::PAUSED)
+	if (gamestate == EGameState::Paused)
 		gamestate = pause_window.update(*window, mousePosView);
-	if (gamestate == Gamestate::OVER)
-		gamestate = go_window.update(mousePosView, window->getSize(), OVER);
-	if (gamestate == Gamestate::HOME)
-		gamestate = home_window.update(mousePosView, window->getSize(), HOME);
-	if (gamestate == Gamestate::STAGE_COMPLETE)
-		gamestate = stage_complete_window.update(mousePosView, window->getSize(), STAGE_COMPLETE);
+	if (gamestate == EGameState::GameOver)
+		gamestate = go_window.update(mousePosView, window->getSize(), EGameState::GameOver);
+	if (gamestate == EGameState::Home)
+		gamestate = home_window.update(mousePosView, window->getSize(), EGameState::Home);
+	if (gamestate == EGameState::StageComplete)
+		gamestate = stage_complete_window.update(mousePosView, window->getSize(), EGameState::StageComplete);
 }
 
 void Game::renderMenu()
 {
-	if (gamestate == Gamestate::PAUSED)
+	if (gamestate == EGameState::Paused)
 		pause_window.render(*window);
-	if (gamestate == Gamestate::OVER)
+	if (gamestate == EGameState::GameOver)
 		go_window.render(*window);
-	if (gamestate == Gamestate::HOME)
+	if (gamestate == EGameState::Home)
 		home_window.render(*window);
-	if (gamestate == Gamestate::STAGE_COMPLETE)
+	if (gamestate == EGameState::StageComplete)
 		stage_complete_window.render(*window);
 }
 
@@ -446,17 +447,17 @@ void Game::updatePlayer()
 {
 	player->updatePlayer(mousePosView, window->getSize());
 	if (player->getCurrentHealth() <= 0) {
-		gamestate = Gamestate::OVER;
+		gamestate = EGameState::GameOver;
 	}
 }
 
 void Game::updateProgress()
 {
-	currentProgress += PROGRESSION_PER_FRAME;
+	currentProgress += GAME_PROGRESSION_PER_FRAME;
 	progressBar.updateStatic(maxProgress, currentProgress);
 	if (currentProgress >= maxProgress)
 	{
-		gamestate = Gamestate::STAGE_COMPLETE;
+		gamestate = EGameState::StageComplete;
 	}
 }
 
@@ -467,21 +468,21 @@ void Game::update()
 	updateMousePosition();
 	updateItemEffectBar();
 
-	if (gamestate == Gamestate::QUIT)
+	if (gamestate == EGameState::Quit)
 		window->close();
 
-	if (gamestate == Gamestate::RESTART) {
+	if (gamestate == EGameState::Restart) {
 		restartGame();
-		gamestate = Gamestate::PLAYING;
+		gamestate = EGameState::Playing;
 	}
 	
-	if (gamestate == Gamestate::HOME)
+	if (gamestate == EGameState::Home)
 	{
 		restartGame();
-		gamestate = Gamestate::HOME;
+		gamestate = EGameState::Home;
 	}
 
-	if (gamestate == Gamestate::PLAYING)
+	if (gamestate == EGameState::Playing)
 	{
 		updateProgress();
 		checkCollision();
@@ -502,7 +503,7 @@ void Game::render()
 	
 	renderItemEffectBar();
 
-	if (gamestate != HOME) {
+	if (gamestate != EGameState::Home) {
 		renderItemsAndItemSlopes();
 
 		renderSlopeVector();
@@ -511,7 +512,7 @@ void Game::render()
 
 		player->renderPlayer(*window);
 	}
-	if (gamestate == Gamestate::PLAYING) {
+	if (gamestate == EGameState::Playing) {
 		renderText();
 		progressBar.render(*window);
 	}

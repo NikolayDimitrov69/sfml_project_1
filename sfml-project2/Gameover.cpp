@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "Gameover.h"
+#include "Constants.h"
 
 void Gameover::updateFrame()
 {
@@ -37,18 +38,18 @@ void Gameover::setTexture(const sf::Texture& texture, unsigned frames, float sca
 	click_sprite.setPosition(go_sprite.getPosition().x, go_sprite.getPosition().y + click_sprite.getGlobalBounds().height * 3.5f);
 }
 
-Gamestate Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, Gamestate state)
+EGameState Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, EGameState state)
 {
 	pressTimer += 1.f;
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && pressTimer >= PRESS_TO_CONTINUE_TIMER)
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && pressTimer >= MENU_PRESS_TO_CONTINUE_TIMER)
 	{
 		pressTimer = 0.f;
-		if (state == Gamestate::OVER)
-			return  Gamestate::HOME;
-		if (state == Gamestate::HOME)
-			return  Gamestate::PLAYING;
-		if (state == Gamestate::STAGE_COMPLETE)
-			return Gamestate::HOME;
+		if (state == EGameState::GameOver)
+			return  EGameState::Home;
+		if (state == EGameState::Home)
+			return  EGameState::Playing;
+		if (state == EGameState::StageComplete)
+			return EGameState::Home;
 	}
 	updateFrame();
 	return state;
@@ -57,7 +58,7 @@ Gamestate Gameover::update(const sf::Vector2f& mousePos, const sf::Vector2u& tar
 void Gameover::render(sf::RenderTarget& target)
 {
 	target.draw(go_sprite);
-	if (pressTimer >= PRESS_TO_CONTINUE_TIMER)
+	if (pressTimer >= MENU_PRESS_TO_CONTINUE_TIMER)
 	{
 		target.draw(click_sprite);
 	}

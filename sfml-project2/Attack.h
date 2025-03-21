@@ -3,8 +3,6 @@
 #include "Math.h"
 #include "Animation.h"
 
-constexpr float DEFAULT_ATTACK_MOVE_SPEED = 7.f;
-
 class Attack
 {
 private:
@@ -17,9 +15,9 @@ private:
 	//Sprite for attack
 	sf::Sprite m_Sprite;
 	
-	Actionstate ac_state;
+	EActionState ac_state;
 
-	Movementstate state;
+	EMovementState state;
 
 	//Direction of attack, relative to the direction the player is facing
 	float m_Direction;
@@ -38,13 +36,15 @@ private:
 	void initVariables();
 public:
 	//Default constructor, not meant to create the attack itself, use spawn() method to create an attack
-	Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed = DEFAULT_ATTACK_MOVE_SPEED, const float& scale = 1.f);
+	Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth);
+
+	Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed, const float& scale);
 
 	bool isFrameFinished() const;
 
-	void setActionState(const Actionstate&);
+	void setActionState(const EActionState&);
 
-	const Actionstate& getActionState() const;
+	const EActionState& getActionState() const;
 
 	//Using offset angle will give you an entirely different movement vector that has the same origin as the main vector but is rotated by the angle
 	void setShootDir(const sf::Vector2f&, const sf::Vector2f&, const float& offsetAngle = 0);

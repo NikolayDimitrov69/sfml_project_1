@@ -3,15 +3,6 @@
 #include "Physics.h"
 #include "Animation.h"
 
-constexpr float ATTACK_COOLDOWN = 30.f; 
-constexpr float JUMP_COOLDOWN = 1.5f; 
-constexpr float JUMP_FORCE = 9.f;
-constexpr float PLAYER_DAMAGE = 30.f;
-constexpr float PLAYER_DOUBLE_ATTACK_TIMER = 800.f;
-constexpr unsigned PLAYER_MAX_DOUBLE_JUMPS = 3;
-constexpr float PLAYER_MIN_DOUBLE_JUMP_TIMER = 60.f;
-constexpr float PLAYER_BOOST_ATTACK_TIMER = 800.f;
-
 struct Playerhealth {
 	Bar healthbar;
 	float m_Health;
@@ -22,13 +13,13 @@ class Player
 {
 private:
 	//Current playerstate
-	Movementstate playerstate;
+	EMovementState playerstate;
 
 	//Current physics state, so the physic class knows which physic to apply to the player
-	Physicstate physicstate;
+	EPhysicState physicstate;
 
 	//Keeps a track of the player's action state
-	Actionstate actionstate;
+	EActionState actionstate;
 
 	//Player physics
 	Physics playerphysics;
@@ -131,10 +122,10 @@ public:
 	sf::FloatRect getGlobalBounds() const;
 
 	//Changes the physic state of the player, based on whats happening in the game
-	void setPhysicState(const Physicstate&);
+	void setPhysicState(const EPhysicState&);
 
 	//Returns the physic state of the player
-	const Physicstate& getPhysState() const;
+	const EPhysicState& getPhysState() const;
 
 	//updates the physics vector's X variable;
 	void move_x(const float&);

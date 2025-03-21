@@ -5,11 +5,6 @@
 #include "Item.h"
 #include "Bar.h"
 
-constexpr float ENEMY_SPAWN_TIMER = 200.f;
-constexpr float SLOPE_SPAWN_TIMER = 225.f;
-constexpr float ITEM_SLOPE_SPAWN_TIMER = 1000.f;
-constexpr float PROGRESSION_PER_FRAME = 0.01f;
-
 class Player;
 class IEnemy;
 
@@ -47,7 +42,7 @@ private:
 
 	Gameover stage_complete_window;
 
-	Gamestate gamestate;
+	EGameState gamestate;
 
 	//Player pointer
 	Player* player;
@@ -140,7 +135,7 @@ private:
 
 	void renderText();
 
-	void applyItemEffect(Itemspec spec);
+	void applyItemEffect(EItemType spec);
 
 	//Clears all vectors
 	void clearVectors();

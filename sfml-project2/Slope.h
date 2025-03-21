@@ -1,7 +1,5 @@
 #pragma once
 
-constexpr float INIT_SLOPE_FALL_SPEED = 1.2f;
-
 class Slope
 {
 private:

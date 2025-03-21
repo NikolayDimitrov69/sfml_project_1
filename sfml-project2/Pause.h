@@ -1,6 +1,5 @@
 #pragma once
-
-enum Gamestate { MENU = 0, PLAYING, PAUSED, OVER, STAGE_COMPLETE, HOME, RESTART, QUIT};
+#include "Enums.h"
 
 class Pause
 {
@@ -18,7 +17,7 @@ class Pause
 public:
 	Pause();
 
-	Gamestate update(const sf::RenderTarget& rendertarget,const sf::Vector2f& mousePos);
+	EGameState update(const sf::RenderTarget& rendertarget,const sf::Vector2f& mousePos);
 
 	void render(sf::RenderTarget& rendertarget);
 };

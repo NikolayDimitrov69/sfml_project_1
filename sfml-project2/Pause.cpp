@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "Pause.h"
+#include "Constants.h"
 
 Pause::Pause()
 {
@@ -21,7 +22,7 @@ Pause::Pause()
 	quit_sprite.setScale(2.f, 2.f);
 }
 
-Gamestate Pause::update(const sf::RenderTarget& rendertarget, const sf::Vector2f& mousePos)
+EGameState Pause::update(const sf::RenderTarget& rendertarget, const sf::Vector2f& mousePos)
 {
 	pause_sprite.setPosition(rendertarget.getSize().x / 2.f, rendertarget.getSize().y / 2.f);
 	quit_sprite.setPosition(pause_sprite.getGlobalBounds().left, pause_sprite.getGlobalBounds().top + pause_sprite.getGlobalBounds().height + quit_sprite.getGlobalBounds().height / 4.f);
@@ -30,14 +31,14 @@ Gamestate Pause::update(const sf::RenderTarget& rendertarget, const sf::Vector2f
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		if (resume_sprite.getGlobalBounds().contains(mousePos))
-			return Gamestate::PLAYING;
+			return EGameState::Playing;
 		if (quit_sprite.getGlobalBounds().contains(mousePos))
-			return Gamestate::HOME;
+			return EGameState::Home;
 		if (restart_sprite.getGlobalBounds().contains(mousePos))
-			return Gamestate::RESTART;
+			return EGameState::Restart;
 	}
 
-	return Gamestate::PAUSED;
+	return EGameState::Paused;
 }
 
 void Pause::render(sf::RenderTarget& rendertarget)

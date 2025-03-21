@@ -1,12 +1,12 @@
 #pragma once
+#include "Enums.h"
 #include "Animation.h"
-enum Itemspec {HEAL = 0, DOUBLE_ATTACK, DOUBLE_JUMP, BOOST_ATTACK};
 
 class Item
 {
 private:
 	sf::Sprite itemSprite;
-	Itemspec itemSpec;
+	EItemType itemSpec;
 	Animation frame;
 	float speed;
 
@@ -15,13 +15,13 @@ public:
 
 	Item() = default;
 
-	Item(const sf::Texture& texture, Itemspec spec, float nspeed);
+	Item(const sf::Texture& texture, EItemType spec, float nspeed);
 
 	void setPosition(const sf::Vector2f& position);
 
 	const sf::FloatRect& getGlobalBounds() const;
 	
-	Itemspec getItemSpec() const;
+	EItemType getItemSpec() const;
 
 	void update();
 

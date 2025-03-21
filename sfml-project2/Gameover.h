@@ -2,8 +2,6 @@
 #include "Animation.h"
 #include "Pause.h"
 
-constexpr float PRESS_TO_CONTINUE_TIMER = 250.f;
-
 class Gameover
 {
 private:
@@ -23,7 +21,7 @@ public:
 
 	void setTexture(const sf::Texture& texture, unsigned frames, float scale, sf::Vector2f pos);
 
-	Gamestate update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, Gamestate state);
+	EGameState update(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, EGameState state);
 
 	void render(sf::RenderTarget& target);
 

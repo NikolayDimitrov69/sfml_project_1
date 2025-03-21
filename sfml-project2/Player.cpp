@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "Player.h"
+#include "Constants.h"
 
 void Player::initPlayerHealth()
 {
@@ -29,17 +30,17 @@ void Player::initAttack()
 void Player::initVariables(float newhealth)
 {
 	boostAttackTimer = PLAYER_BOOST_ATTACK_TIMER;
-	attackCooldown = ATTACK_COOLDOWN;
+	attackCooldown = PLAYER_ATTACK_COOLDOWN;
 	doubleJumpTimer = 0.f;
 	doubleJumpedOnce = false;
 	doubleJumps = 0;
-	attCooldown = ATTACK_COOLDOWN;
+	attCooldown = PLAYER_ATTACK_COOLDOWN;
 	doubleAttCooldown = PLAYER_DOUBLE_ATTACK_TIMER;
 	damage = PLAYER_DAMAGE;
 	//Will be asumed that the player is not on a solid object, if needed the game class will change that
-	physicstate = Physicstate::MID_AIR;
+	physicstate = EPhysicState::MID_AIR;
 	//Player will be spawned with its idle animation
-	playerstate = Movementstate::IDLE;
+	playerstate = EMovementState::IDLE;
 	health.m_Health = newhealth;
 }
 
@@ -74,13 +75,13 @@ bool Player::attackHasHit(const sf::FloatRect& enemyBounds)
 {
 	for (size_t i = 0; i < attacks.size(); i++)
 	{
-		if (attacks[i].getActionState() == Actionstate::DYING && attacks[i].isFrameFinished()) {
+		if (attacks[i].getActionState() == EActionState::DYING && attacks[i].isFrameFinished()) {
 			attacks.erase(attacks.begin() + i);
 			return false;
 		}
-		if (attacks[i].getActionState() != Actionstate::DYING && attacks[i].getGlobalBounds().intersects(enemyBounds))
+		if (attacks[i].getActionState() != EActionState::DYING && attacks[i].getGlobalBounds().intersects(enemyBounds))
 		{
-			attacks[i].setActionState(Actionstate::DYING);
+			attacks[i].setActionState(EActionState::DYING);
 			return true;
 		}
 	}
@@ -145,11 +146,11 @@ void Player::updateAttackCooldown()
 {
 	if (boostAttackTimer < PLAYER_BOOST_ATTACK_TIMER)
 	{
-		attackCooldown = ATTACK_COOLDOWN / 2;
+		attackCooldown = PLAYER_ATTACK_COOLDOWN / 2;
 	}
 	else
 	{
-		attackCooldown = ATTACK_COOLDOWN;
+		attackCooldown = PLAYER_ATTACK_COOLDOWN;
 	}
 
 }
@@ -158,7 +159,7 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 {
 	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
 
-	if (physicstate == Physicstate::ON_GROUND)
+	if (physicstate == EPhysicState::ON_GROUND)
 	{
 		doubleJumpedOnce = false;
 	}
@@ -168,33 +169,33 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 		TurnLeft();
 		move_x(-1.f);
 		if (playerphysics.getMoveVelocity().y == 0)
-			playerstate = Movementstate::MOVING;
+			playerstate = EMovementState::MOVING;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		TurnRight();
 		move_x(1.f);
 		if (playerphysics.getMoveVelocity().y == 0)
-			playerstate = Movementstate::MOVING;
+			playerstate = EMovementState::MOVING;
 	}
 	
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::ON_GROUND && keyPressable())
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::ON_GROUND && keyPressable())
 	{
-		physicstate = Physicstate::MID_AIR;
-		playerstate = Movementstate::JUMPING;
-		jump(JUMP_FORCE);
+		physicstate = EPhysicState::MID_AIR;
+		playerstate = EMovementState::JUMPING;
+		jump(PLAYER_JUMP_FORCE);
 	}
 	
-	if (!doubleJumpedOnce && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == Physicstate::MID_AIR && doubleJumpTimer >= PLAYER_MIN_DOUBLE_JUMP_TIMER && doubleJumps > 0)
+	if (!doubleJumpedOnce && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::MID_AIR && doubleJumpTimer >= PLAYER_MIN_DOUBLE_JUMP_TIMER && doubleJumps > 0)
 	{
 		doubleJumpedOnce = true;
-		jump(JUMP_FORCE);
+		jump(PLAYER_JUMP_FORCE);
 		doubleJumpTimer = 0.f;
 		doubleJumps--;
 	}
 	                       
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-		actionstate = Actionstate::SHOOTING;
+		actionstate = EActionState::SHOOTING;
 		if (mousePos.x < m_Sprite.getPosition().x)
 			TurnLeft();
 		if (mousePos.x > m_Sprite.getPosition().x)
@@ -206,12 +207,12 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 		createSingleAttack(mousePos, targetSize);
 	}
 	else
-		actionstate = Actionstate::NOT_SHOOTING;
+		actionstate = EActionState::NOT_SHOOTING;
 
-	if (playerphysics.getMoveVelocity().y == 0 && physicstate == Physicstate::MID_AIR)
-		playerstate = Movementstate::FALLING;
+	if (playerphysics.getMoveVelocity().y == 0 && physicstate == EPhysicState::MID_AIR)
+		playerstate = EMovementState::FALLING;
 	else if (playerphysics.getMoveVelocity() == sf::Vector2f(0.f, 0.f))
-		playerstate = Movementstate::IDLE;
+		playerstate = EMovementState::IDLE;
 }
 
 void Player::updateHealth()
@@ -270,11 +271,11 @@ void Player::updateAttack(const sf::Vector2u& targetSize)
 void Player::updatePlayerPhysics()
 {
 	//Gravity will be stoped, if player is on ground
-	if (physicstate == Physicstate::ON_GROUND)
+	if (physicstate == EPhysicState::ON_GROUND)
 		playerphysics.stopGravity();
 
 	//Gravity will be applied only if the player is mid air, meaning no solid object bellow them
-	if (physicstate == Physicstate::MID_AIR)
+	if (physicstate == EPhysicState::MID_AIR)
 		applyGravity();
 
 	playerphysics.updateMovePhysics();
@@ -322,11 +323,11 @@ void Player::updateTimers()
 	doubleAttCooldown += 1.f;
 	boostAttackTimer += 1.f;
 
-	if (physicstate == Physicstate::MID_AIR)
+	if (physicstate == EPhysicState::MID_AIR)
 	{
 		doubleJumpTimer += 1.f;
 	}
-	if (physicstate == Physicstate::ON_GROUND)
+	if (physicstate == EPhysicState::ON_GROUND)
 	{
 		doubleJumpTimer = 0.f;
 	}
@@ -348,12 +349,12 @@ void Player::updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targ
 	updateFrame();
 }
 
-void Player::setPhysicState(const Physicstate& newstate)
+void Player::setPhysicState(const EPhysicState& newstate)
 {
 	physicstate = newstate;
 }
 
-const Physicstate& Player::getPhysState() const
+const EPhysicState& Player::getPhysState() const
 {
 	return physicstate;
 }
@@ -367,7 +368,7 @@ void Player::renderPlayer(sf::RenderTarget& target)
 
 bool Player::keyPressable()
 {
-	if (timer >= JUMP_COOLDOWN) {
+	if (timer >= PLAYER_JUMP_COOLDOWN) {
 		timer = 0.f;
 		return true;
 	}

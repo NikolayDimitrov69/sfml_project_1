@@ -3,8 +3,6 @@
 #include "Bar.h"
 #include "Math.h"
 
-constexpr float MAX_IMMUNITY_TIMER = 0.f;
-
 class IEnemy
 {
 protected:
@@ -12,8 +10,8 @@ protected:
 	float maxHP;
 	float currentHP;
 
-	Movementstate state;
-	Actionstate ac_state;
+	EMovementState state;
+	EActionState ac_state;
 
 	float immunityCoolDown;
 
@@ -32,9 +30,9 @@ public:
 
 	bool isFrameFinished() const;
 
-	const Actionstate& getActionstate();
+	const EActionState& getActionstate();
 
-	void setActionState(const Actionstate& state);
+	void setActionState(const EActionState& state);
 
 	void takeDamage(float);
 

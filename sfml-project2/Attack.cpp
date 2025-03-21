@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "Attack.h"
+#include "Constants.h"
 
 void Attack::updateFrame()
 {
@@ -10,17 +11,27 @@ void Attack::updateFrame()
 void Attack::initVariables() {
 	shootDir.x = -1;
 	shootDir.y = -1;
-	state = Movementstate::IDLE;
-	ac_state = Actionstate::NOT_SHOOTING;
+	state = EMovementState::IDLE;
+	ac_state = EActionState::NOT_SHOOTING;
 }
 
-Attack::Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed, const float& scale) : m_Direction(1), outOfBounds(false), angle(0.f)
+Attack::Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth)
+	: Attack(attack_texture, attackWidth, attackHeigth, PLAYER_DEFAULT_ATTACK_MOVE_SPEED, 1.0f)
 {
-	initVariables();
-	attackMoveSpeed = nattackMoveSpeed;
+}
+
+Attack::Attack(const sf::Texture& attack_texture, const int& attackWidth, const int& attackHeigth, const float& nattackMoveSpeed, const float& scale)
+	: m_Direction(1)
+	, outOfBounds(false)
+	, angle(0.f)
+	, attackMoveSpeed(nattackMoveSpeed)
+	, attackScale(scale)
+	, shootDir(-1, -1)
+	, state(EMovementState::IDLE)
+	, ac_state(EActionState::NOT_SHOOTING)
+{
 	m_Sprite.setTexture(attack_texture);
 	m_Sprite.setTextureRect(sf::IntRect(0, 0, attackWidth, attackHeigth));
-	attackScale = scale;
 	frame.setTextureSize(attack_texture.getSize());
 	frame.setDimension(attackWidth, attackHeigth);
 	frame.setIdleSpeed(0.03f);
@@ -32,7 +43,7 @@ bool Attack::isFrameFinished() const
 	return frame.isFinished();
 }
 
-void Attack::setActionState(const Actionstate& nstate)
+void Attack::setActionState(const EActionState& nstate)
 {
 	ac_state = nstate;
 }
@@ -53,8 +64,8 @@ void Attack::setShootDir(const sf::Vector2f& mousepos, const sf::Vector2f& playe
 	else //the vector will be created by the following formula
 	{
 		float r = vectorLenght(mousepos - playerpos);
-		shootDir.x = r * cos((angle + offsetAngle) * 3.1415f / 180.f);
-		shootDir.y = r * sin((angle + offsetAngle) * 3.1415f / 180.f);
+		shootDir.x = r * cos((angle + offsetAngle) * UTILITY_M_PI / 180.f);
+		shootDir.y = r * sin((angle + offsetAngle) * UTILITY_M_PI / 180.f);
 
 		shootDir = normalize(shootDir) * m_Direction;
 
@@ -70,7 +81,7 @@ void Attack::changeDirection(const float& direction)
 
 void Attack::update(const sf::Vector2u& targetSize)
 {
-	if (ac_state == Actionstate::NOT_SHOOTING)
+	if (ac_state == EActionState::NOT_SHOOTING)
 	{
 		m_Sprite.move(attackMoveSpeed * shootDir);
 		if (m_Sprite.getPosition().x > targetSize.x ||
@@ -93,7 +104,7 @@ void Attack::spawn(const sf::Sprite& sprite)
 	m_Sprite.setScale(m_Direction * attackScale, 1 * attackScale);
 }
 
-const Actionstate& Attack::getActionState() const
+const EActionState& Attack::getActionState() const
 {
 	return ac_state;
 }
