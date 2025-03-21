@@ -1,16 +1,17 @@
 #pragma once
-#include "Player.h"
 #include "Slope.h"
 #include "Background.h"
-#include "Enemy.h"
-#include "RangedEnemy.h"
 #include "Gameover.h"
 #include "Item.h"
+#include "Bar.h"
 
 constexpr float ENEMY_SPAWN_TIMER = 200.f;
 constexpr float SLOPE_SPAWN_TIMER = 225.f;
 constexpr float ITEM_SLOPE_SPAWN_TIMER = 1000.f;
 constexpr float PROGRESSION_PER_FRAME = 0.01f;
+
+class Player;
+class IEnemy;
 
 struct ItemEffectBar {
 	sf::Sprite sprite;

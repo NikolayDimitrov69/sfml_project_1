@@ -1,5 +1,8 @@
 #include "precompheaders.h"
 #include "Game.h"
+#include "Player.h"
+#include "RangedEnemy.h"
+#include "Enemy.h"
 
 void Game::initMenus()
 {
