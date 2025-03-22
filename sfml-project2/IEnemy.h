@@ -44,7 +44,7 @@ public:
 
 	void randomizeSpawnPosition(const sf::Vector2u& targetSize);
 
-	const sf::FloatRect& getGlobalBounds() const;
+	sf::FloatRect getGlobalBounds() const;
 
 	bool outOfBounds(const sf::Vector2u& targetSize);
 

@@ -66,7 +66,7 @@ void IEnemy::randomizeSpawnPosition(const sf::Vector2u& targetSize)
 	sprite.setPosition(randomSpawnpos);
 }
 
-const sf::FloatRect& IEnemy::getGlobalBounds() const
+sf::FloatRect IEnemy::getGlobalBounds() const
 {
 	return sprite.getGlobalBounds();
 }

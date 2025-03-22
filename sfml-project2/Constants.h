@@ -5,11 +5,15 @@ constexpr float		GAME_PROGRESSION_PER_FRAME = 0.01f;
 constexpr float		GAME_SLOPE_SPAWN_TIMER = 225.f;
 constexpr float		GAME_ITEM_SLOPE_SPAWN_TIMER = 1000.f;
 constexpr float		GAME_INIT_SLOPE_FALL_SPEED = 1.2f;
+constexpr int		GAME_WINDOW_WIDTH = 1600;
+constexpr int		GAME_WINDOW_HEIGHT = 800;
+constexpr float     GAME_WINDOW_SCALE = 2;
 
 // MENU constants
 constexpr float		MENU_PRESS_TO_CONTINUE_TIMER = 250.f;
 
 // PLAYER constants
+constexpr float		PLAYER_MAX_HEALTH = 100.f;
 constexpr float		PLAYER_DEFAULT_ATTACK_MOVE_SPEED = 7.f;
 constexpr float		PLAYER_ATTACK_COOLDOWN = 30.f;
 constexpr float		PLAYER_JUMP_COOLDOWN = 1.5f;

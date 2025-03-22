@@ -26,7 +26,7 @@ void Item::setPosition(const sf::Vector2f& position)
 	itemSprite.setPosition(position);
 }
 
-const sf::FloatRect& Item::getGlobalBounds() const
+sf::FloatRect Item::getGlobalBounds() const
 {
 	return itemSprite.getGlobalBounds();
 }

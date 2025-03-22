@@ -4,6 +4,13 @@
 #include "Animation.h"
 
 struct Playerhealth {
+
+	Playerhealth(float health)
+		: m_Health(health)
+		, currentHealth(health)
+	{
+	}
+
 	Bar healthbar;
 	float m_Health;
 	float currentHealth;
@@ -39,7 +46,7 @@ private:
 	unsigned doubleJumps;
 	bool doubleJumpedOnce;
 	float doubleJumpTimer;
-	
+
 	//Player attack, attack container and max attack counter
 	std::vector<Attack> attacks;
 	sf::Texture attack_texture;
@@ -48,18 +55,19 @@ private:
 	float attCooldown;
 	float boostAttackTimer;
 	float doubleAttCooldown;
-	
+
 	//Player texture and sprite
 	Animation frame;
+	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
 
 	//Key timers
 	float timer;
-	
+
 	//Private initializer functions
 	void initPlayerHealth();
 	void initAttack();
-	void initSprite(const sf::Texture& texture, const sf::Vector2u& targetSize);
+	void initSprite();
 
 	//Push_back attack whenever spawned
 	void createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
@@ -69,7 +77,7 @@ private:
 	void renderHealth(sf::RenderTarget& target);
 	void renderSprite(sf::RenderTarget& target);
 	void renderAttack(sf::RenderTarget& target);
-	
+
 	//Simple function for flipping the sprite left/right based on its current scale
 	void TurnLeft();
 	void TurnRight();
@@ -87,11 +95,9 @@ private:
 	void applyGravity();
 	//Updates the frame
 	void updateFrame();
-	//Variable initializer
-	void initVariables(float newhealth);
 public:
-	
-	Player(const sf::Vector2u& targetSize, const sf::Texture& texture, std::string name = "newplayer", float newhealth = 10);
+
+	Player();
 
 	void heal(float amount);
 
@@ -110,7 +116,7 @@ public:
 	void gainDoubleJump();
 
 	//Gets the vector position of the player's sprite
-	const sf::Vector2f& getPostion() const;
+	sf::Vector2f getPostion() const;
 
 	//Gets the max health of the player
 	const float& getMaxHealth() const;
@@ -139,7 +145,7 @@ public:
 
 	//updates the player and takes vector as an argument, which this game is the mouse position
 	void updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
-	
+
 	//renders the player
 	void renderPlayer(sf::RenderTarget& target);
 
@@ -151,5 +157,8 @@ public:
 	float getDoubleAttackTimer() const;
 
 	float getBoostAttackTimer() const;
-};
 
+	void initialize();
+
+	void setTexture(const sf::Texture& texture);
+};

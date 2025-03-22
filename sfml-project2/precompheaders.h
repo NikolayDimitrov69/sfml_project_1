@@ -7,6 +7,9 @@
 #include <math.h>
 #include <filesystem>
 #include <string>
+#include <cassert>
+#include <unordered_map>
+#include <typeindex>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>

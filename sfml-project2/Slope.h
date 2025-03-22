@@ -14,7 +14,7 @@ public:
 
 	const sf::Vector2f& getPosition() const;
 
-	const sf::FloatRect& getGlobalBounds() const;
+	sf::FloatRect getGlobalBounds() const;
 
 	//Sets random vertical position of the next slope, based on the location of the previos slope.
 	void setRandomVertPos(const sf::Vector2u& targetSize, sf::Vector2f& prev_pos);
