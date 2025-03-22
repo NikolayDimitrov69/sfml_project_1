@@ -11,7 +11,7 @@ void Slope::setPostion(const sf::Vector2f& pos)
 	slopeSprite.setPosition(pos);
 }
 
-const sf::FloatRect& Slope::getGlobalBounds() const
+sf::FloatRect Slope::getGlobalBounds() const
 {
 	return slopeSprite.getGlobalBounds();
 }

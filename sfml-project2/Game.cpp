@@ -3,7 +3,8 @@
 #include "Player.h"
 #include "RangedEnemy.h"
 #include "Enemy.h"
-#include "Constants.h"
+#include "Essentials.h"
+#include "PlayerManagerService.h"
 
 void Game::initMenus()
 {
@@ -21,11 +22,7 @@ void Game::initWindow()
 
 void Game::initPlayer()
 {
-	if (player != nullptr)
-	{
-		delete player;
-	}
-	player = new Player(window->getSize(), player_texture);
+	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
 }
 
 void Game::initProgressBar()
@@ -74,12 +71,14 @@ void Game::spawnSlope()
 
 void Game::updateItemEffectBar()
 {
+	auto player = GetPlayerObject();
 	player_doubleAttackTimer.barTimer.updateStatic(PLAYER_DOUBLE_ATTACK_TIMER, PLAYER_DOUBLE_ATTACK_TIMER - player->getDoubleAttackTimer());
 	player_boostAttackTimer.barTimer.updateStatic(PLAYER_BOOST_ATTACK_TIMER, PLAYER_BOOST_ATTACK_TIMER - player->getBoostAttackTimer());
 }
 
 void Game::renderItemEffectBar()
 {
+	auto player = GetPlayerObject();
 	if (player->getDoubleAttackTimer() <= PLAYER_DOUBLE_ATTACK_TIMER && gamestate == EGameState::Playing)
 	{
 		player_doubleAttackTimer.barTimer.render(*window);
@@ -135,6 +134,7 @@ void Game::spawnItemAndItemSlope()
 
 void Game::applyItemEffect(EItemType spec)
 {
+	auto player = GetPlayerObject();
 	switch (spec)
 	{
 	case EItemType::HEAL: player->heal(20); points += 2;
@@ -157,6 +157,8 @@ void Game::updateItemsAndItemSlopes()
 	{
 		spawnItemAndItemSlope();
 	}
+
+	auto player = GetPlayerObject();
 
 	for (size_t i = 0; i < items.size(); i++)
 	{
@@ -185,6 +187,8 @@ void Game::updateSlopeVector()
 	{
 		spawnSlope();
 	}
+
+	auto player = GetPlayerObject();
 
 	for (size_t i = 0; i < slopes.size(); i++)
 	{
@@ -240,6 +244,8 @@ void Game::updateEnemyVector()
 		spawnRandomEnemy();
 	}
 
+	auto player = GetPlayerObject();
+
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
 		enemies[i]->update(player->getPostion(), window->getSize());
@@ -249,6 +255,7 @@ void Game::updateEnemyVector()
 
 void Game::checkEnemyCollision(const size_t& i)
 {
+	auto player = GetPlayerObject();
 	if (enemies[i]->outOfBounds(window->getSize())) {
 		delete enemies[i];
 		enemies.erase(enemies.begin() + i);
@@ -313,6 +320,7 @@ void Game::pollEvents()
 
 void Game::initSpawnSlope()
 {
+	auto player = GetPlayerObject();
 	Slope slope(slope_texture);
 	slope.setScale(sf::Vector2f(10.f, 10.f));
 	slope.setPostion(sf::Vector2f(player->getGlobalBounds().left - slope.getGlobalBounds().width / 2.7f, 
@@ -323,6 +331,7 @@ void Game::initSpawnSlope()
 
 void Game::checkCollision()
 {
+	auto player = GetPlayerObject();
 	if (player->getGlobalBounds().top >= window->getSize().y)
 		gamestate = EGameState::GameOver;
 	else
@@ -331,7 +340,7 @@ void Game::checkCollision()
 
 void Game::initTextures()
 {
-	player_texture.loadFromFile("IMAGES/megaman.png");
+	//player_texture.loadFromFile("IMAGES/megaman.png");
 	slope_texture.loadFromFile("IMAGES/platform.jpg");
 	background.setTexture("IMAGES/background.jpg");
 	enemy_texture.loadFromFile("IMAGES/skull.png");
@@ -374,6 +383,7 @@ void Game::initText()
 
 void Game::updateText()
 {
+	auto player = GetPlayerObject();
 	std::stringstream ss;
 	ss << "Points: " << points << '\n';
 	ss << "Double jumps: " << player->getDoubleJumps() << '\n';
@@ -405,14 +415,15 @@ void Game::restartGame()
 	initSpawnSlope();
 }
 
-Game::Game()
-{	
-	initWindow();	
+void Game::initialize()
+{
+	GetServiceManager().RegisterNeededServices();
+	initWindow();
 	initTextures();
 	initFont();
 	initText();
 	initVariables();
-	initPlayer();	
+	initPlayer();
 	initItemEffectBar();
 	initSpawnSlope();
 	initProgressBar();
@@ -445,6 +456,7 @@ void Game::renderMenu()
 
 void Game::updatePlayer()
 {
+	auto player = GetPlayerObject();
 	player->updatePlayer(mousePosView, window->getSize());
 	if (player->getCurrentHealth() <= 0) {
 		gamestate = EGameState::GameOver;
@@ -503,6 +515,8 @@ void Game::render()
 	
 	renderItemEffectBar();
 
+	auto player = GetPlayerObject();
+
 	if (gamestate != EGameState::Home) {
 		renderItemsAndItemSlopes();
 
@@ -529,7 +543,6 @@ bool Game::isRunning() const
 
 Game::~Game()
 {
-	delete player;
 	delete window;
 	for (size_t i = 0; i < enemies.size(); i++)
 	{

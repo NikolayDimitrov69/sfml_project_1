@@ -45,8 +45,8 @@ private:
 	EGameState gamestate;
 
 	//Player pointer
-	Player* player;
-	sf::Texture player_texture;
+	/*Player* player;
+	sf::Texture player_texture;*/
 
 	//Background
 	Background background;
@@ -143,8 +143,7 @@ private:
 	//Will restart the game by clearing all vectors and calling all initializer functions again
 	void restartGame();
 public:
-	
-	Game();
+	void initialize();
 
 	//Will render different types of menus, based on current game state
 	void renderMenu();

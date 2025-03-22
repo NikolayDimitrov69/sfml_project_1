@@ -1,25 +1,23 @@
 #include "precompheaders.h"
 #include "Player.h"
-#include "Constants.h"
+#include "Essentials.h"
 
 void Player::initPlayerHealth()
 {
-	health.m_Health = 100.f;
-	health.currentHealth = health.m_Health;
 	health.healthbar.setSize(m_Sprite.getGlobalBounds().width, 6.f);
 }
 
-void Player::initSprite(const sf::Texture& texture, const sf::Vector2u& targetSize)
+void Player::initSprite()
 {
 	frame.setDimension(28, 25);
 	frame.setIdleSpeed(0.5f);
-	frame.setTextureSize(texture.getSize());
+	frame.setTextureSize(m_Texture.getSize());
 	frame.setNumberOfFrames(3);
-	m_Sprite.setTexture(texture);
+	m_Sprite.setTexture(m_Texture);
 	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
 	m_Sprite.setScale(4.f, 4.f);
 	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
-	m_Sprite.setPosition(targetSize.x / 2.f, targetSize.y / 2.f);
+	m_Sprite.setPosition(GAME_WINDOW_WIDTH / 2.f, GAME_WINDOW_HEIGHT / 2.f);
 }
 
 void Player::initAttack()
@@ -27,29 +25,22 @@ void Player::initAttack()
 	attack_texture.loadFromFile("IMAGES/megaman_attack.png");
 }
 
-void Player::initVariables(float newhealth)
+Player::Player()
+	: m_Name("player")
+	, health(PLAYER_MAX_HEALTH)
+	, boostAttackTimer(PLAYER_BOOST_ATTACK_TIMER)
+	, attackCooldown(PLAYER_ATTACK_COOLDOWN)
+	, doubleJumpTimer(0.f)
+	, doubleJumpedOnce(false)
+	, doubleJumps(0)
+	, attCooldown(PLAYER_ATTACK_COOLDOWN)
+	, doubleAttCooldown(PLAYER_DOUBLE_ATTACK_TIMER)
+	, damage(PLAYER_DAMAGE)
+	, physicstate(EPhysicState::MID_AIR)
+	, playerstate(EMovementState::IDLE)
+	, timer(0.f)
+	, actionstate(EActionState::NONE)
 {
-	boostAttackTimer = PLAYER_BOOST_ATTACK_TIMER;
-	attackCooldown = PLAYER_ATTACK_COOLDOWN;
-	doubleJumpTimer = 0.f;
-	doubleJumpedOnce = false;
-	doubleJumps = 0;
-	attCooldown = PLAYER_ATTACK_COOLDOWN;
-	doubleAttCooldown = PLAYER_DOUBLE_ATTACK_TIMER;
-	damage = PLAYER_DAMAGE;
-	//Will be asumed that the player is not on a solid object, if needed the game class will change that
-	physicstate = EPhysicState::MID_AIR;
-	//Player will be spawned with its idle animation
-	playerstate = EMovementState::IDLE;
-	health.m_Health = newhealth;
-}
-
-Player::Player(const sf::Vector2u& targetSize, const sf::Texture& texture, std::string name, float newhealth) : m_Name(name)
-{
-	initVariables(newhealth);
-	initAttack();
-	initSprite(texture, targetSize);
-	initPlayerHealth();
 }
 
 void Player::heal(float amount)
@@ -88,7 +79,7 @@ bool Player::attackHasHit(const sf::FloatRect& enemyBounds)
 	return false;
 }
 
-const sf::Vector2f& Player::getPostion() const
+sf::Vector2f Player::getPostion() const
 {
 	return sf::Vector2f(m_Sprite.getPosition());
 }
@@ -178,14 +169,14 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 		if (playerphysics.getMoveVelocity().y == 0)
 			playerstate = EMovementState::MOVING;
 	}
-	
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::ON_GROUND && keyPressable())
 	{
 		physicstate = EPhysicState::MID_AIR;
 		playerstate = EMovementState::JUMPING;
 		jump(PLAYER_JUMP_FORCE);
 	}
-	
+
 	if (!doubleJumpedOnce && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::MID_AIR && doubleJumpTimer >= PLAYER_MIN_DOUBLE_JUMP_TIMER && doubleJumps > 0)
 	{
 		doubleJumpedOnce = true;
@@ -193,7 +184,7 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 		doubleJumpTimer = 0.f;
 		doubleJumps--;
 	}
-	                       
+
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = EActionState::SHOOTING;
 		if (mousePos.x < m_Sprite.getPosition().x)
@@ -241,7 +232,7 @@ void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u
 		Attack attack(attack_texture, 194, 60);
 		attack.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
 		attack.setShootDir(mousePos, m_Sprite.getPosition(), 5);
-		
+
 		attack.spawn(m_Sprite);
 
 		Attack attack2(attack_texture, 194, 60);
@@ -390,5 +381,16 @@ float Player::getBoostAttackTimer() const
 	return boostAttackTimer;
 }
 
+void Player::initialize()
+{
+	initAttack();
+	initSprite();
+	initPlayerHealth();
+}
+
+void Player::setTexture(const sf::Texture& texture)
+{
+	m_Texture = texture;
+}
 
 

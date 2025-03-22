@@ -159,10 +159,12 @@
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="EssentialFunctions.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Gameover.cpp" />
     <ClCompile Include="Bar.cpp" />
     <ClCompile Include="IEnemy.cpp" />
+    <ClCompile Include="IService.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
@@ -170,6 +172,7 @@
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerManagerService.cpp" />
     <ClCompile Include="precompheaders.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">precompheaders.h</PrecompiledHeaderFile>
@@ -181,6 +184,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">precompheaders.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="RangedEnemy.cpp" />
+    <ClCompile Include="ServiceManager.cpp" />
     <ClCompile Include="Slope.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -190,18 +194,23 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Enums.h" />
+    <ClInclude Include="EssentialFunctions.h" />
+    <ClInclude Include="Essentials.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Gameover.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="IEnemy.h" />
+    <ClInclude Include="IService.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Pause.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerManagerService.h" />
     <ClInclude Include="precompheaders.h" />
     <ClInclude Include="RangedEnemy.h" />
+    <ClInclude Include="ServiceManager.h" />
     <ClInclude Include="Slope.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

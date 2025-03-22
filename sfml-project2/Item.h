@@ -19,7 +19,7 @@ public:
 
 	void setPosition(const sf::Vector2f& position);
 
-	const sf::FloatRect& getGlobalBounds() const;
+	sf::FloatRect getGlobalBounds() const;
 	
 	EItemType getItemSpec() const;
 

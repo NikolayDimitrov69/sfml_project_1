@@ -48,7 +48,7 @@ void Attack::setActionState(const EActionState& nstate)
 	ac_state = nstate;
 }
 
-const sf::FloatRect& Attack::getGlobalBounds() const {
+sf::FloatRect Attack::getGlobalBounds() const {
 	return m_Sprite.getGlobalBounds();
 }
 
