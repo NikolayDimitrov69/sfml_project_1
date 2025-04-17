@@ -164,7 +164,6 @@
     <ClCompile Include="Gameover.cpp" />
     <ClCompile Include="Bar.cpp" />
     <ClCompile Include="IEnemy.cpp" />
-    <ClCompile Include="IService.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math.cpp" />
@@ -200,7 +199,7 @@
     <ClInclude Include="Gameover.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="IEnemy.h" />
-    <ClInclude Include="IService.h" />
+    <ClInclude Include="TypeIdGenerator.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Particle.h" />

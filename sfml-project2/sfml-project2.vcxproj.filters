@@ -72,9 +72,6 @@
     <ClCompile Include="PlayerManagerService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IService.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ServiceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -143,7 +140,7 @@
     <ClInclude Include="PlayerManagerService.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IService.h">
+    <ClInclude Include="TypeIdGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ServiceManager.h">
