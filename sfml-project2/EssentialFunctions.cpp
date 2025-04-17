@@ -1,6 +1,5 @@
 #include "precompheaders.h"
 #include "EssentialFunctions.h"
-#include "ServiceManager.h"
 #include "PlayerManagerService.h"
 
 ServiceManager& GetServiceManager()
@@ -10,5 +9,5 @@ ServiceManager& GetServiceManager()
 
 Player* GetPlayerObject()
 {
-    return GetServiceManager().GetService<PlayerManagerService>()->GetPlayer();
+    return GetService<PlayerManagerService>()->GetPlayer();
 }

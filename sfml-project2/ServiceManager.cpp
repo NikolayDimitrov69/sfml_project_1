@@ -4,17 +4,5 @@
 
 void ServiceManager::RegisterNeededServices()
 {
-	auto& serviceMgr = GetInstance();
-	serviceMgr.RegisterService<PlayerManagerService>();
-
-
-	InitializeServices();
-}
-
-void ServiceManager::InitializeServices()
-{
-	for (auto& service : services)
-	{
-		service.second->Initialize();
-	}
+	RegisterService<PlayerManagerService>();
 }

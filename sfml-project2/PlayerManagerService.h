@@ -1,19 +1,21 @@
 #pragma once
-#include "IService.h"
 #include "Player.h"
 
-class PlayerManagerService : public IService
+class PlayerManagerService
 {
 public:
 	PlayerManagerService();
 
 	Player* GetPlayer() const;
 
-	virtual void Initialize() override;
+	const sf::Sprite& GetSprite() const;
+
+	sf::Sprite& MutableSprite();
 
 	void InitializePlayer();
 private:
 	std::unique_ptr<Player> m_Player;
-	sf::Texture m_PlayerTexture;
+	sf::Sprite m_Sprite;
+	sf::Texture m_Texture;
 };
 

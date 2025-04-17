@@ -1,23 +1,20 @@
 #include "precompheaders.h"
 #include "Player.h"
 #include "Essentials.h"
+#include "PlayerManagerService.h"
 
 void Player::initPlayerHealth()
 {
-	health.healthbar.setSize(m_Sprite.getGlobalBounds().width, 6.f);
+	health.healthbar.setSize(GetService<PlayerManagerService>()->GetSprite().getGlobalBounds().width, 6.f);
 }
 
 void Player::initSprite()
 {
+	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
 	frame.setDimension(28, 25);
 	frame.setIdleSpeed(0.5f);
-	frame.setTextureSize(m_Texture.getSize());
+	frame.setTextureSize(sprite.getTexture()->getSize());
 	frame.setNumberOfFrames(3);
-	m_Sprite.setTexture(m_Texture);
-	m_Sprite.setTextureRect(sf::IntRect(0, 0, 28, 25));
-	m_Sprite.setScale(4.f, 4.f);
-	m_Sprite.setOrigin(m_Sprite.getLocalBounds().width / 2, m_Sprite.getLocalBounds().height / 2);
-	m_Sprite.setPosition(GAME_WINDOW_WIDTH / 2.f, GAME_WINDOW_HEIGHT / 2.f);
 }
 
 void Player::initAttack()
@@ -81,7 +78,7 @@ bool Player::attackHasHit(const sf::FloatRect& enemyBounds)
 
 sf::Vector2f Player::getPostion() const
 {
-	return sf::Vector2f(m_Sprite.getPosition());
+	return sf::Vector2f(GetService<PlayerManagerService>()->GetSprite().getPosition());
 }
 
 void Player::takeDamage(float damage)
@@ -123,14 +120,16 @@ void Player::jump(const float& height)
 
 void Player::TurnLeft()
 {
-	if (m_Sprite.getScale().x > 0)
-		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
+	auto& sprite = GetService<PlayerManagerService>()->MutableSprite();
+	if (sprite.getScale().x > 0)
+		sprite.setScale(-1.f * sprite.getScale().x, sprite.getScale().y);
 }
 
 void Player::TurnRight()
 {
-	if (m_Sprite.getScale().x < 0)
-		m_Sprite.setScale(-1.f * m_Sprite.getScale().x, m_Sprite.getScale().y);
+	auto& sprite = GetService<PlayerManagerService>()->MutableSprite();
+	if (sprite.getScale().x < 0)
+		sprite.setScale(-1.f * sprite.getScale().x, sprite.getScale().y);
 }
 
 void Player::updateAttackCooldown()
@@ -148,7 +147,9 @@ void Player::updateAttackCooldown()
 
 void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
-	sf::FloatRect playerBounds = m_Sprite.getGlobalBounds();
+	 const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
+	
+	sf::FloatRect playerBounds = sprite.getGlobalBounds();
 
 	if (physicstate == EPhysicState::ON_GROUND)
 	{
@@ -187,9 +188,9 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = EActionState::SHOOTING;
-		if (mousePos.x < m_Sprite.getPosition().x)
+		if (mousePos.x < sprite.getPosition().x)
 			TurnLeft();
-		if (mousePos.x > m_Sprite.getPosition().x)
+		if (mousePos.x > sprite.getPosition().x)
 			TurnRight();
 
 		if (doubleAttCooldown < PLAYER_DOUBLE_ATTACK_TIMER)
@@ -208,37 +209,39 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 
 void Player::updateHealth()
 {
-	health.healthbar.update(m_Sprite, health.m_Health, health.currentHealth);
+	health.healthbar.update(GetService<PlayerManagerService>()->GetSprite(), health.m_Health, health.currentHealth);
 }
 
 void Player::createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
+	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
 	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
 		Attack attack(attack_texture, 194, 60);
-		attack.setShootDir(mousePos, m_Sprite.getPosition());
-		attack.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
-		attack.spawn(m_Sprite);
+		attack.setShootDir(mousePos, sprite.getPosition());
+		attack.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
+		attack.spawn(sprite);
 		attacks.push_back(attack);
 	}
 }
 
 void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
+	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
 	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
 		Attack attack(attack_texture, 194, 60);
-		attack.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
-		attack.setShootDir(mousePos, m_Sprite.getPosition(), 5);
+		attack.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
+		attack.setShootDir(mousePos, sprite.getPosition(), 5);
 
-		attack.spawn(m_Sprite);
+		attack.spawn(sprite);
 
 		Attack attack2(attack_texture, 194, 60);
-		attack2.changeDirection(mousePos.x < m_Sprite.getPosition().x ? -1 : 1);
-		attack2.setShootDir(mousePos, m_Sprite.getPosition(), -5);
-		attack2.spawn(m_Sprite);
+		attack2.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
+		attack2.setShootDir(mousePos, sprite.getPosition(), -5);
+		attack2.spawn(sprite);
 
 
 		attacks.push_back(attack);
@@ -270,7 +273,7 @@ void Player::updatePlayerPhysics()
 		applyGravity();
 
 	playerphysics.updateMovePhysics();
-	m_Sprite.move(playerphysics.getMoveVelocity());
+	GetService<PlayerManagerService>()->MutableSprite().move(playerphysics.getMoveVelocity());
 }
 
 void Player::applyGravity()
@@ -281,7 +284,7 @@ void Player::applyGravity()
 void Player::updateFrame()
 {
 	frame.update(playerstate, actionstate);
-	m_Sprite.setTextureRect(frame.getCurrentFrame());
+	GetService<PlayerManagerService>()->MutableSprite().setTextureRect(frame.getCurrentFrame());
 }
 
 void Player::renderHealth(sf::RenderTarget& target)
@@ -291,7 +294,7 @@ void Player::renderHealth(sf::RenderTarget& target)
 
 void Player::renderSprite(sf::RenderTarget& target)
 {
-	target.draw(m_Sprite);
+	target.draw(GetService<PlayerManagerService>()->GetSprite());
 }
 
 void Player::renderAttack(sf::RenderTarget& target)
@@ -304,7 +307,7 @@ void Player::renderAttack(sf::RenderTarget& target)
 
 sf::FloatRect Player::getGlobalBounds() const
 {
-	return m_Sprite.getGlobalBounds();
+	return GetService<PlayerManagerService>()->GetSprite().getGlobalBounds();
 }
 
 void Player::updateTimers()
@@ -386,11 +389,6 @@ void Player::initialize()
 	initAttack();
 	initSprite();
 	initPlayerHealth();
-}
-
-void Player::setTexture(const sf::Texture& texture)
-{
-	m_Texture = texture;
 }
 
 

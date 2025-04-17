@@ -58,8 +58,6 @@ private:
 
 	//Player texture and sprite
 	Animation frame;
-	sf::Texture m_Texture;
-	sf::Sprite m_Sprite;
 
 	//Key timers
 	float timer;
@@ -159,6 +157,4 @@ public:
 	float getBoostAttackTimer() const;
 
 	void initialize();
-
-	void setTexture(const sf::Texture& texture);
 };
