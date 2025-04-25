@@ -20,11 +20,6 @@ void Game::initWindow()
 	window->setFramerateLimit(144);
 }
 
-void Game::initPlayer()
-{
-	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
-}
-
 void Game::initProgressBar()
 {
 	progressBar.setSize(window->getSize().x / 2.f, 20.f);
@@ -340,7 +335,6 @@ void Game::checkCollision()
 
 void Game::initTextures()
 {
-	//player_texture.loadFromFile("IMAGES/megaman.png");
 	slope_texture.loadFromFile("IMAGES/platform.jpg");
 	background.setTexture("IMAGES/background.jpg");
 	enemy_texture.loadFromFile("IMAGES/skull.png");
@@ -357,7 +351,7 @@ void Game::initTextures()
 void Game::initVariables()
 {
 	currentProgress = 0.f;
-	maxProgress = 250.f;
+	maxProgress = GAME_MAX_PROGRESS;
 	points = 0;
 	previous_pos.x = -1.f;
 	background.setScale(sf::Vector2f(1.f, 0.8f));
@@ -411,7 +405,7 @@ void Game::restartGame()
 {
 	clearVectors();
 	initVariables();
-	initPlayer();
+	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
 	initSpawnSlope();
 }
 
@@ -423,7 +417,7 @@ void Game::initialize()
 	initFont();
 	initText();
 	initVariables();
-	initPlayer();
+	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
 	initItemEffectBar();
 	initSpawnSlope();
 	initProgressBar();

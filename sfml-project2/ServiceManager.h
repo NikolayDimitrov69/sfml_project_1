@@ -3,14 +3,17 @@
 
 using VoidPtr = std::shared_ptr<void>;
 
+#define DECLARE_SINGLETON(type)  \
+    static type& GetInstance() {\
+        static type instance;\
+        return instance;\
+    }\
+    private:\
+    type() = default;\
+    public:\
+
 class ServiceManager {
 public:
-    // Singleton instance
-    static ServiceManager& GetInstance() {
-        static ServiceManager instance;
-        return instance;
-    }
-
     // Retrieve a service by type
     template<typename T>
     std::shared_ptr<T> GetService() {
@@ -23,6 +26,7 @@ public:
 
     void RegisterNeededServices();
 
+    DECLARE_SINGLETON(ServiceManager);
 private:
     // Register a service using its type
     template<typename T>
@@ -30,7 +34,7 @@ private:
         services[TypeIdGenerator::Get<T>()] = std::make_shared<T>();
     }
     
-    ServiceManager() = default;
+    
 
     std::unordered_map<std::size_t, VoidPtr> services;
 };
