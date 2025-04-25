@@ -78,7 +78,6 @@ private:
 	//Initializer functions
 	void initMenus();
 	void initWindow();
-	void initPlayer();
 	void initProgressBar();
 	void setupItemEffectBar(ItemEffectBar& ieb,sf::Texture& texture, float verticalPos);
 	void initItemEffectBar();

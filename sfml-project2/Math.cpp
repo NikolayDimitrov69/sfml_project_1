@@ -1,5 +1,6 @@
 #include "precompheaders.h"
 #include "Math.h"
+#include "Essentials.h"
 
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {
@@ -13,7 +14,7 @@ float findAngleCos(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
 	float hypotenuse = sqrt((pointA.x - pointB.x) * (pointA.x - pointB.x) + (pointA.y - pointB.y) * (pointA.y - pointB.y));
 	float cos = adjecent / hypotenuse;
 	angle = static_cast<float>(acos(cos));
-	angle = (angle * 180) / 3.1415;
+	angle = (angle * 180) / UTILITY_M_PI;
 	return angle;
 }
 
@@ -24,7 +25,7 @@ float findAngleTan(const sf::Vector2f& pointA, const sf::Vector2f& pointB)
 	float adjecent = pointB.x - pointA.x;
 	float tangens = opposite / adjecent;
 	angle = static_cast<float>(atan(tangens));
-	angle = (angle * 180) / 3.1415;
+	angle = (angle * 180) / UTILITY_M_PI;
 	return angle;
 }
 
