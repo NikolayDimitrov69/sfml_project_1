@@ -68,8 +68,7 @@ private:
 	void initSprite();
 
 	//Push_back attack whenever spawned
-	void createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
-	void createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
+	void createAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, int amount);
 
 	//Renderers
 	void renderHealth(sf::RenderTarget& target);

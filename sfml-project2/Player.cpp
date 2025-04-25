@@ -194,9 +194,9 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 			TurnRight();
 
 		if (doubleAttCooldown < PLAYER_DOUBLE_ATTACK_TIMER)
-			createDoubleAttack(mousePos, targetSize);
+			createAttack(mousePos, targetSize, GAME_DEFAULT_ATTACK_COUNT * 2);
 
-		createSingleAttack(mousePos, targetSize);
+		createAttack(mousePos, targetSize, GAME_DEFAULT_ATTACK_COUNT);
 	}
 	else
 		actionstate = EActionState::NOT_SHOOTING;
@@ -212,41 +212,22 @@ void Player::updateHealth()
 	health.healthbar.update(GetService<PlayerManagerService>()->GetSprite(), health.m_Health, health.currentHealth);
 }
 
-void Player::createSingleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
+void Player::createAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize, int amount)
 {
 	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
 	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
 	{
 		attCooldown = 0.f;
-		Attack attack(attack_texture, 194, 60);
-		attack.setShootDir(mousePos, sprite.getPosition());
-		attack.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
-		attack.spawn(sprite);
-		attacks.push_back(attack);
-	}
-}
-
-void Player::createDoubleAttack(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
-{
-	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
-	if (attCooldown >= attackCooldown && mousePos.x > 0 && mousePos.y > 0 && mousePos.x < targetSize.x && mousePos.y < targetSize.y)
-	{
-		attCooldown = 0.f;
-		Attack attack(attack_texture, 194, 60);
-		attack.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
-		attack.setShootDir(mousePos, sprite.getPosition(), 5);
-
-		attack.spawn(sprite);
-
-		Attack attack2(attack_texture, 194, 60);
-		attack2.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
-		attack2.setShootDir(mousePos, sprite.getPosition(), -5);
-		attack2.spawn(sprite);
-
-
-		attacks.push_back(attack);
-
-		attacks.push_back(attack2);
+		float baseAngle = -(GAME_ATTACK_OFFSET_ANGLE * (amount - 1) / 2.f);
+		for (int i = 0; i < amount; i++)
+		{
+			float angleOffset = baseAngle + i * GAME_ATTACK_OFFSET_ANGLE;
+			Attack attack(attack_texture, 194, 60);
+			attack.changeDirection(mousePos.x < sprite.getPosition().x ? -1 : 1);
+			attack.setShootDir(mousePos, sprite.getPosition(), angleOffset);
+			attack.spawn(sprite);
+			attacks.push_back(attack);
+		}
 	}
 }
 
