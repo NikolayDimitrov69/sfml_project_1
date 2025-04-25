@@ -161,6 +161,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EssentialFunctions.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Gameover.cpp" />
     <ClCompile Include="Bar.cpp" />
     <ClCompile Include="IEnemy.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="RangedEnemy.cpp" />
     <ClCompile Include="ServiceManager.cpp" />
     <ClCompile Include="Slope.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
@@ -196,9 +198,11 @@
     <ClInclude Include="EssentialFunctions.h" />
     <ClInclude Include="Essentials.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Gameover.h" />
     <ClInclude Include="Bar.h" />
     <ClInclude Include="IEnemy.h" />
+    <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="TypeIdGenerator.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Math.h" />
