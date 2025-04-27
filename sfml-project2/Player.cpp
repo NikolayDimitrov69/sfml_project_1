@@ -1,6 +1,5 @@
 #include "precompheaders.h"
 #include "Player.h"
-#include "Essentials.h"
 #include "PlayerManagerService.h"
 
 void Player::initPlayerHealth()

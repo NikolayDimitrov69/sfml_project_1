@@ -1,0 +1,25 @@
+{
+  "textureConfig" : {
+	  "textures" : 
+		[
+		  { "name": "slope", "path": "IMAGES/platform.jpg" },
+		  { "name": "background", "path": "IMAGES/background.jpg" },
+		  { "name": "enemy", "path": "IMAGES/skull.png" },
+		  { "name": "rangedEnemy", "path": "IMAGES/ranged_skull.png" },
+		  { "name": "heart", "path": "IMAGES/heart.png" },
+		  { "name": "doubleAttack", "path": "IMAGES/double_attack.png" },
+		  { "name": "doubleJump", "path": "IMAGES/double_jump.png" },
+		  { "name": "boostAttack", "path": "IMAGES/boost_attack.png" },
+		  { "name": "gameover", "path": "IMAGES/gameover.png" },
+		  { "name": "home", "path": "IMAGES/home_screen.png" },
+		  { "name": "stageComplete", "path": "IMAGES/stage_complete.png" },
+		  { "name": "click", "path": "IMAGES/click.png" },
+		  { "name": "pause", "path": "IMAGES/paused.png" },
+		  { "name": "resume", "path": "IMAGES/resume_button.png" },
+		  { "name": "restart", "path": "IMAGES/restart_button.png" },
+		  { "name": "quit", "path": "IMAGES/quit_button.png" },
+		  { "name": "megamanAttack", "path": "IMAGES/megaman_attack.png" },
+		  { "name": "rangedSkullAttack", "path": "IMAGES/ranged_skull_attack.png" }
+		]
+  }
+}

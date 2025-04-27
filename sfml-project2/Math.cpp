@@ -1,6 +1,5 @@
 #include "precompheaders.h"
 #include "Math.h"
-#include "Essentials.h"
 
 sf::Vector2f normalize(const sf::Vector2f& vector)
 {

@@ -9,6 +9,13 @@
 #include <string>
 #include <cassert>
 #include <unordered_map>
+#include <fstream>
+#include <unordered_set>
+
+#include <../Externals/json.hpp>
+using json = nlohmann::json;
+
+#include <../sfml-project2/Essentials.h>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>

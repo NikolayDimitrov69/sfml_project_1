@@ -3,15 +3,6 @@
 
 using VoidPtr = std::shared_ptr<void>;
 
-#define DECLARE_SINGLETON(type)  \
-    static type& GetInstance() {\
-        static type instance;\
-        return instance;\
-    }\
-    private:\
-    type() = default;\
-    public:\
-
 class ServiceManager {
 public:
     // Retrieve a service by type

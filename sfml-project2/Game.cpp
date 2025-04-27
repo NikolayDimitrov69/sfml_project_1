@@ -3,8 +3,8 @@
 #include "Player.h"
 #include "RangedEnemy.h"
 #include "Enemy.h"
-#include "Essentials.h"
 #include "PlayerManagerService.h"
+#include "TextureLoader.h"
 
 void Game::initMenus()
 {
@@ -405,19 +405,20 @@ void Game::restartGame()
 {
 	clearVectors();
 	initVariables();
-	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
+	GetService<PlayerManagerService>()->InitializePlayer();
 	initSpawnSlope();
 }
 
 void Game::initialize()
 {
+	GetConfigLoader().Initialize();
 	GetServiceManager().RegisterNeededServices();
 	initWindow();
 	initTextures();
 	initFont();
 	initText();
 	initVariables();
-	GetServiceManager().GetService<PlayerManagerService>()->InitializePlayer();
+	GetService<PlayerManagerService>()->InitializePlayer();
 	initItemEffectBar();
 	initSpawnSlope();
 	initProgressBar();

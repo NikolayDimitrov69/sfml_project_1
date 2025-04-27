@@ -1,6 +1,7 @@
 #pragma once
 
 // GAME constants
+constexpr const char* GAME_CONFIG_FILE_PATH = "../game/config.json";
 constexpr float		GAME_PROGRESSION_PER_FRAME = 0.00f;
 constexpr float		GAME_SLOPE_SPAWN_TIMER = 225.f;
 constexpr float		GAME_ITEM_SLOPE_SPAWN_TIMER = 1000.f;
@@ -8,7 +9,7 @@ constexpr float		GAME_INIT_SLOPE_FALL_SPEED = 1.2f;
 constexpr int		GAME_WINDOW_WIDTH = 1600;
 constexpr int		GAME_WINDOW_HEIGHT = 800;
 constexpr float     GAME_WINDOW_SCALE = 2;
-constexpr float		GAME_MAX_PROGRESS = 1000000000.f;
+constexpr float		GAME_MAX_PROGRESS = 10000.f;
 constexpr float		GAME_ATTACK_OFFSET_ANGLE = 5.f;
 constexpr int		GAME_DEFAULT_ATTACK_COUNT = 1;
 
@@ -41,3 +42,88 @@ constexpr float		ENEMY_SPAWN_TIMER = 200.f;
 
 // UTILITY constants
 constexpr double	UTILITY_M_PI = 3.141592653589793;
+
+// Macros
+
+#define DECLARE_SINGLETON(type)  \
+    static type& GetInstance() {\
+        static type instance;\
+        return instance;\
+    }\
+    private:\
+    type() = default;\
+    public:
+
+template <typename T>
+T& GetSingletonInstance()
+{
+    return T::GetInstance();
+}
+
+#define ReturnUnless(condition) \
+    if(!(condition)) \
+        return;
+
+#define ReturnIf(condition) \
+    if((condition)) \
+        return;
+
+#define ContinueUnless(condition) \
+    if(!(condition)) \
+        continue;
+
+#define ContinueIf(condition) \
+    if((condition)) \
+        continue;
+
+#define BrakeUnless(condition) \
+    if(!(condition)) \
+        break;
+
+#define BrakeIf(condition) \
+    if((condition)) \
+        break;
+
+#define AssertReturnUnless(condition) \
+    if(!(condition)) { \
+        assert(!(condition)); \
+        return; \
+    }
+
+#define AssertReturnIf(condition) \
+    if(condition) { \
+        assert(condition); \
+        return; \
+    }
+
+#define AssertContinueUnless(condition) \
+    if(!(condition)) { \
+        assert(!(condition)); \
+        continue; \
+    }
+
+#define AssertContinueIf(condition) \
+    if(condition) { \
+        assert(condition); \
+        continue; \
+    }
+
+#define AssertBrakeUnless(condition) \
+    if(!(condition)) { \
+        assert(!(condition)); \
+        break; \
+    }
+
+#define AssertBrakeIf(condition) \
+    if(condition) { \
+        assert(condition); \
+        break; \
+    }
+#define ThrowUnless(condition, exception) \
+    if(!(condition)) \
+        throw exception;
+
+#define ThrowIf(condition, exception) \
+    do\
+    if((condition)) \
+        throw exception;

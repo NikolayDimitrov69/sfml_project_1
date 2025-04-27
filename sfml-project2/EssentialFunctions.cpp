@@ -1,10 +1,16 @@
 #include "precompheaders.h"
 #include "EssentialFunctions.h"
 #include "PlayerManagerService.h"
+#include "IConfigLoader.h"
 
 ServiceManager& GetServiceManager()
 {
-	return ServiceManager::GetInstance();
+	return GetSingletonInstance<ServiceManager>();
+}
+
+MainConfigLoader& GetConfigLoader()
+{
+	return GetSingletonInstance<MainConfigLoader>();
 }
 
 Player* GetPlayerObject()
