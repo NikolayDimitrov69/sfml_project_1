@@ -1,6 +1,7 @@
 {
-  "textureConfig" : {
-	  "textures" : 
+  "textureConfig" : 
+  {
+		"textures" : 
 		[
 		  { "name": "slope", "path": "IMAGES/platform.jpg" },
 		  { "name": "background", "path": "IMAGES/background.jpg" },
@@ -20,6 +21,19 @@
 		  { "name": "quit", "path": "IMAGES/quit_button.png" },
 		  { "name": "megamanAttack", "path": "IMAGES/megaman_attack.png" },
 		  { "name": "rangedSkullAttack", "path": "IMAGES/ranged_skull_attack.png" }
+		]
+  },
+  "enemySpawnerConfig" : {
+		"spawnRates" : 
+		[
+		  { "enemyType" : 1, "weight" : 70 },
+		  { "enemyType" : 2, "weight" : 30 }
+		]
+  },
+  "enemySpawnerConfig" : {
+		"spawnRates" : 
+		[
+		  { "enemyType" : 1, "weight" : 70 }
 		]
   }
 }
