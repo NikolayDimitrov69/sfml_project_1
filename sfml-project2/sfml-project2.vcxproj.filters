@@ -87,6 +87,12 @@
     <ClCompile Include="IConfigLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EnemySpawnerConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WeightedList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -168,6 +174,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IConfigLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySpawnerConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WeightedList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

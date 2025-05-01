@@ -158,6 +158,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="EnemySpawnerConfig.cpp" />
     <ClCompile Include="IConfigLoader.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EssentialFunctions.cpp" />
@@ -188,11 +189,13 @@
     <ClCompile Include="ServiceManager.cpp" />
     <ClCompile Include="Slope.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="WeightedList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="Background.h" />
+    <ClInclude Include="EnemySpawnerConfig.h" />
     <ClInclude Include="IConfigLoader.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Enemy.h" />
@@ -217,6 +220,7 @@
     <ClInclude Include="RangedEnemy.h" />
     <ClInclude Include="ServiceManager.h" />
     <ClInclude Include="Slope.h" />
+    <ClInclude Include="WeightedList.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
