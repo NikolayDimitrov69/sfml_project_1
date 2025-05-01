@@ -1,9 +1,10 @@
 #include "precompheaders.h"
 #include "Enemy.h"
 #include "Constants.h"
+#include "TextureLoader.h"
 
 
-Enemy::Enemy(const sf::Texture& texture)
+Enemy::Enemy()
 {
 	immunityCoolDown = ENEMY_MAX_IMMUNITY_TIMER;
 	state = EMovementState::IDLE;
@@ -11,7 +12,8 @@ Enemy::Enemy(const sf::Texture& texture)
 	damage = ENEMY_DAMAGE;
 	maxHP = ENEMY_MAX_HEALTH;
 	currentHP = maxHP;
-	setTexure(texture);
+	auto texture = GetConfigLoader().Get<TextureLoader>()->GetTexture("enemy");
+	setTexure(*texture);
 	sprite.setTextureRect(sf::IntRect(0, 0, 50, 32));
 	sprite.setScale(-3.f, 3.f);
 	sprite.setOrigin(sprite.getLocalBounds().width / 1.5f, sprite.getLocalBounds().height / 2.f);

@@ -9,11 +9,9 @@ class RangedEnemy : public IEnemy
 
 	float movingTimer;
 
-	sf::Texture attackTexture;
-
 	void createAttack(const sf::Vector2f& playerpos);
 public:
-	RangedEnemy(const sf::Texture& texture);
+	RangedEnemy();
 
 	void updateAttack(const sf::Vector2u& targetSize);
 

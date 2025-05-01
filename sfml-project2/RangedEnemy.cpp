@@ -1,13 +1,15 @@
 #include "precompheaders.h"
 #include "RangedEnemy.h"
 #include "Constants.h"
+#include "TextureLoader.h"
 
 void RangedEnemy::createAttack(const sf::Vector2f& playerpos)
 {
 	if (attackCooldown >= ENEMY_RANGED_ATTACK_COOLDOWN)
 	{
 		attackCooldown = 0.f;
-		Attack attack(attackTexture, 10, 10, 4.f, 7.f);
+		auto texture = GetConfigLoader().Get<TextureLoader>()->GetTexture("rangedSkullAttack");
+		Attack attack(*texture, 10, 10, 4.f, 7.f);
 		attack.setShootDir(playerpos, sprite.getPosition());
 		attack.changeDirection(playerpos.x < sprite.getPosition().x ? -1 : 1);
 		attack.spawn(sprite);
@@ -15,17 +17,17 @@ void RangedEnemy::createAttack(const sf::Vector2f& playerpos)
 	}
 }
 
-RangedEnemy::RangedEnemy(const sf::Texture& texture)
+RangedEnemy::RangedEnemy()
 {
 	immunityCoolDown = ENEMY_MAX_IMMUNITY_TIMER;
-	attackTexture.loadFromFile("IMAGES/ranged_skull_attack.png");
 	attackCooldown = 0.f;
 	state = EMovementState::MOVING;
 	ac_state = EActionState::NOT_SHOOTING;
 	damage = ENEMY_RANGED_DAMAGE;
 	maxHP = ENEMY_RANGED_MAX_HEALTH;
 	currentHP = maxHP;
-	setTexure(texture);
+	auto texture = GetConfigLoader().Get<TextureLoader>()->GetTexture("rangedEnemy");
+	setTexure(*texture);
 	sprite.setTextureRect(sf::IntRect(0, 0, 50, 32));
 	sprite.setScale(-3.f, 3.f);
 	sprite.setOrigin(sprite.getLocalBounds().width / 1.5f, sprite.getLocalBounds().height / 2.f);

@@ -9,7 +9,7 @@ void Item::updateFrame()
 
 Item::Item(const sf::Texture& texture, EItemType spec, float nspeed)
 {
-	itemSpec = spec;
+	itemType = spec;
 	speed = nspeed;
 	itemSprite.setTexture(texture);
 	itemSprite.setTextureRect(sf::IntRect(0, 0, texture.getSize().x / 4, texture.getSize().y));
@@ -31,9 +31,9 @@ sf::FloatRect Item::getGlobalBounds() const
 	return itemSprite.getGlobalBounds();
 }
 
-EItemType Item::getItemSpec() const
+EItemType Item::GetItemType() const
 {
-	return itemSpec;
+	return itemType;
 }
 
 void Item::update()

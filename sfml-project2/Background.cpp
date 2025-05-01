@@ -1,13 +1,13 @@
 #include "precompheaders.h"
 #include "Background.h"
-
+#include "TextureLoader.h"
 Background::Background()
 {}
 
-void Background::setTexture(const std::string& path)
+void Background::Init()
 {
-	backgroundTexture.loadFromFile(path);
-	backgroundSprite.setTexture(backgroundTexture);
+	auto texture = GetConfigLoader().Get<TextureLoader>()->GetTexture("background");
+	backgroundSprite.setTexture(*texture);
 }
 
 void Background::setScale(const sf::Vector2f& scale)

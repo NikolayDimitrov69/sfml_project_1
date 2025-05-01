@@ -6,7 +6,7 @@ class Item
 {
 private:
 	sf::Sprite itemSprite;
-	EItemType itemSpec;
+	EItemType itemType;
 	Animation frame;
 	float speed;
 
@@ -21,7 +21,7 @@ public:
 
 	sf::FloatRect getGlobalBounds() const;
 	
-	EItemType getItemSpec() const;
+	EItemType GetItemType() const;
 
 	void update();
 

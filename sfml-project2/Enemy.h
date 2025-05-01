@@ -4,7 +4,7 @@
 class Enemy : public IEnemy
 {	
 public:
-	Enemy(const sf::Texture& texture);
+	Enemy();
 	
 	void update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize);
 

@@ -19,9 +19,9 @@ void TextureLoader::Update(const json& data)
 		ContinueUnless(JsonParse(textureJson, "path", path));
 
 		TexturePtr texture(new sf::Texture);
-		AssertContinueUnless(texture->loadFromFile(path) && "Failed to load texture");
+		ContinueUnless(texture->loadFromFile(path));
 
-		AssertContinueIf(textures.find(name) != textures.end());
+		ContinueUnless(textures.find(name) == textures.end());
 		textures[name] = std::move(texture);
 	}
 }

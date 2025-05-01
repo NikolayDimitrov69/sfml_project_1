@@ -44,42 +44,26 @@ private:
 
 	EGameState gamestate;
 
-	//Player pointer
-	/*Player* player;
-	sf::Texture player_texture;*/
-
-	//Background
 	Background background;
 
 	//Sloper vector
 	std::vector<Slope> slopes;
 	sf::Vector2f previous_pos;
-	sf::Texture slope_texture;
 	float slopeSpawnTimer;
 
-	sf::Texture gameoverTexture;
-	sf::Texture homeTexture;
-	sf::Texture stageCompleteTexture;
-
 	//Items things lol
-	sf::Texture heartTexture;
-	sf::Texture doubleAttTexture;
-	sf::Texture doubleJumpTexture;
-	sf::Texture boostAttack;
 	std::vector<Item> items;
 	float itemSlopeSpawnTimer;
 
 	//Enemy vector
 	std::vector<IEnemy *> enemies;
-	sf::Texture enemy_texture;
-	sf::Texture rangedEnemy_texture;
 	float enemySpawnTimer;
 
 	//Initializer functions
 	void initMenus();
 	void initWindow();
 	void initProgressBar();
-	void setupItemEffectBar(ItemEffectBar& ieb,sf::Texture& texture, float verticalPos);
+	void setupItemEffectBar(ItemEffectBar& ieb,const sf::Texture& texture, float verticalPos);
 	void initItemEffectBar();
 
 	//Containers for mouse position
@@ -91,10 +75,6 @@ private:
 	void renderItemEffectBar();
 
 	void spawnItemAndItemSlope();
-
-	void spawnRangedEnemy();
-
-	void spawnHomingEnemy();
 
 	void spawnRandomEnemy();
 
@@ -121,25 +101,14 @@ private:
 
 	//Mouse position updater
 	void updateMousePosition();
-
-	//Will check for collision between the player and an object on the screen
 	void checkCollision();
-	void initTextures();
 	void initVariables();
-
 	void initFont();
 	void initText();
-
 	void updateText();
-
 	void renderText();
-
 	void applyItemEffect(EItemType spec);
-
-	//Clears all vectors
 	void clearVectors();
-
-	//Will restart the game by clearing all vectors and calling all initializer functions again
 	void restartGame();
 public:
 	void initialize();

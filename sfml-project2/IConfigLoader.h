@@ -21,7 +21,7 @@ public:
     void registerLoader(const std::string& configName)
     {
         auto loader = std::make_shared<T>();
-        AssertReturnIf(registeredLoaders.count(loader.get()) &&
+        ReturnIf(registeredLoaders.count(loader.get()) &&
             "This loader instance is already registered under a different name!");
         
         ConfigLoaderData data;
@@ -33,7 +33,7 @@ public:
     }
 
     template <typename T>
-    ConfigPtr Get()
+    std::shared_ptr<T> Get()
     {
         auto it = loaders.find(TypeIdGenerator::Get<T>());
         if (it != loaders.end()) {

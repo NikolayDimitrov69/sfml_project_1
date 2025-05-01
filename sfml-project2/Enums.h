@@ -54,3 +54,12 @@ enum class EGameState : int
 	Quit,
 	COUNT
 };
+
+enum class EEnemyType : int
+{
+	INVALID = -1,
+	NONE = 0,
+	Homing,
+	Ranged,
+	COUNT
+};

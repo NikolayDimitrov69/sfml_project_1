@@ -5,12 +5,15 @@
 #include "Enemy.h"
 #include "PlayerManagerService.h"
 #include "TextureLoader.h"
+#include "EnemySpawnerConfig.h"
 
 void Game::initMenus()
 {
-	go_window.setTexture(gameoverTexture, 3, 7.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
-	home_window.setTexture(homeTexture, 1, 5.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.f));
-	stage_complete_window.setTexture(stageCompleteTexture, 1, 8.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
+	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
+	ReturnUnless(textureLoader);
+	go_window.setTexture(*textureLoader->GetTexture("gameover"), 3, 7.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
+	home_window.setTexture(*textureLoader->GetTexture("home"), 1, 5.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.f));
+	stage_complete_window.setTexture(*textureLoader->GetTexture("stageComplete"), 1, 8.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
 }
 
 void Game::initWindow()
@@ -26,7 +29,7 @@ void Game::initProgressBar()
 	progressBar.setPosition(sf::Vector2f(window->getSize().x/ 4.f, 25));
 }
 
-void Game::setupItemEffectBar(ItemEffectBar& ieb, sf::Texture& texture, float verticalPos)
+void Game::setupItemEffectBar(ItemEffectBar& ieb, const sf::Texture& texture, float verticalPos)
 {
 	ieb.sprite.setTexture(texture);
 	ieb.sprite.setTextureRect(sf::IntRect(0, 0, texture.getSize().x / 4.f, texture.getSize().y));
@@ -41,8 +44,11 @@ void Game::setupItemEffectBar(ItemEffectBar& ieb, sf::Texture& texture, float ve
 
 void Game::initItemEffectBar()
 {
-	setupItemEffectBar(player_doubleAttackTimer, doubleAttTexture, window->getSize().y / 3.f);
-	setupItemEffectBar(player_boostAttackTimer, boostAttack, window->getSize().y / 3.f + boostAttack.getSize().y * 5.f);
+	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
+	ReturnUnless(textureLoader);
+
+	setupItemEffectBar(player_doubleAttackTimer, *textureLoader->GetTexture("doubleAttack"), window->getSize().y / 3.f);
+	setupItemEffectBar(player_boostAttackTimer, *textureLoader->GetTexture("boostAttack"), window->getSize().y / 3.f + textureLoader->GetTexture("boostAttack")->getSize().y * 5.f);
 }
 
 void Game::updateMousePosition()
@@ -54,7 +60,10 @@ void Game::updateMousePosition()
 
 void Game::spawnSlope()
 {
-	Slope slope(slope_texture);
+	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
+	ReturnUnless(textureLoader);
+
+	Slope slope(*textureLoader->GetTexture("slope"));
 	slope.setFallSpeed(GAME_INIT_SLOPE_FALL_SPEED);
 	slope.setScale(sf::Vector2f(3.f, 3.f));
 	slope.setRandomVertPos(window->getSize(), previous_pos);
@@ -89,7 +98,10 @@ void Game::renderItemEffectBar()
 
 void Game::spawnItemAndItemSlope()
 {
-	Slope slope(slope_texture);
+	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
+	ReturnUnless(textureLoader);
+
+	Slope slope(*textureLoader->GetTexture("slope"));
 	slope.setFallSpeed(0.5f);
 	slope.setScale(sf::Vector2f(2.f, 2.f));
 	
@@ -97,13 +109,13 @@ void Game::spawnItemAndItemSlope()
 
 	switch (rand() % 4)
 	{
-	case 0: item = Item(heartTexture, EItemType::HEAL, 0.5f);
+	case 0: item = Item(*textureLoader->GetTexture("heart"), EItemType::HEAL, 0.5f);
 		break;
-	case 1: item = Item(doubleAttTexture, EItemType::DOUBLE_ATTACK, 0.5f);
+	case 1: item = Item(*textureLoader->GetTexture("doubleAttack"), EItemType::DOUBLE_ATTACK, 0.5f);
 		break;
-	case 2: item = Item(doubleJumpTexture, EItemType::DOUBLE_JUMP, 0.5f);
+	case 2: item = Item(*textureLoader->GetTexture("doubleJump"), EItemType::DOUBLE_JUMP, 0.5f);
 		break;
-	case 3: item = Item(boostAttack, EItemType::BOOST_ATTACK, 0.5f);
+	case 3: item = Item(*textureLoader->GetTexture("boostAttack"), EItemType::BOOST_ATTACK, 0.5f);
 		break;
 	default:
 		break;
@@ -160,7 +172,7 @@ void Game::updateItemsAndItemSlopes()
 		items[i].update();
 		if (items[i].getGlobalBounds().intersects(player->getGlobalBounds()))
 		{
-			applyItemEffect(items[i].getItemSpec());
+			applyItemEffect(items[i].GetItemType());
 			items.erase(items.begin() + i);
 		}
 	}
@@ -201,32 +213,34 @@ void Game::updateSlopeVector()
 
 }
 
-void Game::spawnRangedEnemy()
-{
-	IEnemy* enemy = new RangedEnemy(rangedEnemy_texture);
-	enemy->randomizeSpawnPosition(window->getSize());
-	enemies.push_back(enemy);
-}
-
-void Game::spawnHomingEnemy()
-{
-	IEnemy* enemy = new Enemy(enemy_texture);
-	enemy->randomizeSpawnPosition(window->getSize());
-	enemies.push_back(enemy);
-}
-
 void Game::spawnRandomEnemy()
 {
-	int a = rand() % 100;
-	if (a > 0 && a <= 30)
-	{
-		spawnRangedEnemy();
-	}
-	else if (a > 30 && a < 100)
-	{
-		spawnHomingEnemy();
-	}
+	auto cfg = GetConfigLoader().Get<EnemySpawnerConfig>();
+	ReturnUnless(cfg);
 	
+	IEnemy* enemy = nullptr;
+
+	switch (cfg->GetWeightedSpawnRates().GetRandomItem())
+	{
+	case EEnemyType::Homing:
+	{
+		enemy = new Enemy();
+		break;
+	}
+	case EEnemyType::Ranged:
+	{
+		enemy = new RangedEnemy();
+		break;
+	}
+	default:
+		assert(false && "unkown type of enemy");
+	}
+
+	ReturnUnless(enemy);
+
+	enemy->randomizeSpawnPosition(window->getSize());
+	enemies.push_back(enemy);
+
 	enemySpawnTimer = 0.f;
 }
 
@@ -315,8 +329,11 @@ void Game::pollEvents()
 
 void Game::initSpawnSlope()
 {
+	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
+	ReturnUnless(textureLoader);
+
 	auto player = GetPlayerObject();
-	Slope slope(slope_texture);
+	Slope slope(*textureLoader->GetTexture("slope"));
 	slope.setScale(sf::Vector2f(10.f, 10.f));
 	slope.setPostion(sf::Vector2f(player->getGlobalBounds().left - slope.getGlobalBounds().width / 2.7f, 
 								  player->getGlobalBounds().top + player->getGlobalBounds().height));
@@ -333,21 +350,6 @@ void Game::checkCollision()
 		player->setPhysicState(EPhysicState::MID_AIR);
 }
 
-void Game::initTextures()
-{
-	slope_texture.loadFromFile("IMAGES/platform.jpg");
-	background.setTexture("IMAGES/background.jpg");
-	enemy_texture.loadFromFile("IMAGES/skull.png");
-	rangedEnemy_texture.loadFromFile("IMAGES/ranged_skull.png");
-	heartTexture.loadFromFile("IMAGES/heart.png");
-	doubleAttTexture.loadFromFile("IMAGES/double_attack.png");
-	doubleJumpTexture.loadFromFile("IMAGES/double_jump.png");
-	boostAttack.loadFromFile("IMAGES/boost_attack.png");
-	gameoverTexture.loadFromFile("IMAGES/gameover.png");
-	homeTexture.loadFromFile("IMAGES/home_screen.png");
-	stageCompleteTexture.loadFromFile("IMAGES/stage_complete.png");
-}
-
 void Game::initVariables()
 {
 	currentProgress = 0.f;
@@ -359,6 +361,7 @@ void Game::initVariables()
 	enemySpawnTimer = 0.f;
 	slopeSpawnTimer = 0.f;
 	itemSlopeSpawnTimer = 0.f;
+	background.Init();
 }
 
 void Game::initFont()
@@ -414,7 +417,6 @@ void Game::initialize()
 	GetConfigLoader().Initialize();
 	GetServiceManager().RegisterNeededServices();
 	initWindow();
-	initTextures();
 	initFont();
 	initText();
 	initVariables();
