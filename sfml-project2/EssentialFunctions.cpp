@@ -17,3 +17,8 @@ Player* GetPlayerObject()
 {
     return GetService<PlayerManagerService>()->GetPlayer();
 }
+
+int RandomNumber(int min, int max)
+{
+	return min + (std::rand() % (max - min + 1));
+}
