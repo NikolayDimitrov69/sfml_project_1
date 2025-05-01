@@ -60,13 +60,13 @@ T& GetSingletonInstance()
     return T::GetInstance();
 }
 
-#define ReturnUnless(condition) \
+#define ReturnUnless(condition, _ARGS) \
     if(!(condition)) \
-        return;
+        return _ARGS;
 
-#define ReturnIf(condition) \
+#define ReturnIf(condition, _ARGS) \
     if((condition)) \
-        return;
+        return _ARGS;
 
 #define ContinueUnless(condition) \
     if(!(condition)) \
@@ -84,41 +84,6 @@ T& GetSingletonInstance()
     if((condition)) \
         break;
 
-#define AssertReturnUnless(condition) \
-    if(!(condition)) { \
-        assert(!(condition)); \
-        return; \
-    }
-
-#define AssertReturnIf(condition) \
-    if(condition) { \
-        assert(condition); \
-        return; \
-    }
-
-#define AssertContinueUnless(condition) \
-    if(!(condition)) { \
-        assert(!(condition)); \
-        continue; \
-    }
-
-#define AssertContinueIf(condition) \
-    if(condition) { \
-        assert(condition); \
-        continue; \
-    }
-
-#define AssertBrakeUnless(condition) \
-    if(!(condition)) { \
-        assert(!(condition)); \
-        break; \
-    }
-
-#define AssertBrakeIf(condition) \
-    if(condition) { \
-        assert(condition); \
-        break; \
-    }
 #define ThrowUnless(condition, exception) \
     if(!(condition)) \
         throw exception;
