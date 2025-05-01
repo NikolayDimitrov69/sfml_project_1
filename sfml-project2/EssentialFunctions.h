@@ -4,15 +4,24 @@ class ServiceManager;
 class Player;
 class MainConfigLoader;
 
+template <typename T>
+inline bool IsValidEnum(T val)
+{
+	ReturnIf((int)val > (int)T::NONE && (int)val < (int)T::COUNT, true);
+	return false;
+}
+
 ServiceManager& GetServiceManager();
 
 MainConfigLoader& GetConfigLoader();
 
 template <typename Service>
-std::shared_ptr<Service> GetService()
+inline std::shared_ptr<Service> GetService()
 {
 	return GetServiceManager().GetService<Service>();
 }
 
 Player* GetPlayerObject();
+
+int RandomNumber(int min, int max);
 
