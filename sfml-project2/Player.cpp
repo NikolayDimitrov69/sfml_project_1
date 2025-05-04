@@ -35,7 +35,7 @@ Player::Player()
 	, physicstate(EPhysicState::MID_AIR)
 	, playerstate(EMovementState::IDLE)
 	, timer(0.f)
-	, actionstate(EActionState::NONE)
+	, actionstate(EActionState::INVALID)
 {
 }
 
@@ -234,7 +234,7 @@ void Player::updateAttack(const sf::Vector2u& targetSize)
 {
 	for (int i = 0; i < attacks.size(); i++)
 	{
-		attacks[i].update(targetSize);
+		attacks[i].update();
 		if (attacks[i].isOutOfBounds())
 		{
 			attacks.erase(attacks.begin() + i);
@@ -312,8 +312,10 @@ void Player::resetBoostTimer()
 	boostAttackTimer = 0.f;
 }
 
-void Player::updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
+void Player::updatePlayer(const sf::Vector2f& mousePos)
 {
+	auto window = GetGameWindow();
+	auto targetSize = window->getSize();
 	updateAttackCooldown();
 	updateTimers();
 	updateHealth();

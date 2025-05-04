@@ -6,7 +6,7 @@ class Enemy : public IEnemy
 public:
 	Enemy();
 	
-	void update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize);
+	virtual void update() override;
 
 	void render(sf::RenderTarget& renderTarget);
 

@@ -6,9 +6,11 @@
 #include "PlayerManagerService.h"
 #include "TextureLoader.h"
 #include "EnemySpawnerConfig.h"
+#include "EnemySpawnerController.h"
 
 void Game::initMenus()
 {
+	auto window = GetGameWindow();
 	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
 	ReturnUnless(textureLoader);
 	go_window.setTexture(*textureLoader->GetTexture("gameover"), 3, 7.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
@@ -16,15 +18,9 @@ void Game::initMenus()
 	stage_complete_window.setTexture(*textureLoader->GetTexture("stageComplete"), 1, 8.f, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.5f));
 }
 
-void Game::initWindow()
-{
-	videomode = sf::VideoMode(1600, 800);
-	window = new sf::RenderWindow(videomode, "Game", sf::Style::Close | sf::Style::Titlebar);
-	window->setFramerateLimit(144);
-}
-
 void Game::initProgressBar()
 {
+	auto window = GetGameWindow();
 	progressBar.setSize(window->getSize().x / 2.f, 20.f);
 	progressBar.setPosition(sf::Vector2f(window->getSize().x/ 4.f, 25));
 }
@@ -46,6 +42,7 @@ void Game::initItemEffectBar()
 {
 	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
 	ReturnUnless(textureLoader);
+	auto window = GetGameWindow();
 
 	setupItemEffectBar(player_doubleAttackTimer, *textureLoader->GetTexture("doubleAttack"), window->getSize().y / 3.f);
 	setupItemEffectBar(player_boostAttackTimer, *textureLoader->GetTexture("boostAttack"), window->getSize().y / 3.f + textureLoader->GetTexture("boostAttack")->getSize().y * 5.f);
@@ -53,6 +50,7 @@ void Game::initItemEffectBar()
 
 void Game::updateMousePosition()
 {
+	auto window = GetGameWindow();
 	mousePosWindow = sf::Mouse::getPosition(*window);
 	mousePosView = window->mapPixelToCoords(mousePosWindow);
 }
@@ -62,6 +60,7 @@ void Game::spawnSlope()
 {
 	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
 	ReturnUnless(textureLoader);
+	auto window = GetGameWindow();
 
 	Slope slope(*textureLoader->GetTexture("slope"));
 	slope.setFallSpeed(GAME_INIT_SLOPE_FALL_SPEED);
@@ -82,6 +81,7 @@ void Game::updateItemEffectBar()
 
 void Game::renderItemEffectBar()
 {
+	auto window = GetGameWindow();
 	auto player = GetPlayerObject();
 	if (player->getDoubleAttackTimer() <= PLAYER_DOUBLE_ATTACK_TIMER && gamestate == EGameState::Playing)
 	{
@@ -98,6 +98,7 @@ void Game::renderItemEffectBar()
 
 void Game::spawnItemAndItemSlope()
 {
+	auto window = GetGameWindow();
 	auto textureLoader = GetConfigLoader().Get<TextureLoader>();
 	ReturnUnless(textureLoader);
 
@@ -180,6 +181,7 @@ void Game::updateItemsAndItemSlopes()
 
 void Game::renderItemsAndItemSlopes()
 {
+	auto window = GetGameWindow();
 	for (size_t i = 0; i < items.size(); i++)
 	{
 		items[i].render(*window);
@@ -196,6 +198,7 @@ void Game::updateSlopeVector()
 	}
 
 	auto player = GetPlayerObject();
+	auto window = GetGameWindow();
 
 	for (size_t i = 0; i < slopes.size(); i++)
 	{
@@ -213,97 +216,9 @@ void Game::updateSlopeVector()
 
 }
 
-void Game::spawnRandomEnemy()
-{
-	auto cfg = GetConfigLoader().Get<EnemySpawnerConfig>();
-	ReturnUnless(cfg);
-	
-	IEnemy* enemy = nullptr;
-
-	switch (cfg->GetWeightedSpawnRates().GetRandomItem())
-	{
-	case EEnemyType::Homing:
-	{
-		enemy = new Enemy();
-		break;
-	}
-	case EEnemyType::Ranged:
-	{
-		enemy = new RangedEnemy();
-		break;
-	}
-	default:
-		assert(false && "unkown type of enemy");
-	}
-
-	ReturnUnless(enemy);
-
-	enemy->randomizeSpawnPosition(window->getSize());
-	enemies.push_back(enemy);
-
-	enemySpawnTimer = 0.f;
-}
-
-void Game::updateEnemyVector()
-{
-	enemySpawnTimer += 1.f;
-
-	if (enemySpawnTimer >= ENEMY_SPAWN_TIMER)
-	{
-		spawnRandomEnemy();
-	}
-
-	auto player = GetPlayerObject();
-
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		enemies[i]->update(player->getPostion(), window->getSize());
-		checkEnemyCollision(i);
-	}
-}
-
-void Game::checkEnemyCollision(const size_t& i)
-{
-	auto player = GetPlayerObject();
-	if (enemies[i]->outOfBounds(window->getSize())) {
-		delete enemies[i];
-		enemies.erase(enemies.begin() + i);
-	}
-	else if (enemies[i]->isFrameFinished()) {
-		delete enemies[i];
-		enemies.erase(enemies.begin() + i);
-	}
-	else if (enemies[i]->getActionstate() != EActionState::DYING && enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()))
-	{
-		player->takeDamage(enemies[i]->dealDamage());
-		enemies[i]->setActionState(EActionState::DYING);
-	}
-	else if (enemies[i]->attackHasHit(player->getGlobalBounds()))
-	{
-		player->takeDamage(enemies[i]->dealDamage());
-	}
-	else if (enemies[i]->getActionstate() != EActionState::DYING && player->attackHasHit(enemies[i]->getGlobalBounds()) && enemies[i]->immunityOver()) {
-		enemies[i]->takeDamage(player->dealDamage());
-		enemies[i]->resetImmunityTimer();
-		if (enemies[i]->getCurrentHP() <= 0) {
-			points++;
-			currentProgress += 3.f;
-			enemies[i]->setActionState(EActionState::DYING);
-		}
-	}
-	
-}
-
-void Game::renderEnemyVector()
-{
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		enemies[i]->render(*window);
-	}
-}
-
 void Game::renderSlopeVector()
 {
+	auto window = GetGameWindow();
 	for (size_t i = 0; i < slopes.size(); i++)
 	{
 		slopes[i].render(*window);
@@ -312,6 +227,7 @@ void Game::renderSlopeVector()
 
 void Game::pollEvents()
 {
+	auto window = GetGameWindow();
 	while (window->pollEvent(event)) {
 		switch (event.type) {
 		case sf::Event::Closed:
@@ -343,6 +259,7 @@ void Game::initSpawnSlope()
 
 void Game::checkCollision()
 {
+	auto window = GetGameWindow();
 	auto player = GetPlayerObject();
 	if (player->getGlobalBounds().top >= window->getSize().y)
 		gamestate = EGameState::GameOver;
@@ -358,7 +275,6 @@ void Game::initVariables()
 	previous_pos.x = -1.f;
 	background.setScale(sf::Vector2f(1.f, 0.8f));
 	gamestate = EGameState::Home;
-	enemySpawnTimer = 0.f;
 	slopeSpawnTimer = 0.f;
 	itemSlopeSpawnTimer = 0.f;
 	background.Init();
@@ -389,17 +305,11 @@ void Game::updateText()
 
 void Game::renderText()
 {
-	window->draw(uiText);
+	GetGameWindow()->draw(uiText);
 }
 
 void Game::clearVectors()
 {
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		delete enemies[i];
-	}
-	enemies.clear();
-	
 	slopes.clear();
 	items.clear();
 }
@@ -416,7 +326,6 @@ void Game::initialize()
 {
 	GetConfigLoader().Initialize();
 	GetServiceManager().RegisterNeededServices();
-	initWindow();
 	initFont();
 	initText();
 	initVariables();
@@ -429,6 +338,8 @@ void Game::initialize()
 
 void Game::updateMenu()
 {
+	auto window = GetGameWindow();
+
 	if (gamestate == EGameState::Paused)
 		gamestate = pause_window.update(*window, mousePosView);
 	if (gamestate == EGameState::GameOver)
@@ -441,6 +352,8 @@ void Game::updateMenu()
 
 void Game::renderMenu()
 {
+	auto window = GetGameWindow();
+
 	if (gamestate == EGameState::Paused)
 		pause_window.render(*window);
 	if (gamestate == EGameState::GameOver)
@@ -454,7 +367,7 @@ void Game::renderMenu()
 void Game::updatePlayer()
 {
 	auto player = GetPlayerObject();
-	player->updatePlayer(mousePosView, window->getSize());
+	player->updatePlayer(mousePosView);
 	if (player->getCurrentHealth() <= 0) {
 		gamestate = EGameState::GameOver;
 	}
@@ -478,7 +391,7 @@ void Game::update()
 	updateItemEffectBar();
 
 	if (gamestate == EGameState::Quit)
-		window->close();
+		GetGameWindow()->close();
 
 	if (gamestate == EGameState::Restart) {
 		restartGame();
@@ -494,11 +407,11 @@ void Game::update()
 	if (gamestate == EGameState::Playing)
 	{
 		updateProgress();
+		GetSystemObject()->get<EnemySpawnerController>()->Update();
 		checkCollision();
 		updateSlopeVector();
 		updateItemsAndItemSlopes();
 		updatePlayer();
-		updateEnemyVector();	
 		updateText();
 	}
 
@@ -506,6 +419,7 @@ void Game::update()
 
 void Game::render()
 {
+	auto window = GetGameWindow();
 	window->clear(sf::Color::White);
 
 	background.render(*window);
@@ -519,7 +433,7 @@ void Game::render()
 
 		renderSlopeVector();
 
-		renderEnemyVector();
+		GetSystemObject()->get<EnemySpawnerController>()->Render();
 
 		player->renderPlayer(*window);
 	}
@@ -535,14 +449,10 @@ void Game::render()
 
 bool Game::isRunning() const
 {
+	auto window = GetGameWindow();
 	return window->isOpen();
 }
 
 Game::~Game()
 {
-	delete window;
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		delete enemies[i];
-	}
 }

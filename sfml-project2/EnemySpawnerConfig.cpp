@@ -1,6 +1,11 @@
 #include "precompheaders.h"
 #include "EnemySpawnerConfig.h"
 
+EnemySpawnerConfig::EnemySpawnerConfig()
+	: m_DefaultSpawnCooldown(0)
+{
+}
+
 void EnemySpawnerConfig::Update(const json& section)
 {
 	json spawnRatesArr;
@@ -21,4 +26,9 @@ void EnemySpawnerConfig::Update(const json& section)
 const EnemySpawnRates& EnemySpawnerConfig::GetWeightedSpawnRates() const
 {
 	return m_WeightedSpawnRates;
+}
+
+float EnemySpawnerConfig::GetDefaultSpawnCooldown() const
+{
+	return m_DefaultSpawnCooldown;
 }

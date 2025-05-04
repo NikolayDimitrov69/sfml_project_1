@@ -24,16 +24,11 @@
 		]
   },
   "enemySpawnerConfig" : {
+		"defaultSpawnCooldown" : 200,
 		"spawnRates" : 
 		[
-		  { "enemyType" : 1, "weight" : 70 },
-		  { "enemyType" : 2, "weight" : 30 }
-		]
-  },
-  "enemySpawnerConfig" : {
-		"spawnRates" : 
-		[
-		  { "enemyType" : 1, "weight" : 70 }
+		  { "enemyType" : 0, "weight" : 70 },
+		  { "enemyType" : 1, "weight" : 30 }
 		]
   }
 }

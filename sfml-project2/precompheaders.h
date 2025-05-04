@@ -15,10 +15,10 @@
 #include <../Externals/json.hpp>
 using json = nlohmann::json;
 
-#include <../sfml-project2/Essentials.h>
-
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Network.hpp>
+
+#include <../sfml-project2/Essentials.h>

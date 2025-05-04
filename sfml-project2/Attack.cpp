@@ -79,10 +79,12 @@ void Attack::changeDirection(const float& direction)
 	m_Direction = direction;
 }
 
-void Attack::update(const sf::Vector2u& targetSize)
+void Attack::update()
 {
 	if (ac_state == EActionState::NOT_SHOOTING)
 	{
+		auto window = GetGameWindow();
+		auto targetSize = window->getSize();
 		m_Sprite.move(attackMoveSpeed * shootDir);
 		if (m_Sprite.getPosition().x > targetSize.x ||
 			m_Sprite.getPosition().x < 0 ||

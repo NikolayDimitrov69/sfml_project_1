@@ -42,7 +42,7 @@ public:
 
 	const sf::Vector2f& getPosition() const;
 
-	void randomizeSpawnPosition(const sf::Vector2u& targetSize);
+	void randomizeSpawnPosition();
 
 	sf::FloatRect getGlobalBounds() const;
 
@@ -54,7 +54,7 @@ public:
 
 	virtual bool attackHasHit(const sf::FloatRect& object) = 0;
 
-	virtual void update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize) = 0;
+	virtual void update() = 0;
 	
 	virtual void render(sf::RenderTarget& target) = 0;
 

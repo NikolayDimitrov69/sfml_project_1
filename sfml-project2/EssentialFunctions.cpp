@@ -2,6 +2,7 @@
 #include "EssentialFunctions.h"
 #include "PlayerManagerService.h"
 #include "IConfigLoader.h"
+#include "GameEnvironmentService.h"
 
 ServiceManager& GetServiceManager()
 {
@@ -16,6 +17,16 @@ MainConfigLoader& GetConfigLoader()
 Player* GetPlayerObject()
 {
     return GetService<PlayerManagerService>()->GetPlayer();
+}
+
+sf::RenderWindow* GetGameWindow()
+{
+	return GetService<GameEnvironmentService>()->GetWindow();
+}
+
+GameObject* GetSystemObject()
+{
+	return GetService<GameEnvironmentService>()->GetSystemObject();
 }
 
 int RandomNumber(int min, int max)

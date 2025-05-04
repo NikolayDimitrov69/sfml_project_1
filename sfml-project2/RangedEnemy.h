@@ -13,7 +13,7 @@ class RangedEnemy : public IEnemy
 public:
 	RangedEnemy();
 
-	void updateAttack(const sf::Vector2u& targetSize);
+	void updateAttack();
 
 	void updateAngle(const sf::Vector2f& playerpos);
 
@@ -21,7 +21,7 @@ public:
 
 	void updateTimers();
 
-	void update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize);
+	virtual void update() override;
 
 	void renderAttack(sf::RenderTarget& target);
 

@@ -141,7 +141,7 @@ public:
 	void resetBoostTimer();
 
 	//updates the player and takes vector as an argument, which this game is the mouse position
-	void updatePlayer(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize);
+	void updatePlayer(const sf::Vector2f& mousePos);
 
 	//renders the player
 	void renderPlayer(sf::RenderTarget& target);

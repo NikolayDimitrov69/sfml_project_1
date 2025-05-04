@@ -2,6 +2,7 @@
 #include "RangedEnemy.h"
 #include "Constants.h"
 #include "TextureLoader.h"
+#include "Player.h"
 
 void RangedEnemy::createAttack(const sf::Vector2f& playerpos)
 {
@@ -37,11 +38,11 @@ RangedEnemy::RangedEnemy()
 	frame.setIdleSpeed(0.075f);
 }
 
-void RangedEnemy::updateAttack(const sf::Vector2u& targetSize)
+void RangedEnemy::updateAttack()
 {
 	for (int i = 0; i < attacks.size(); i++)
 	{
-		attacks[i].update(targetSize);
+		attacks[i].update();
 		if (attacks[i].isOutOfBounds())
 		{
 			attacks.erase(attacks.begin() + i);
@@ -71,11 +72,14 @@ void RangedEnemy::updateTimers()
 		movingTimer += 1.f;
 }
 
-void RangedEnemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize)
+void RangedEnemy::update()
 {
 	updateDirection();
 
 	updateTimers();
+
+	auto player = GetPlayerObject();
+	auto playerpos = player->getPostion();
 
 	updateAngle(playerpos);
 
@@ -88,7 +92,7 @@ void RangedEnemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targ
 	if (ac_state == EActionState::SHOOTING)
 	{
 		createAttack(playerpos);
-		updateAttack(targetSize);
+		updateAttack();
 	}
 	if (ac_state == EActionState::NOT_SHOOTING) {
 		sprite.move(ENEMY_RANGED_SPEED * direction);

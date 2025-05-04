@@ -7,8 +7,7 @@ class MainConfigLoader;
 template <typename T>
 inline bool IsValidEnum(T val)
 {
-	ReturnIf((int)val > (int)T::NONE && (int)val < (int)T::COUNT, true);
-	return false;
+	return (int)val > (int)T::INVALID && (int)val < (int)T::COUNT;
 }
 
 ServiceManager& GetServiceManager();
@@ -22,6 +21,10 @@ inline std::shared_ptr<Service> GetService()
 }
 
 Player* GetPlayerObject();
+
+sf::RenderWindow* GetGameWindow();
+
+GameObject* GetSystemObject();
 
 int RandomNumber(int min, int max);
 

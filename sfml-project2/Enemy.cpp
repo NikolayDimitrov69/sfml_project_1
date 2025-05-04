@@ -2,7 +2,7 @@
 #include "Enemy.h"
 #include "Constants.h"
 #include "TextureLoader.h"
-
+#include "Player.h"
 
 Enemy::Enemy()
 {
@@ -23,12 +23,14 @@ Enemy::Enemy()
 	frame.setIdleSpeed(0.075f);
 }
 
-void Enemy::update(const sf::Vector2f& playerpos, const sf::Vector2u& targetSize)
+void Enemy::update()
 {
 	immunityCoolDown += 1.f;
 
 	//Enemy stops moving when dying
 	if (ac_state == EActionState::NOT_SHOOTING) {
+		auto player = GetPlayerObject();
+		auto playerpos = player->getPostion();
 		direction = normalize(playerpos - sprite.getPosition());
 		angle = findAngleCos(sprite.getPosition(), playerpos);
 		if (playerpos.y > sprite.getPosition().y)

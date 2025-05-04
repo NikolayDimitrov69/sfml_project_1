@@ -3,7 +3,6 @@
 enum class EMovementState : int
 { 
 	INVALID = -1,
-	NONE = 0,
 	IDLE, 
 	MOVING, 
 	JUMPING, 
@@ -14,7 +13,6 @@ enum class EMovementState : int
 enum class EActionState : int
 { 
 	INVALID = -1,
-	NONE = 0,
 	SHOOTING, 
 	NOT_SHOOTING, 
 	DYING 
@@ -23,7 +21,6 @@ enum class EActionState : int
 enum class EPhysicState : int
 { 
 	INVALID = -1,
-	NONE = 0,
 	MID_AIR,
 	ON_GROUND,
 	ON_SLOPE 
@@ -32,7 +29,6 @@ enum class EPhysicState : int
 enum class EItemType : int
 {
 	INVALID = -1,
-	NONE = 0,
 	HEAL,
 	DOUBLE_ATTACK,
 	DOUBLE_JUMP,
@@ -43,7 +39,6 @@ enum class EItemType : int
 enum class EGameState : int
 {
 	INVALID = -1,
-	NONE = 0,
 	Menu, 
 	Playing, 
 	Paused, 
@@ -58,7 +53,6 @@ enum class EGameState : int
 enum class EEnemyType : int
 {
 	INVALID = -1,
-	NONE = 0,
 	Homing,
 	Ranged,
 	COUNT

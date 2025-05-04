@@ -28,26 +28,32 @@ public:
 	ObjectMutator(GameObject* obj);
 
 	template <typename Component>
-	ObjectMutator& add()
-	{
-		if (m_Obj.get<Component>())
-		{
-			assert(false && "component already exists!");
-		}
-		else
-		{
-			m_Obj.components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
-		}
-		return *this;
-	}
+	ObjectMutator& add();
 
 	template <typename Component>
-	ObjectMutator& remove()
-	{
-		m_Obj.components.erase(TypeIdGenerator::Get<Component>());
-		return *this;
-	}
+	ObjectMutator& remove();
 
 private:
 	GameObject& m_Obj;
 };
+
+template <typename Component>
+ObjectMutator& ObjectMutator::add()
+{
+	if (m_Obj.get<Component>())
+	{
+		assert(false && "component already exists!");
+	}
+	else
+	{
+		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
+	}
+	return *this;
+}
+
+template <typename Component>
+ObjectMutator& ObjectMutator::remove()
+{
+	m_Obj.components.erase(TypeIdGenerator::Get<Component>());
+	return *this;
+}

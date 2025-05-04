@@ -12,6 +12,7 @@ constexpr float     GAME_WINDOW_SCALE = 2;
 constexpr float		GAME_MAX_PROGRESS = 10000.f;
 constexpr float		GAME_ATTACK_OFFSET_ANGLE = 5.f;
 constexpr int		GAME_DEFAULT_ATTACK_COUNT = 1;
+constexpr int       GAME_FPS = 144;
 
 // MENU constants
 constexpr float		MENU_PRESS_TO_CONTINUE_TIMER = 250.f;
@@ -60,29 +61,25 @@ T& GetSingletonInstance()
     return T::GetInstance();
 }
 
-#define ReturnUnless(condition, _ARGS) \
-    if(!(condition)) \
-        return _ARGS;
+#define ReturnIf(x, ...) do{ if(x){ return __VA_ARGS__; } }while(false)
+#define ReturnUnless(x, ...) do{ if(!(x)){ return __VA_ARGS__; } }while(false)
 
-#define ReturnIf(condition, _ARGS) \
-    if((condition)) \
-        return _ARGS;
+#define ContinueIf(x) if(x){ continue; }
+#define ContinueUnless(x) if(!(x)){ continue; }
 
-#define ContinueUnless(condition) \
-    if(!(condition)) \
-        continue;
+#define BreakIf(x) if(x){ break; }
+#define BreakUnless(x) if(!(x)){ break; }
 
-#define ContinueIf(condition) \
-    if((condition)) \
-        continue;
+#define JumpIf(x,y) if(x){ goto y; }
 
-#define BrakeUnless(condition) \
-    if(!(condition)) \
-        break;
+#define AssertReturnIf(x, ...) do{ if(x){ assert(!(#x)); return __VA_ARGS__; } }while(false)
+#define AssertReturnUnless(x, ...) do{ if(!(x)){ assert(!(#x)); return __VA_ARGS__; } }while(false)
 
-#define BrakeIf(condition) \
-    if((condition)) \
-        break;
+#define AssertContinueIf(x) { if(x){ assert(!(#x)); continue; } }
+#define AssertContinueUnless(x) { if(!(x)){ assert(!(#x)); continue; } }
+
+#define AssertBreakIf(x) { if(x){ assert(!(#x)); break; } }
+#define AssertBreakUnless(x) { if(!(x)){ assert(!(#x)); break; } }
 
 #define ThrowUnless(condition, exception) \
     if(!(condition)) \

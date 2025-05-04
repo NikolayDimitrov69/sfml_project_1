@@ -56,7 +56,7 @@ public:
 	void spawn(const sf::Sprite&);
 
 	//Updates the screen position of the attack and checks if out of bounds on render target
-	void update(const sf::Vector2u& targetSize);
+	void update();
 
 	//Renders attack sprite
 	void render(sf::RenderTarget&);

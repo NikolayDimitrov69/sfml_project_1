@@ -49,8 +49,10 @@ const sf::Vector2f& IEnemy::getPosition() const
 	return sprite.getPosition();
 }
 
-void IEnemy::randomizeSpawnPosition(const sf::Vector2u& targetSize)
+void IEnemy::randomizeSpawnPosition()
 {
+	auto window = GetGameWindow();
+	auto targetSize = window->getSize();
 	//Random switch case for wether the enemy will be spawned from left or right side of the screen
 	switch (rand() % 2)
 	{

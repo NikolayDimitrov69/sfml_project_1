@@ -29,10 +29,7 @@ private:
 
 	unsigned int points;
 
-	//Window variables
-	sf::RenderWindow* window;
 	sf::Event event;
-	sf::VideoMode videomode;
 
 	Pause pause_window;
 
@@ -55,13 +52,8 @@ private:
 	std::vector<Item> items;
 	float itemSlopeSpawnTimer;
 
-	//Enemy vector
-	std::vector<IEnemy *> enemies;
-	float enemySpawnTimer;
-
 	//Initializer functions
 	void initMenus();
-	void initWindow();
 	void initProgressBar();
 	void setupItemEffectBar(ItemEffectBar& ieb,const sf::Texture& texture, float verticalPos);
 	void initItemEffectBar();
@@ -75,14 +67,6 @@ private:
 	void renderItemEffectBar();
 
 	void spawnItemAndItemSlope();
-
-	void spawnRandomEnemy();
-
-	void updateEnemyVector();
-
-	void checkEnemyCollision(const size_t& i);
-
-	void renderEnemyVector();
 
 	void spawnSlope();
 
