@@ -13,6 +13,8 @@ public:
 
 	~EnemySpawnerController();
 
+	void Clear();
+
 private:
 	void checkEnemyCollision(const size_t& i);
 	void spawnRandomEnemy();

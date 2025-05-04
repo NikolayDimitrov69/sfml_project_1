@@ -320,6 +320,7 @@ void Game::restartGame()
 	initVariables();
 	GetService<PlayerManagerService>()->InitializePlayer();
 	initSpawnSlope();
+	GetSystemObject()->get<EnemySpawnerController>()->Clear();
 }
 
 void Game::initialize()

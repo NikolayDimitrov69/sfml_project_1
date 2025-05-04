@@ -41,6 +41,11 @@ void EnemySpawnerController::Render()
 
 EnemySpawnerController::~EnemySpawnerController()
 {
+	Clear();
+}
+
+void EnemySpawnerController::Clear()
+{
 	for (size_t i = 0; i < m_Enemies.size(); i++)
 	{
 		delete m_Enemies[i];
