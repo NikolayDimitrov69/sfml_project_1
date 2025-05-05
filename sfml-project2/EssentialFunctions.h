@@ -7,7 +7,7 @@ class MainConfigLoader;
 template <typename T>
 inline bool IsValidEnum(T val)
 {
-	return (int)val > (int)T::INVALID && (int)val < (int)T::COUNT;
+	return (int)val > (int)T::Invalid && (int)val < (int)T::COUNT;
 }
 
 ServiceManager& GetServiceManager();

@@ -1,0 +1,43 @@
+<ListLibrary>
+    <list name="MovementState">
+		<listentry name="IDLE" />
+		<listentry name="MOVING" />
+		<listentry name="JUMPING" />
+		<listentry name="FALLING" />
+	</list>
+
+	<list name="ActionState">
+		<listentry name="SHOOTING" />
+		<listentry name="NOT_SHOOTING" />
+		<listentry name="DYING" />
+	</list>
+
+	<list name="PhysicState">
+		<listentry name="MID_AIR" />
+		<listentry name="ON_GROUND" />
+		<listentry name="ON_SLOPE" />
+	</list>
+
+	<list name="ItemType">
+		<listentry name="HEAL" />
+		<listentry name="DOUBLE_ATTACK" />
+		<listentry name="DOUBLE_JUMP" />
+		<listentry name="BOOST_ATTACK" />
+	</list>
+
+	<list name="GameState">
+		<listentry name="Menu" />
+		<listentry name="Playing" />
+		<listentry name="Paused" />
+		<listentry name="GameOver" />
+		<listentry name="StageComplete" />
+		<listentry name="Home" />
+		<listentry name="Restart" />
+		<listentry name="Quit" />
+	</list>
+
+	<list name="EnemyType">
+		<listentry name="Homing" />
+		<listentry name="Ranged" />
+	</list>
+</ListLibrary>

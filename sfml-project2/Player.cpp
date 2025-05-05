@@ -35,7 +35,7 @@ Player::Player()
 	, physicstate(EPhysicState::MID_AIR)
 	, playerstate(EMovementState::IDLE)
 	, timer(0.f)
-	, actionstate(EActionState::INVALID)
+	, actionstate(EActionState::Invalid)
 {
 }
 
