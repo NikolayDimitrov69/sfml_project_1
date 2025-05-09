@@ -1,0 +1,22 @@
+<GameObjects>
+	<object name="RangedEnemy">
+		<component name="EnemyConfig">
+			<p name="Health" value="100"/>
+			<p name="EnemyType" value="2"/>
+		</component>
+		<component name="RenderingConfig">
+			<p name="TextureId" value="ranged_skull"/>
+			<p name="Color" value="00000"/>
+		</component>
+	</object>
+	<object name="HomingEnemy">
+		<component name="EnemyConfig">
+			<p name="Health" value="100"/>
+			<p name="EnemyType" value="1"/>
+		</component>
+		<component name="RenderingConfig">
+			<p name="TextureId" value="skull"/>
+			<p name="Color" value="00001"/>
+		</component>
+	</object>
+</GameObjects>

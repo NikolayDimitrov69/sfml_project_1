@@ -5,9 +5,9 @@ class Player;
 class MainConfigLoader;
 
 template <typename T>
-inline bool IsValidEnum(T val)
+inline bool IsValidEnum(T e)
 {
-	return (int)val > (int)T::Invalid && (int)val < (int)T::COUNT;
+	return e > T::Invalid && e < T::COUNT;
 }
 
 ServiceManager& GetServiceManager();
