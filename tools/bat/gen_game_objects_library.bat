@@ -1,7 +1,7 @@
 @echo off
-echo Running enum generator...
+echo Building GameObjects...
 
-set "path=../bin/GameObjects.bin"
+set "path=../../bin/GameObjects.bin"
 del "%path%" 2>nul
 
 C:\Windows\py.exe ../Scripts/gen_objects_library.py
@@ -11,5 +11,3 @@ if exist "%path%" (
 ) else (
     echo Generation failed.
 )
-
-pause

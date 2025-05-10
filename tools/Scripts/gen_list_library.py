@@ -14,7 +14,7 @@ def generate_enum(name, items):
     return enum_str
 
 def main():
-    tree = ET.parse('../game/ListLibrary.xml')
+    tree = ET.parse('../../game/ListLibrary.xml')
     root = tree.getroot()
 
     output = "// Auto-generated enum header file\n#pragma once\n\n"
@@ -24,7 +24,7 @@ def main():
         items = [item.get('name') for item in list_elem.findall('listentry')]
         output += generate_enum(list_name, items) + "\n"
 
-    with open("../sfml-project2/GeneratedEnums.h", "w") as f:
+    with open("../../sfml-project2/GeneratedEnums.h", "w") as f:
         f.write(output)
 
     print("Generated GeneratedEnums.h")

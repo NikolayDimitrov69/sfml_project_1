@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <GameObjects>
 	<object name="RangedEnemy">
 		<component name="EnemyConfig">
@@ -5,8 +6,20 @@
 			<p name="EnemyType" value="2"/>
 		</component>
 		<component name="RenderingConfig">
-			<p name="TextureId" value="ranged_skull"/>
 			<p name="Color" value="00000"/>
+			<p name="Texture" value=""/>
+		</component>
+		<component name="LevelingConfig">
+			<p name="XpPerLevelSettings">
+				<p name="XpPerLevel_1">
+					<p name="XpAmount" value="0"/>
+					<p name="ForLevel" value="0"/>
+				</p>
+				<p name="XpPerLevel_2">
+					<p name="XpAmount" value="0"/>
+					<p name="ForLevel" value="0"/>
+				</p>
+			</p>
 		</component>
 	</object>
 	<object name="HomingEnemy">
@@ -15,8 +28,8 @@
 			<p name="EnemyType" value="1"/>
 		</component>
 		<component name="RenderingConfig">
-			<p name="TextureId" value="skull"/>
 			<p name="Color" value="00001"/>
+			<p name="Texture" value="wow"/>
 		</component>
 	</object>
 </GameObjects>
