@@ -23,26 +23,12 @@ def clone_property_structure(prop_elem):
         clone.append(clone_property_structure(child))
     return clone
 
-# Build structure map of a component, with support for array element types
+# Build structure map of a component
 def build_property_structure_map(component_elem):
     structure = {}
     for prop in component_elem.findall('p'):
         name = prop.get('name')
         children_map = build_property_structure_map(prop)
-
-        if prop.get('type') == 'array':
-            # Handle array: define the structure of its internal element
-            array_struct_elem = prop.find('p')
-            if array_struct_elem is not None:
-                element_name = array_struct_elem.get('name')
-                children_map = build_property_structure_map(array_struct_elem)
-                structure[name] = {
-                    'element': clone_property_structure(prop),
-                    'children': children_map,
-                    'array_element_name': element_name
-                }
-                continue
-
         structure[name] = {
             'element': clone_property_structure(prop),
             'children': children_map
@@ -55,30 +41,29 @@ component_structures = {
 }
 
 # Sync properties with full support for arrays and _number entries
-def sync_properties(parent_elem, definition_structure, is_array=False, array_element_name=None):
-    current_props = {p.get('name'): p for p in parent_elem.findall('p')}
+def sync_properties(game_object_component, template_component):
+    game_object_component_props = {p.get('name'): p for p in game_object_component.findall('p')}
 
-    for pname, def_info in definition_structure.items():
-        is_array_type = def_info['element'].get('type') == 'array'
-        array_elem_name = def_info.get('array_element_name')
+    for pname, template_component_info in template_component.items():
+        is_array_type = template_component_info['element'].get('type') == 'array'
 
-        if pname in current_props:
+        if pname in game_object_component_props:
             if is_array_type:
-                array_elem = current_props[pname]
-                for child in array_elem.findall('p'):
-                    cname = child.get('name')
-                    if cname and array_elem_name and re.match(rf'^{array_elem_name}_[0-9]+$', cname):
-                        sync_properties(child, def_info['children'], is_array=True)
+                array_property = game_object_component_props[pname]
+                for property in array_property.findall('p'):
+                    template_component_children = template_component_info['children']
+                    if property.get('name') in template_component_children:
+                        sync_properties(property, template_component_children[property.get('name')]['children'])
+                    else:
+                        array_property.remove(property)
             else:
-                sync_properties(current_props[pname], def_info['children'])
+                sync_properties(game_object_component_props[pname], template_component_info['children'])
         else:
-            parent_elem.append(copy.deepcopy(def_info['element']))
+            game_object_component.append(copy.deepcopy(template_component_info['element'])) # adding of missing properties
 
-    for pname in list(current_props.keys()):
-        if pname not in definition_structure:
-            if is_array and array_element_name and re.match(rf'^{array_element_name}_[0-9]+$', pname):
-                continue  # Preserve numbered array entries
-            parent_elem.remove(current_props[pname])
+    for pname in list(game_object_component_props.keys()):
+        if pname not in template_component:
+            game_object_component.remove(game_object_component_props[pname]) # removing of non-existent properties
 
 # Strip 'type' attributes before saving
 def strip_type_attributes(elem):

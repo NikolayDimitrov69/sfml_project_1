@@ -4,14 +4,14 @@
 		<p name="EnemyType" type="int" value="0" description="Type of the enemy (EnemyTypes in ListLibrary)"/>
 	</component>
 	<component name="RenderingConfig" description="Rendering properties of game objects">
-		<p name="Texture" type="string" value="" description="Texture id"/>
+		<p name="Texture" type="string" value="none" description="Texture id"/>
 		<p name="Color" type="int" value="00000" description="Color of texture in hex"/>
 	</component>
 	<component name="LevelingConfig" description="Base leveling config, holds xp needed per level">
 		<p name="XpPerLevelSettings" type="array">
 			<p name="XpPerLevel" type="struct">
-				<p name="XpAmount" type="int" value="0"/>
-				<p name="ForLevel" type="int" value="0"/>
+				<p name="Xp" type="int" value="0"/>
+				<p name="Level" type="int" value="0"/>
 			</p>
 		</p>
 	</component>

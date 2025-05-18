@@ -7,17 +7,21 @@
 		</component>
 		<component name="RenderingConfig">
 			<p name="Color" value="00000"/>
-			<p name="Texture" value=""/>
+			<p name="Texture" value="none"/>
 		</component>
 		<component name="LevelingConfig">
 			<p name="XpPerLevelSettings">
-				<p name="XpPerLevel_1">
-					<p name="XpAmount" value="0"/>
-					<p name="ForLevel" value="0"/>
+				<p name="XpPerLevel">
+					<p name="Xp" value="1"/>
+					<p name="Level" value="2"/>
 				</p>
-				<p name="XpPerLevel_2">
-					<p name="XpAmount" value="0"/>
-					<p name="ForLevel" value="0"/>
+				<p name="XpPerLevel">
+					<p name="Xp" value="0"/>
+					<p name="Level" value="0"/>
+				</p>
+				<p name="XpPerLevel">
+					<p name="Xp" value="0"/>
+					<p name="Level" value="0"/>
 				</p>
 			</p>
 		</component>
@@ -28,8 +32,8 @@
 			<p name="EnemyType" value="1"/>
 		</component>
 		<component name="RenderingConfig">
-			<p name="Color" value="00001"/>
-			<p name="Texture" value="wow"/>
+			<p name="Color" value="00000"/>
+			<p name="Texture" value="none"/>
 		</component>
 	</object>
 </GameObjects>
