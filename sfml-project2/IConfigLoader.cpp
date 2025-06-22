@@ -4,7 +4,7 @@
 void MainConfigLoader::Initialize()
 {
     std::ifstream in(GAME_CONFIG_FILE_PATH);
-    ThrowUnless(in.is_open(), std::runtime_error("Cannot open config file!"));
+    ReturnUnless(in.is_open());
     json configJson;
     in >> configJson;
     updateLoaders(configJson);

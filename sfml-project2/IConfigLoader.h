@@ -21,15 +21,12 @@ public:
     void registerLoader(const std::string& configName)
     {
         auto loader = std::make_shared<T>();
-        ReturnIf(registeredLoaders.count(loader.get()) &&
-            "This loader instance is already registered under a different name!");
         
         ConfigLoaderData data;
         data.configName = configName;
-        data.configPtr = loader;
+        data.configPtr = std::move(loader);
 
         loaders[TypeIdGenerator::Get<T>()] = std::move(data);
-        registeredLoaders.insert(loader.get());
     }
 
     template <typename T>
@@ -49,7 +46,6 @@ private:
 
 private:
     std::unordered_map<std::size_t, ConfigLoaderData> loaders;
-    std::unordered_set<IConfigLoader*> registeredLoaders;
 };
 
 template<typename T>
