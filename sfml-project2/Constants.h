@@ -2,6 +2,7 @@
 
 // GAME constants
 constexpr const char* GAME_CONFIG_FILE_PATH = "../game/config.json";
+constexpr const char* GAME_OBJECTS_BIN_PATH = "../bin/GameObjects.bin";
 constexpr float		GAME_PROGRESSION_PER_FRAME = 0.00f;
 constexpr float		GAME_SLOPE_SPAWN_TIMER = 225.f;
 constexpr float		GAME_ITEM_SLOPE_SPAWN_TIMER = 1000.f;
@@ -80,12 +81,3 @@ T& GetSingletonInstance()
 
 #define AssertBreakIf(x) { if(x){ assert(!(#x)); break; } }
 #define AssertBreakUnless(x) { if(!(x)){ assert(!(#x)); break; } }
-
-#define ThrowUnless(condition, exception) \
-    if(!(condition)) \
-        throw exception;
-
-#define ThrowIf(condition, exception) \
-    do\
-    if((condition)) \
-        throw exception;
