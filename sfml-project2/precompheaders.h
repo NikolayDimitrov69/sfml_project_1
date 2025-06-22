@@ -11,6 +11,10 @@
 #include <unordered_map>
 #include <fstream>
 #include <unordered_set>
+#include <variant>
+#include <memory>
+#include <stdexcept>
+#include <cstring>
 
 #include <../Externals/json.hpp>
 using json = nlohmann::json;
