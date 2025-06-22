@@ -1,6 +1,9 @@
 <Components>
 	<component name="EnemyConfig" description="The base properties of every enemy">
 		<p name="Health" type="int" value="0" description="Health points"/>
+		<p name="Damage" type="int" value="0"/>
+		<p name="TravelSpeed" type="int" value="0" />
+		<p name="AttackSpeed" type="int" value="0" />
 		<p name="EnemyType" type="int" value="0" description="Type of the enemy (EnemyTypes in ListLibrary)"/>
 	</component>
 	<component name="RenderingConfig" description="Rendering properties of game objects">

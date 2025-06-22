@@ -44,7 +44,7 @@ class StaticComponentRegistration {
 public:
     StaticComponentRegistration(const std::string& compName) {
         static_assert(std::is_base_of<IComponent, T>::value);
-        GetSingletonInstance<ComponentFactory>().Register(compName);
+        GetSingletonInstance<ComponentFactory>().Register<T>(compName);
     }
 };
 

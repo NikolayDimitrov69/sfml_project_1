@@ -4,6 +4,9 @@
 		<component name="EnemyConfig">
 			<p name="Health" value="100"/>
 			<p name="EnemyType" value="2"/>
+			<p name="Damage" value="50"/>
+			<p name="TravelSpeed" value="1"/>
+			<p name="AttackSpeed" value="300"/>
 		</component>
 		<component name="RenderingConfig">
 			<p name="Color" value="00000"/>
@@ -30,6 +33,9 @@
 		<component name="EnemyConfig">
 			<p name="Health" value="100"/>
 			<p name="EnemyType" value="1"/>
+			<p name="Damage" value="0"/>
+			<p name="TravelSpeed" value="0"/>
+			<p name="AttackSpeed" value="0"/>
 		</component>
 		<component name="RenderingConfig">
 			<p name="Color" value="00000"/>
