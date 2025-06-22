@@ -12,4 +12,9 @@ EnemyConfigComponent::EnemyConfigComponent()
 
 void EnemyConfigComponent::Update(const BinaryStruct& data)
 {
+	m_Health = data.Get<int>("Health");
+	m_Damage = data.Get<int>("Damage");
+	m_AttackSpeed = data.Get<int>("AttackSpeed");
+	m_TravelSpeed = data.Get<int>("TravelSpeed");
+	m_Type = EEnemyType(data.Get<int>("EnemyType"));
 }
