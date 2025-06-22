@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
 import struct
-import re
 
 # File paths
 xml_path = "../../game/GameObjectsLibrary.xml"
@@ -11,66 +10,61 @@ bin_path = "../../bin/GameObjects.bin"
 string_table = {}
 string_list = []
 
-def add_string(s):
-    if s not in string_table:
-        string_table[s] = len(string_list)
-        string_list.append(s)
+def add_string(s : str) -> int:
+    string_table[s] = len(string_list)
+    string_list.append(s)
     return string_table[s]
 
-# --- Step 1: Load component types ---
-def extract_type_tree(elem):
-    tree = {}
-    for p in elem.findall("p"):
-        name = p.get("name")
-        typ = p.get("type", "string")
-        subtree = extract_type_tree(p)
-        tree[name] = {
-            "type": typ,
-            "children": subtree
-        }
-    return tree
-
-components_tree = ET.parse(components_path)
-components_root = components_tree.getroot()
-
-component_types = {}
-for comp in components_root.findall("component"):
-    name = comp.get("name")
-    component_types[name] = extract_type_tree(comp)
-
 # --- Step 2: Serialize a property ---
-def serialize_property(prop_name, prop_elem, defn):
+def serialize_property(prop_name : str, prop_elem : ET.Element, defn : ET.Element) -> bytearray:
     output = bytearray()
     name_idx = add_string(prop_name)
-    typ = defn["type"]
+    type = defn.get("type")
     output += struct.pack('<I', name_idx)
 
-    if typ == "int":
+    if type == "int":
         output += struct.pack('<B', 0)
         output += struct.pack('<i', int(prop_elem.get("value", 0)))
 
-    elif typ == "bool":
+    elif type == "bool":
         output += struct.pack('<B', 1)
         val = prop_elem.get("value", "false").lower() == "true"
         output += struct.pack('<B', 1 if val else 0)
 
-    elif typ == "float":
+    elif type == "float":
         output += struct.pack('<B', 2)
         output += struct.pack('<f', float(prop_elem.get("value", 0.0)))
 
-    elif typ == "string":
+    elif type == "string":
         output += struct.pack('<B', 3)
         val = prop_elem.get("value", "")
         output += struct.pack('<I', add_string(val))
 
-    elif typ == "struct":
+    elif type == "struct":
         output += struct.pack('<B', 4)
-        output += struct.pack('<I', len(defn["children"]))
-        for child_name, child_def in defn["children"].items():
-            child_elem = prop_elem.find(f"./p[@name='{child_name}']")
-            if child_elem is None:
-                child_elem = ET.Element("p", {"name": child_name, "value": ""})
-            output += serialize_property(child_name, child_elem, child_def)
+        output += serialize_properties(prop_elem, defn)
+
+    elif type == "array":
+        output += struct.pack('<B', 5)
+        output += serialize_properties(prop_elem, defn)
+
+    return output
+
+def serialize_properties(prop_elem : ET.Element, defn : ET.Element) -> bytearray:
+    output = bytearray()
+    properties = []
+    # Gather serialized props
+    for prop in prop_elem.findall("p"):
+        prop_name = prop.get("name")
+        property_template = find_element(defn.findall("p"), prop_name)
+        if property_template == None:
+            continue
+        properties.append(serialize_property(prop_name, prop, property_template))
+
+    # Write property count and data
+    output += struct.pack('<I', len(properties))
+    for prop_bytes in properties:
+        output += prop_bytes
 
     return output
 
@@ -78,12 +72,19 @@ def serialize_property(prop_name, prop_elem, defn):
 game_tree = ET.parse(xml_path)
 game_root = game_tree.getroot()
 
+components_tree = ET.parse(components_path)
+components_root = components_tree.getroot()
+
 binary_data = bytearray()
 object_count_pos = len(binary_data)
 binary_data += struct.pack('<I', 0)  # Placeholder
 
 objects = game_root.findall("object")
+component_templates = components_root.findall("component")
 binary_data[object_count_pos:object_count_pos+4] = struct.pack('<I', len(objects))
+
+def find_element(container : list, key : str) -> ET.Element | None:
+    return next((elem for elem in container if elem.get("name") == key), None)
 
 for obj in objects:
     obj_name = obj.get("name")
@@ -96,30 +97,11 @@ for obj in objects:
         comp_name = comp.get("name")
         binary_data += struct.pack('<I', add_string(comp_name))
 
-        type_map = component_types.get(comp_name, {})
-        properties = []
+        component_template = find_element(component_templates, comp_name)
+        if component_template == None:
+            continue
 
-        # Gather serialized props
-        for prop in comp.findall("p"):
-            prop_name = prop.get("name")
-
-            # Handle array
-            defn = type_map.get(prop_name)
-            if defn and defn["type"] == "array":
-                array_elem_def = list(defn["children"].values())[0]  # struct or type inside array
-                array_elem_name = list(defn["children"].keys())[0]
-                for entry in prop.findall("p"):
-                    entry_name = entry.get("name", "")
-                    if re.match(rf'^{array_elem_name}_[0-9]+$', entry_name):
-                        properties.append(serialize_property(entry_name, entry, array_elem_def))
-            else:
-                if prop_name in type_map:
-                    properties.append(serialize_property(prop_name, prop, type_map[prop_name]))
-
-        # Write property count and data
-        binary_data += struct.pack('<I', len(properties))
-        for prop_bytes in properties:
-            binary_data += prop_bytes
+        binary_data += serialize_properties(comp, component_template)
 
 # --- Step 4: Write string table ---
 binary_data += struct.pack('<I', len(string_list))
