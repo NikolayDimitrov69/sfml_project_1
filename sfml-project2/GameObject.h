@@ -31,6 +31,12 @@ public:
 	ObjectMutator& add();
 
 	template <typename Component>
+	ObjectMutator& add(const std::shared_ptr<Component>& component);
+
+	template <typename Component>
+	ObjectMutator& add(std::shared_ptr<Component>&& component);
+
+	template <typename Component>
 	ObjectMutator& remove();
 
 private:
@@ -38,7 +44,7 @@ private:
 };
 
 template <typename Component>
-ObjectMutator& ObjectMutator::add()
+inline ObjectMutator& ObjectMutator::add()
 {
 	if (m_Obj.get<Component>())
 	{
@@ -47,6 +53,34 @@ ObjectMutator& ObjectMutator::add()
 	else
 	{
 		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
+	}
+	return *this;
+}
+
+template<typename Component>
+inline ObjectMutator& ObjectMutator::add(const std::shared_ptr<Component>& component)
+{
+	if (m_Obj.get<Component>())
+	{
+		assert(false && "component already exists!");
+	}
+	else
+	{
+		m_Obj.components[TypeIdGenerator::Get<Component>()] = component;
+	}
+	return *this;
+}
+
+template<typename Component>
+inline ObjectMutator& ObjectMutator::add(std::shared_ptr<Component>&& component)
+{
+	if (m_Obj.get<Component>())
+	{
+		assert(false && "component already exists!");
+	}
+	else
+	{
+		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::move(component);
 	}
 	return *this;
 }
