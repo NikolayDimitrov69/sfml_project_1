@@ -5,3 +5,5 @@
 #include "ServiceManager.h"
 #include "EssentialFunctions.h"
 #include "IConfigLoader.h"
+#include "BinaryValue.h"
+#include "IComponent.h"

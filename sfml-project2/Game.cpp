@@ -7,6 +7,7 @@
 #include "TextureLoader.h"
 #include "EnemySpawnerConfig.h"
 #include "EnemySpawnerController.h"
+#include "GameObjectsLoader.h"
 
 void Game::initMenus()
 {
@@ -325,6 +326,7 @@ void Game::restartGame()
 
 void Game::initialize()
 {
+	GetSingletonInstance<GameObjectsLoader>().Load();
 	GetConfigLoader().Initialize();
 	GetServiceManager().RegisterNeededServices();
 	initFont();

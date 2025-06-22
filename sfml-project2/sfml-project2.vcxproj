@@ -158,9 +158,12 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="Background.cpp" />
+    <ClCompile Include="BinaryValue.cpp" />
     <ClCompile Include="EnemySpawnerConfig.cpp" />
     <ClCompile Include="EnemySpawnerController.cpp" />
     <ClCompile Include="GameEnvironmentService.cpp" />
+    <ClCompile Include="GameObjectsLoader.cpp" />
+    <ClCompile Include="IComponent.cpp" />
     <ClCompile Include="IConfigLoader.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EssentialFunctions.cpp" />
@@ -197,9 +200,12 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Attack.h" />
     <ClInclude Include="Background.h" />
+    <ClInclude Include="BinaryValue.h" />
     <ClInclude Include="EnemySpawnerConfig.h" />
     <ClInclude Include="EnemySpawnerController.h" />
     <ClInclude Include="GameEnvironmentService.h" />
+    <ClInclude Include="GameObjectsLoader.h" />
+    <ClInclude Include="IComponent.h" />
     <ClInclude Include="IConfigLoader.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Enemy.h" />
