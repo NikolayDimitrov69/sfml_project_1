@@ -8,6 +8,7 @@
 #include "EnemySpawnerConfig.h"
 #include "EnemySpawnerController.h"
 #include "GameObjectsLoader.h"
+#include "ComponentRules.h"
 
 void Game::initMenus()
 {
@@ -326,6 +327,7 @@ void Game::restartGame()
 
 void Game::initialize()
 {
+	InitComponentRules();
 	GetSingletonInstance<GameObjectsLoader>().Load();
 	GetConfigLoader().Initialize();
 	GetServiceManager().RegisterNeededServices();

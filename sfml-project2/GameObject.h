@@ -43,6 +43,39 @@ private:
 	GameObject& m_Obj;
 };
 
+class ComponentDependancyRules
+{
+public:
+	using DependancyFunction = std::function<void(ObjectMutator&)>;
+	
+	template <typename Dependee, typename Depender>
+	void push()
+	{
+		DependancyFunction dpFn = [](ObjectMutator& mut)
+			{
+				mut.add<Depender>();
+			};
+		dependanciesMap[TypeIdGenerator::Get<Dependee>()].push_back(dpFn);
+	}
+	
+	template <typename Dependee>
+	void applyDependancies(ObjectMutator& mut)
+	{
+		auto it = dependanciesMap.find(TypeIdGenerator::Get<Dependee>());
+		if (it != dependanciesMap.end())
+		{
+			for (const auto& dpFn : it->second)
+			{
+				dpFn(mut);
+			}
+		}
+	}
+	
+	DECLARE_SINGLETON(ComponentDependancyRules);
+private:
+	std::unordered_map<std::size_t, std::vector<DependancyFunction>> dependanciesMap;
+};
+
 template <typename Component>
 inline ObjectMutator& ObjectMutator::add()
 {
@@ -53,6 +86,7 @@ inline ObjectMutator& ObjectMutator::add()
 	else
 	{
 		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
+		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
 	}
 	return *this;
 }
@@ -67,6 +101,7 @@ inline ObjectMutator& ObjectMutator::add(const std::shared_ptr<Component>& compo
 	else
 	{
 		m_Obj.components[TypeIdGenerator::Get<Component>()] = component;
+		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
 	}
 	return *this;
 }
@@ -81,6 +116,7 @@ inline ObjectMutator& ObjectMutator::add(std::shared_ptr<Component>&& component)
 	else
 	{
 		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::move(component);
+		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
 	}
 	return *this;
 }

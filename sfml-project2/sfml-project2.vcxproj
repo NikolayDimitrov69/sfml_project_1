@@ -159,6 +159,7 @@
     <ClCompile Include="Attack.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="BinaryValue.cpp" />
+    <ClCompile Include="ComponentRules.cpp" />
     <ClCompile Include="EnemyConfigComponent.cpp" />
     <ClCompile Include="EnemySpawnerConfig.cpp" />
     <ClCompile Include="EnemySpawnerController.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="Attack.h" />
     <ClInclude Include="Background.h" />
     <ClInclude Include="BinaryValue.h" />
+    <ClInclude Include="ComponentRules.h" />
     <ClInclude Include="EnemyConfigComponent.h" />
     <ClInclude Include="EnemySpawnerConfig.h" />
     <ClInclude Include="EnemySpawnerController.h" />

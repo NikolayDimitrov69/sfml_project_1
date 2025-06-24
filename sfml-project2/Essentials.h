@@ -1,7 +1,7 @@
 #pragma once
+#include "Constants.h"
 #include "GeneratedEnums.h"
 #include "GameObject.h"
-#include "Constants.h"
 #include "ServiceManager.h"
 #include "EssentialFunctions.h"
 #include "IConfigLoader.h"
