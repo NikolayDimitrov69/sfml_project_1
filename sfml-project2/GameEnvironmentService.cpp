@@ -9,7 +9,8 @@ GameEnvironmentService::GameEnvironmentService()
 
     m_SystemObject = new GameObject();
     ObjectMutator(m_SystemObject)
-        .add<EnemySpawnerController>();
+        .add<EnemySpawnerController>()
+        .apply();
 }
 
 GameObject* GameEnvironmentService::GetSystemObject() const

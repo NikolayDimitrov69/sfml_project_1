@@ -33,6 +33,8 @@ void GameObjectsLoader::InitializeGameObjects()
             const auto& compName = component->Get<std::string>("name");
             GetSingletonInstance<ComponentFactory>().Create(compName, mut, *component.get());
         }
+
+        mut.apply();
     }
 }
 

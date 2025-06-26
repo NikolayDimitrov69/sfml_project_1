@@ -22,10 +22,18 @@ private:
 	friend class ObjectMutator;
 };
 
+using DependancyFunction = std::function<void(ObjectMutator&)>;
+
 class ObjectMutator
 {
 public:
 	ObjectMutator(GameObject* obj);
+
+	~ObjectMutator();
+
+	void reset();
+
+	void apply();
 
 	template <typename Component>
 	ObjectMutator& add();
@@ -40,14 +48,19 @@ public:
 	ObjectMutator& remove();
 
 private:
+	template <typename Component>
+	void appendDependancies();
+
+	void applyStoredDependancies();
+private:
 	GameObject& m_Obj;
+	GameObject* m_Mutation;
+	std::vector<DependancyFunction> m_MutationDependancies;
 };
 
 class ComponentDependancyRules
 {
 public:
-	using DependancyFunction = std::function<void(ObjectMutator&)>;
-	
 	template <typename Dependee, typename Depender>
 	void push()
 	{
@@ -70,6 +83,18 @@ public:
 			}
 		}
 	}
+
+	template <typename Dependee>
+	const std::vector<DependancyFunction>& getDependancies() const
+	{
+		static std::vector<DependancyFunction> s_EmptyDependacyRules;
+		auto it = dependanciesMap.find(TypeIdGenerator::Get<Dependee>());
+		if (it != dependanciesMap.end())
+		{
+			return it->second;
+		}
+		return s_EmptyDependacyRules;
+	}
 	
 	DECLARE_SINGLETON(ComponentDependancyRules);
 private:
@@ -77,16 +102,23 @@ private:
 };
 
 template <typename Component>
+inline void ObjectMutator::appendDependancies()
+{
+	const auto& dep = GetSingletonInstance<ComponentDependancyRules>().getDependancies<Component>();
+	m_MutationDependancies.insert(std::end(m_MutationDependancies), std::begin(dep), std::end(dep));
+}
+
+template <typename Component>
 inline ObjectMutator& ObjectMutator::add()
 {
-	if (m_Obj.get<Component>())
+	if (m_Obj.get<Component>() || m_Mutation->get<Component>())
 	{
 		assert(false && "component already exists!");
 	}
 	else
 	{
-		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
-		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
+		m_Mutation->components[TypeIdGenerator::Get<Component>()] = std::make_shared<Component>();
+		appendDependancies<Component>();
 	}
 	return *this;
 }
@@ -94,14 +126,14 @@ inline ObjectMutator& ObjectMutator::add()
 template<typename Component>
 inline ObjectMutator& ObjectMutator::add(const std::shared_ptr<Component>& component)
 {
-	if (m_Obj.get<Component>())
+	if (m_Obj.get<Component>() || m_Mutation->get<Component>())
 	{
 		assert(false && "component already exists!");
 	}
 	else
 	{
-		m_Obj.components[TypeIdGenerator::Get<Component>()] = component;
-		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
+		m_Mutation->components[TypeIdGenerator::Get<Component>()] = component;
+		appendDependancies<Component>();
 	}
 	return *this;
 }
@@ -109,14 +141,14 @@ inline ObjectMutator& ObjectMutator::add(const std::shared_ptr<Component>& compo
 template<typename Component>
 inline ObjectMutator& ObjectMutator::add(std::shared_ptr<Component>&& component)
 {
-	if (m_Obj.get<Component>())
+	if (m_Obj.get<Component>() || m_Mutation->get<Component>())
 	{
 		assert(false && "component already exists!");
 	}
 	else
 	{
-		m_Obj.components[TypeIdGenerator::Get<Component>()] = std::move(component);
-		GetSingletonInstance<ComponentDependancyRules>().applyDependancies<Component>(*this);
+		m_Mutation->components[TypeIdGenerator::Get<Component>()] = std::move(component);
+		appendDependancies<Component>();
 	}
 	return *this;
 }
@@ -124,6 +156,6 @@ inline ObjectMutator& ObjectMutator::add(std::shared_ptr<Component>&& component)
 template <typename Component>
 ObjectMutator& ObjectMutator::remove()
 {
-	m_Obj.components.erase(TypeIdGenerator::Get<Component>());
+	m_Mutation->components.erase(TypeIdGenerator::Get<Component>());
 	return *this;
 }
