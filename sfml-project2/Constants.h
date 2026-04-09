@@ -3,9 +3,9 @@
 // GAME constants
 constexpr const char* GAME_CONFIG_FILE_PATH = "../game/config.json";
 constexpr const char* GAME_OBJECTS_BIN_PATH = "../bin/GameObjects.bin";
-constexpr float		GAME_PROGRESSION_PER_FRAME = 0.00f;
+constexpr float		GAME_PROGRESSION_PER_FRAME = 0.02f;
 constexpr float		GAME_SLOPE_SPAWN_TIMER = 225.f;
-constexpr float		GAME_ITEM_SLOPE_SPAWN_TIMER = 1000.f;
+constexpr float		GAME_ITEM_SLOPE_SPAWN_TIMER = 500.f;
 constexpr float		GAME_INIT_SLOPE_FALL_SPEED = 1.2f;
 constexpr int		GAME_WINDOW_WIDTH = 1600;
 constexpr int		GAME_WINDOW_HEIGHT = 800;
@@ -13,22 +13,24 @@ constexpr float     GAME_WINDOW_SCALE = 2;
 constexpr float		GAME_MAX_PROGRESS = 10000.f;
 constexpr float		GAME_ATTACK_OFFSET_ANGLE = 5.f;
 constexpr int		GAME_DEFAULT_ATTACK_COUNT = 1;
-constexpr int       GAME_FPS = 144;
+constexpr int       GAME_TPS = 144;
 
 // MENU constants
 constexpr float		MENU_PRESS_TO_CONTINUE_TIMER = 250.f;
 
 // PLAYER constants
 constexpr float		PLAYER_MAX_HEALTH = 100.f;
-constexpr float		PLAYER_DEFAULT_ATTACK_MOVE_SPEED = 7.f;
-constexpr float		PLAYER_ATTACK_COOLDOWN = 30.f;
+constexpr float		PLAYER_DEFAULT_ATTACK_MOVE_SPEED = 10.f;
+constexpr float		PLAYER_ATTACK_COOLDOWN = 15.f;
 constexpr float		PLAYER_JUMP_COOLDOWN = 1.5f;
 constexpr float		PLAYER_JUMP_FORCE = 9.f;
-constexpr float		PLAYER_DAMAGE = 30.f;
+constexpr float		PLAYER_DAMAGE = 18.f;
 constexpr float		PLAYER_DOUBLE_ATTACK_TIMER = 800.f;
 constexpr unsigned	PLAYER_MAX_DOUBLE_JUMPS = 3;
 constexpr float		PLAYER_MIN_DOUBLE_JUMP_TIMER = 60.f;
 constexpr float		PLAYER_BOOST_ATTACK_TIMER = 800.f;
+constexpr float		PLAYER_DASH_FORCE = 3.f; // todo
+constexpr float		PLAYER_DASH_CLICK_CD = 5.f; // todo
 
 // ENEMY constants
 constexpr float		ENEMY_MAX_IMMUNITY_TIMER = 0.f;

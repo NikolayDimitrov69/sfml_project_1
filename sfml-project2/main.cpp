@@ -8,9 +8,13 @@ int main()
 	Game game;
 	game.initialize();
 
+	sf::Clock c;
+
 	while (game.isRunning())
 	{
-		game.update();
+		float deltaTime = c.restart().asSeconds();
+
+		game.update(deltaTime);
 
 		game.render();
 	}

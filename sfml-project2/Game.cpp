@@ -388,7 +388,7 @@ void Game::updateProgress()
 	}
 }
 
-void Game::update()
+void Game::update(float delta)
 {
 	pollEvents();
 	updateMenu();

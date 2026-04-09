@@ -46,10 +46,6 @@ EnemySpawnerController::~EnemySpawnerController()
 
 void EnemySpawnerController::Clear()
 {
-	for (size_t i = 0; i < m_Enemies.size(); i++)
-	{
-		delete m_Enemies[i];
-	}
 	m_Enemies.clear();
 }
 
@@ -58,11 +54,9 @@ void EnemySpawnerController::checkEnemyCollision(const size_t& i)
 	auto window = GetGameWindow();
 	auto player = GetPlayerObject();
 	if (m_Enemies[i]->outOfBounds(window->getSize())) {
-		delete m_Enemies[i];
 		m_Enemies.erase(m_Enemies.begin() + i);
 	}
 	else if (m_Enemies[i]->isFrameFinished()) {
-		delete m_Enemies[i];
 		m_Enemies.erase(m_Enemies.begin() + i);
 	}
 	else if (m_Enemies[i]->getActionstate() != EActionState::DYING && m_Enemies[i]->getGlobalBounds().intersects(player->getGlobalBounds()))
@@ -85,29 +79,65 @@ void EnemySpawnerController::checkEnemyCollision(const size_t& i)
 
 void EnemySpawnerController::spawnRandomEnemy()
 {
-	auto cfg = GetConfigLoader().Get<EnemySpawnerConfig>();
-	ReturnUnless(cfg);
+	auto enemy = generateEnemies(true);
+	m_Enemies.insert(m_Enemies.end(), enemy.begin(), enemy.end());
+}
 
-	IEnemy* enemy = nullptr;
+std::vector<std::shared_ptr<IEnemy>> EnemySpawnerController::generateEnemies(bool randomiseSpawnPos)
+{
+	std::vector<std::shared_ptr<IEnemy>> enemies;
+
+	auto cfg = GetConfigLoader().Get<EnemySpawnerConfig>();
+	ReturnUnless(cfg, (enemies));
+
+	std::shared_ptr<IEnemy> enemy;
 
 	switch (cfg->GetWeightedSpawnRates().GetRandomItem())
 	{
 	case EEnemyType::Homing:
 	{
-		enemy = new Enemy();
+		enemy.reset(new Enemy());
+		if (randomiseSpawnPos)
+		{
+			enemy->randomizeSpawnPosition();
+		}
+		enemies.push_back(enemy);
 		break;
 	}
 	case EEnemyType::Ranged:
 	{
-		enemy = new RangedEnemy();
+		enemy.reset(new RangedEnemy());
+		if (randomiseSpawnPos)
+		{
+			enemy->randomizeSpawnPosition();
+		}
+		enemies.push_back(enemy);
+		break;
+	}
+	case EEnemyType::Wave:
+	{
+		return spawnWave();
 		break;
 	}
 	default:
 		assert(false && "unkown type of enemy");
 	}
 
-	ReturnUnless(enemy);
+	return (enemies);
+}
 
-	enemy->randomizeSpawnPosition();
-	m_Enemies.push_back(enemy);
+std::vector<std::shared_ptr<IEnemy>> EnemySpawnerController::spawnWave()
+{
+	std::vector<std::shared_ptr<IEnemy>> enemies;
+	enemies.reserve(10);
+
+	for (size_t i = 0; i < 10; i++)
+	{
+		std::shared_ptr<IEnemy> enemy;
+		enemy.reset(new RangedEnemy());
+		enemy->randomizeSpawnPosition();
+		enemies.push_back(enemy);
+	}
+
+	return (enemies);
 }

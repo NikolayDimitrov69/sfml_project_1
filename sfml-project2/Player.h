@@ -60,7 +60,8 @@ private:
 	Animation frame;
 
 	//Key timers
-	float timer;
+	float jumpTimer;
+	float dashTimer;
 
 	//Private initializer functions
 	void initPlayerHealth();
@@ -136,6 +137,14 @@ public:
 	//updates the physics vector's Y variable;
 	void jump(const float&);
 
+	void dash(float dir);
+
+	void onDoubleJumped();
+
+	void onJumped();
+
+	void onDashed();
+
 	void updateTimers();
 
 	void resetBoostTimer();
@@ -146,8 +155,13 @@ public:
 	//renders the player
 	void renderPlayer(sf::RenderTarget& target);
 
-	//Check if timer is above Jump cooldown
-	bool keyPressable();
+	bool canDash() const;
+
+	bool canJump() const;
+
+	bool canJumpNormal() const;
+
+	bool canDoubleJump() const;
 
 	void resetDoubleAttTimer();
 

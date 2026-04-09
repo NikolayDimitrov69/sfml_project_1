@@ -39,5 +39,6 @@
 	<list name="EnemyType">
 		<listentry name="Homing" />
 		<listentry name="Ranged" />
+		<listentry name="Wave" />
 	</list>
 </ListLibrary>

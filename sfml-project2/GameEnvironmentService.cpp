@@ -5,7 +5,7 @@
 GameEnvironmentService::GameEnvironmentService()
 {
     m_Window = new sf::RenderWindow(sf::VideoMode(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT), "Game", sf::Style::Close | sf::Style::Titlebar);
-    m_Window->setFramerateLimit(GAME_FPS);
+    m_Window->setFramerateLimit(GAME_TPS);
 
     m_SystemObject = new GameObject();
     ObjectMutator(m_SystemObject)

@@ -34,7 +34,8 @@ Player::Player()
 	, damage(PLAYER_DAMAGE)
 	, physicstate(EPhysicState::MID_AIR)
 	, playerstate(EMovementState::IDLE)
-	, timer(0.f)
+	, jumpTimer(0.f)
+	, dashTimer(PLAYER_DASH_CLICK_CD)
 	, actionstate(EActionState::Invalid)
 {
 }
@@ -114,7 +115,41 @@ void Player::move_x(const float& dir_x)
 
 void Player::jump(const float& height)
 {
+	if (physicstate == EPhysicState::MID_AIR)
+	{
+		onDoubleJumped();
+	}
+	else
+	{
+		onJumped();
+	}
+	
 	playerphysics.setVelocity_Y(height);
+}
+
+void Player::dash(float dir)
+{
+	move_x(dir * PLAYER_DASH_FORCE);
+	//onDashed();
+}
+
+void Player::onDoubleJumped()
+{
+	doubleJumpedOnce = true;
+	doubleJumpTimer = 0.f;
+	doubleJumps--;
+}
+
+void Player::onJumped()
+{
+	jumpTimer = 0.f;
+	physicstate = EPhysicState::MID_AIR;
+	playerstate = EMovementState::JUMPING;
+}
+
+void Player::onDashed()
+{
+	dashTimer = 0.f;
 }
 
 void Player::TurnLeft()
@@ -146,7 +181,7 @@ void Player::updateAttackCooldown()
 
 void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2u& targetSize)
 {
-	 const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
+	const auto& sprite = GetService<PlayerManagerService>()->GetSprite();
 	
 	sf::FloatRect playerBounds = sprite.getGlobalBounds();
 
@@ -158,52 +193,87 @@ void Player::updateInputAndSates(const sf::Vector2f& mousePos, const sf::Vector2
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		TurnLeft();
-		move_x(-1.f);
+
+		/*if (canDash())
+		{
+			dash(-1.f);
+		}
+		else*/
+		{
+			move_x(-1.f);
+		}
+
+		dashTimer = 0.f;
+
 		if (playerphysics.getMoveVelocity().y == 0)
+		{
 			playerstate = EMovementState::MOVING;
+		}
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		TurnRight();
-		move_x(1.f);
+
+		/*if (canDash())
+		{
+			dash(1.f);
+		}
+		else*/
+		{
+			move_x(1.f);
+		}
+
+		dashTimer = 0.f;
+
 		if (playerphysics.getMoveVelocity().y == 0)
+		{
 			playerstate = EMovementState::MOVING;
+		}
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::ON_GROUND && keyPressable())
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
-		physicstate = EPhysicState::MID_AIR;
-		playerstate = EMovementState::JUMPING;
-		jump(PLAYER_JUMP_FORCE);
+		if (canJump())
+		{
+			jump(PLAYER_JUMP_FORCE);
+		}
 	}
 
-	if (!doubleJumpedOnce && sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && physicstate == EPhysicState::MID_AIR && doubleJumpTimer >= PLAYER_MIN_DOUBLE_JUMP_TIMER && doubleJumps > 0)
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) 
 	{
-		doubleJumpedOnce = true;
-		jump(PLAYER_JUMP_FORCE);
-		doubleJumpTimer = 0.f;
-		doubleJumps--;
-	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 		actionstate = EActionState::SHOOTING;
+
 		if (mousePos.x < sprite.getPosition().x)
+		{
 			TurnLeft();
+		}
+
 		if (mousePos.x > sprite.getPosition().x)
+		{
 			TurnRight();
+		}
 
 		if (doubleAttCooldown < PLAYER_DOUBLE_ATTACK_TIMER)
+		{
 			createAttack(mousePos, targetSize, GAME_DEFAULT_ATTACK_COUNT * 2);
+		}
 
 		createAttack(mousePos, targetSize, GAME_DEFAULT_ATTACK_COUNT);
 	}
 	else
+	{
 		actionstate = EActionState::NOT_SHOOTING;
+	}
 
 	if (playerphysics.getMoveVelocity().y == 0 && physicstate == EPhysicState::MID_AIR)
+	{
 		playerstate = EMovementState::FALLING;
+	}
 	else if (playerphysics.getMoveVelocity() == sf::Vector2f(0.f, 0.f))
+	{
 		playerstate = EMovementState::IDLE;
+	}
 }
 
 void Player::updateHealth()
@@ -292,10 +362,11 @@ sf::FloatRect Player::getGlobalBounds() const
 
 void Player::updateTimers()
 {
-	timer += 1.f;
+	jumpTimer += 1.f;
 	attCooldown += 1.f;
 	doubleAttCooldown += 1.f;
 	boostAttackTimer += 1.f;
+	dashTimer += 1.f;
 
 	if (physicstate == EPhysicState::MID_AIR)
 	{
@@ -342,13 +413,31 @@ void Player::renderPlayer(sf::RenderTarget& target)
 	renderHealth(target);
 }
 
-bool Player::keyPressable()
+bool Player::canDash() const
 {
-	if (timer >= PLAYER_JUMP_COOLDOWN) {
-		timer = 0.f;
-		return true;
-	}
-	return false;
+	ReturnUnless(dashTimer <= PLAYER_DASH_CLICK_CD, false);
+	return true;
+}
+
+bool Player::canJump() const
+{
+	return canJumpNormal() || canDoubleJump();
+}
+
+bool Player::canJumpNormal() const
+{
+	ReturnUnless(jumpTimer >= PLAYER_JUMP_COOLDOWN, false);
+	ReturnUnless(physicstate == EPhysicState::ON_GROUND, false);
+	return true;
+}
+
+bool Player::canDoubleJump() const
+{
+	ReturnIf(doubleJumpedOnce, false);
+	ReturnUnless(physicstate == EPhysicState::MID_AIR, false);
+	ReturnUnless(doubleJumpTimer >= PLAYER_MIN_DOUBLE_JUMP_TIMER, false);
+	ReturnUnless(doubleJumps > 0, false);
+	return true;
 }
 
 void Player::resetDoubleAttTimer()

@@ -28,7 +28,8 @@
 		"spawnRates" : 
 		[
 		  { "enemyType" : 0, "weight" : 70 },
-		  { "enemyType" : 1, "weight" : 30 }
+		  { "enemyType" : 1, "weight" : 30 },
+		  { "enemyType" : 2, "weight" : 10 }
 		]
   }
 }

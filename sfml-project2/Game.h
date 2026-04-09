@@ -106,7 +106,7 @@ public:
 
 	void updateProgress();
 
-	void update();
+	void update(float delta);
 
 	void render();
 

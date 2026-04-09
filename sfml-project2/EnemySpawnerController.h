@@ -18,8 +18,10 @@ public:
 private:
 	void checkEnemyCollision(const size_t& i);
 	void spawnRandomEnemy();
+	std::vector<std::shared_ptr<IEnemy>> generateEnemies(bool randomiseSpawnPos = false);
+	std::vector<std::shared_ptr<IEnemy>> spawnWave();
 private:
-	std::vector<IEnemy*> m_Enemies;
+	std::vector<std::shared_ptr<IEnemy>> m_Enemies;
 	float m_EnemySpawnTimer;
 };
 
